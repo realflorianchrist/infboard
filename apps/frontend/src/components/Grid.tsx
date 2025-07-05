@@ -12,6 +12,8 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 export default function Grid() {
     const [mounted, setMounted] = useState(false);
 
+    const [draggingItemId, setDraggingItemId] = useState<string | null>(null);
+
     const [layouts, setLayouts] = useState(generateLayout(['se']));
     const [compactType, setCompactType] = useState<'vertical' | 'horizontal' | null>('vertical');
     const [resizeHandles, setResizeHandles] = useState<ResizeHandle[]>(['se']);
@@ -36,11 +38,24 @@ export default function Grid() {
                 setLayouts(allLayouts);
             }}
             measureBeforeMount={false}
+            onDragStart={(layout, oldItem) => {
+                setDraggingItemId(oldItem.i);
+            }}
+            onDragStop={() => {
+                setDraggingItemId(null);
+            }}
         >
             {layouts.lg?.map((item) => (
                 <div
                     key={item.i}
-                    className={`${item.static ? 'static' : ''} dark:bg-gray-800 bg-gray-300`}
+                    className={`
+                    dark:bg-gray-800 bg-gray-300 border-2 border-transparent
+                    ${item.static
+                        ? 'static'
+                        : draggingItemId === item.i
+                            ? 'cursor-grabbing !border-accent/30'
+                            : 'cursor-grab '} 
+                            `}
                 >
                     {item.i}
                 </div>
