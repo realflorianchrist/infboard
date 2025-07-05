@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "temp",
+    "sourceMap": false,
+    "removeComments": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "config.ts"
+  ],
+  "exclude": [
+    "tests",
+    "src/public/",
+    "scripts",
+    "eslint.config.ts",
+    "vitest.config.js"
+  ]
+}
