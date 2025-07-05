@@ -1,12 +1,13 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
       "@src/*": ["src/*"]
     },
     "useUnknownInCatchVariables": false,
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "allowSyntheticDefaultImports": true
   },
   "ts-node": {
     "swc": true,
