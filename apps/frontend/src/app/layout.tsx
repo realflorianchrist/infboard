@@ -1,6 +1,6 @@
 import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
-import "./globals.css";
+import "@workspace/ui/globals.css"
 import Header from "../components/header/Header";
 import {ThemeProvider} from "../providers/ThemeProvider";
 
@@ -30,12 +30,7 @@ export default function RootLayout(
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-            <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-            >
+            <ThemeProvider>
                 <Header/>
                 {children}
             </ThemeProvider>
