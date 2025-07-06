@@ -4,9 +4,14 @@ import {IoIosPerson} from "react-icons/io";
 import {Input} from "@workspace/ui/components/input";
 import {Label} from "@workspace/ui/components/label";
 import {Button} from "@workspace/ui/components/button";
-import {useState} from "react";
+import {Dispatch, SetStateAction, useState} from "react";
 
-export default function LoginForm() {
+export default function LoginForm(
+    {
+        setIsResetPassword
+    }: {
+        setIsResetPassword: Dispatch<SetStateAction<boolean>>;
+    }) {
 
     const [isRegister, setIsRegister] = useState(false);
 
@@ -28,12 +33,18 @@ export default function LoginForm() {
                 </div>
                 {isRegister ? (
                     <div className={'input-group'}>
-                        <Label htmlFor='password'>Passwort</Label>
-                        <Input id='password' type='password'/>
+                        <Label htmlFor='repeat-password'>Passwort wiederholen</Label>
+                        <Input id='repeat-password' type='password'/>
                     </div>
                 ) : (
                     <div className={'flex flex-col items-start'}>
-                        <Button variant={'link'} className={'p-0'}>Passwort vergessen?</Button>
+                        <Button
+                            variant={'link'}
+                            className={'p-0'}
+                            onClick={() => setIsResetPassword(true)}
+                        >
+                            Passwort vergessen?
+                        </Button>
                     </div>
                 )}
                 <Button>
