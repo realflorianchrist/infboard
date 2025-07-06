@@ -18,25 +18,25 @@ const columnHelper = createColumnHelper<Columns>()
 
 const columns = [
     columnHelper.accessor('name', {
-        cell: () => <>Name</>,
+        header: () => <>Name</>,
     }),
     columnHelper.accessor('updatedAt', {
-        cell: () => <>Änderungsdatum</>
+        header: () => <>Änderungsdatum</>
     }),
     columnHelper.accessor('userName', {
-        cell: () => <>Geändert von</>
+        header: () => <>Geändert von</>
     }),
     columnHelper.accessor('version', {
-        cell: () => <>Version</>
+        header: () => <>Version</>
     }),
     columnHelper.accessor('comment', {
-        cell: () => <>Kommentar</>
+        header: () => <>Kommentar</>
     }),
     columnHelper.accessor('downloads', {
-        cell: () => <>Downloads</>
+        header: () => <>Downloads</>
     }),
     columnHelper.accessor('size', {
-        cell: () => <>Grösse</>
+        header: () => <>Grösse</>
     }),
 ];
 

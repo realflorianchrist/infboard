@@ -15,7 +15,7 @@ export default function TreeNode(
         parents?: FolderPathSegment[];
     }) {
 
-    const {setPath} = useFolderPath();
+    const {path, setPath} = useFolderPath();
 
     const [isOpen, setIsOpen] = useState(folder.isOpen ?? false);
 
@@ -25,16 +25,21 @@ export default function TreeNode(
                 className={`
           cursor-pointer flex items-center gap-2 
           px-2 py-1 rounded
-          hover:bg-accent/20
+          hover:bg-accent/10
+          ${path[path.length - 1]?.id === folder.id ? 'bg-accent/20' : ''}
         `}
                 style={{paddingLeft: `${depth * 1}rem`}}
-                onClick={() => {
-                    setIsOpen(!isOpen);
-                    setPath([...parents, {id: folder.id, name: folder.name}]);
-                }}
+                onClick={() =>
+                    setPath([...parents, {id: folder.id, name: folder.name}])
+                }
             >
                 {folder.children?.length ? (
-                    isOpen ? <VscChevronDown/> : <VscChevronRight/>
+                    <button
+                        className={`cursor-pointer`}
+                        onClick={() => setIsOpen(!isOpen)}
+                    >
+                        {isOpen ? <VscChevronDown/> : <VscChevronRight/>}
+                    </button>
                 ) : (
                     <div className="w-4"/>
                 )}

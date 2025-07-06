@@ -3,7 +3,7 @@ import LoginForm from "@/src/components/login/LoginForm";
 import {useState} from "react";
 import ResetPasswordForm from "@/src/components/login/ResetPasswordForm";
 
-export default function Login() {
+export default function LoginPage() {
     const [isResetPassword, setIsResetPassword] = useState(false);
 
     return (

@@ -1,20 +1,23 @@
-import Grid from "../components/Grid";
+import Grid from "../components/dashboard/Grid";
 import Treeview from "@/src/components/treeview/Treeview";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@workspace/ui/components/resizable";
 import FolderPath from "@/src/components/FolderPath";
+import DataTable from "@/src/components/data_table/DataTable";
 
 export default function Home() {
     return (
         <main className={'flex flex-col'}>
-            <FolderPath/>
+            <div className={'mb-4'}>
+                <FolderPath/>
+            </div>
             <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel defaultSize={15}>
                     <Treeview/>
                 </ResizablePanel>
                 <ResizableHandle/>
                 <ResizablePanel>
-                    <div className={'w-full'}>
-                        <Grid/>
+                    <div className={'p-2'}>
+                        <DataTable/>
                     </div>
                 </ResizablePanel>
             </ResizablePanelGroup>
