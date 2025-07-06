@@ -1,15 +1,19 @@
 import {Folder} from "@workspace/types/data";
 import {useState} from "react";
-import {IoFolderOutline} from "react-icons/io5";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
 
-export default function TreeNode({folder}: { folder: Folder }) {
+export default function TreeNode({folder, depth = 0}: { folder: Folder; depth?: number }) {
     const [isOpen, setIsOpen] = useState(folder.isOpen ?? false);
 
     return (
-        <div className={'pl-2'}>
+        <div>
             <div
-                className={'cursor-pointer flex gap-2 items-center'}
+                className={`
+          cursor-pointer flex items-center gap-2 
+          px-2 py-1 rounded
+          hover:bg-accent/20
+        `}
+                style={{paddingLeft: `${depth * 1}rem`}}
                 onClick={() => setIsOpen(!isOpen)}
             >
                 {folder.children?.length ? (
@@ -17,16 +21,12 @@ export default function TreeNode({folder}: { folder: Folder }) {
                 ) : (
                     <div className="w-4"/>
                 )}
-                {folder.name}
+                <span>{folder.name}</span>
             </div>
 
-            {isOpen && (
-                <div className={'ml-2'}>
-                    {folder.children?.map((child) => (
-                        <TreeNode key={child.id} folder={child}/>
-                    ))}
-                </div>
-            )}
+            {isOpen && folder.children?.map((child) => (
+                <TreeNode key={child.id} folder={child} depth={depth + 1}/>
+            ))}
         </div>
     );
 }
