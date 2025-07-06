@@ -1,24 +1,39 @@
 'use client'
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@workspace/ui/components/table";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {dummyFolderTree} from "@/src/constants/dummyFiles";
+import {Folder} from "@workspace/types/data";
+import {useFolderPath} from "@/src/providers/FolderPathProvider";
+import {IoFolderOutline} from "react-icons/io5";
+import {FaRegFile} from "react-icons/fa";
 
-type Columns = {
+type Row = {
+    id: string;
     name: string;
+    type: 'folder' | 'file';
     updatedAt?: string;
     userName?: string;
-    version: number;
+    version?: number;
     comment?: string;
     downloads?: string;
     size?: number;
     // meta?: string[];
 }
 
-const columnHelper = createColumnHelper<Columns>()
+const columnHelper = createColumnHelper<Row>()
 
 const columns = [
     columnHelper.accessor('name', {
         header: () => <>Name</>,
+        cell: info => {
+            const row = info.row.original;
+            return (
+                <div className="flex items-center gap-2">
+                    {row.type === 'folder' ? <IoFolderOutline/> : <FaRegFile/>} {row.name}
+                </div>
+            );
+        },
     }),
     columnHelper.accessor('updatedAt', {
         header: () => <>Änderungsdatum</>
@@ -40,8 +55,47 @@ const columns = [
     }),
 ];
 
+const findFolderByPath = (tree: Folder[], path: { id: string }[]): Folder | null => {
+    let current: Folder | undefined;
+    let currentLevel = tree;
+
+    for (const segment of path) {
+        current = currentLevel.find(f => f.id === segment.id);
+        if (!current) return null;
+        currentLevel = current.children ?? [];
+    }
+
+    return current ?? null;
+}
+
 export default function DataTable() {
-    const [data, _setData] = useState<Columns[]>([]);
+    const {path} = useFolderPath();
+
+    const [data, setData] = useState<Row[]>([]);
+
+    useEffect(() => {
+        const currentFolder = findFolderByPath(dummyFolderTree, path);
+        if (!currentFolder) return;
+
+        const folderRows: Row[] = (currentFolder.children ?? []).map(f => ({
+            id: f.id,
+            name: f.name,
+            type: 'folder'
+        }));
+
+        const fileRows: Row[] = (currentFolder.files ?? []).map(file => ({
+            id: file.id,
+            name: file.name,
+            type: 'file',
+            updatedAt: file.updatedAt,
+            userName: file.userName,
+            version: file.version,
+            comment: file.comment,
+            size: file.size,
+        }));
+
+        setData([...folderRows, ...fileRows]);
+    }, [path]);
 
     const table = useReactTable({
         data,

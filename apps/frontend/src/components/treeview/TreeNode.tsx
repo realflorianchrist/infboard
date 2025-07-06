@@ -3,6 +3,8 @@ import {Folder} from "@workspace/types/data";
 import {useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
 import {FolderPathSegment} from "@workspace/types/folderPath";
+import {IoFolderOutline} from "react-icons/io5";
+import {FaRegFile} from "react-icons/fa";
 
 export default function TreeNode(
     {
@@ -23,7 +25,7 @@ export default function TreeNode(
         <div>
             <div
                 className={`
-          cursor-pointer flex items-center gap-2 
+          cursor-pointer flex items-center gap-2 text-sm
           px-2 py-1 rounded
           hover:bg-accent/10
           ${path[path.length - 1]?.id === folder.id ? 'bg-accent/20' : ''}
@@ -43,7 +45,10 @@ export default function TreeNode(
                 ) : (
                     <div className="w-4"/>
                 )}
-                <span>{folder.name}</span>
+                <div className="flex items-center gap-2">
+                    <IoFolderOutline/>
+                    {folder.name}
+                </div>
             </div>
 
             {isOpen &&
