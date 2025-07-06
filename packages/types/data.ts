@@ -17,4 +17,5 @@ export type FileMeta = {
     userName?: string;
     meta?: string[];
     comment?: string;
+    downloads?: string;
 };

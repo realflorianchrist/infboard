@@ -1,8 +1,22 @@
+import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {Folder} from "@workspace/types/data";
 import {useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
+import {FolderPathSegment} from "@workspace/types/folderPath";
 
-export default function TreeNode({folder, depth = 0}: { folder: Folder; depth?: number }) {
+export default function TreeNode(
+    {
+        folder,
+        depth = 0,
+        parents = [],
+    }: {
+        folder: Folder;
+        depth?: number;
+        parents?: FolderPathSegment[];
+    }) {
+
+    const {setPath} = useFolderPath();
+
     const [isOpen, setIsOpen] = useState(folder.isOpen ?? false);
 
     return (
@@ -14,7 +28,10 @@ export default function TreeNode({folder, depth = 0}: { folder: Folder; depth?: 
           hover:bg-accent/20
         `}
                 style={{paddingLeft: `${depth * 1}rem`}}
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => {
+                    setIsOpen(!isOpen);
+                    setPath([...parents, {id: folder.id, name: folder.name}]);
+                }}
             >
                 {folder.children?.length ? (
                     isOpen ? <VscChevronDown/> : <VscChevronRight/>
@@ -24,9 +41,15 @@ export default function TreeNode({folder, depth = 0}: { folder: Folder; depth?: 
                 <span>{folder.name}</span>
             </div>
 
-            {isOpen && folder.children?.map((child) => (
-                <TreeNode key={child.id} folder={child} depth={depth + 1}/>
-            ))}
+            {isOpen &&
+                folder.children?.map((child) => (
+                    <TreeNode
+                        key={child.id}
+                        folder={child}
+                        depth={depth + 1}
+                        parents={[...parents, {id: folder.id, name: folder.name}]}
+                    />
+                ))}
         </div>
     );
 }
