@@ -6,7 +6,7 @@ import {dummyFolderTree} from "@/src/constants/dummyFiles";
 import {Folder} from "@workspace/types/data";
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {IoFolderOutline} from "react-icons/io5";
-import {FaRegFile} from "react-icons/fa";
+import {GoFile} from "react-icons/go";
 
 type Row = {
     id: string;
@@ -30,7 +30,7 @@ const columns = [
             const row = info.row.original;
             return (
                 <div className="flex items-center gap-2">
-                    {row.type === 'folder' ? <IoFolderOutline/> : <FaRegFile/>} {row.name}
+                    {row.type === 'folder' ? <IoFolderOutline/> : <GoFile/>} {row.name}
                 </div>
             );
         },
