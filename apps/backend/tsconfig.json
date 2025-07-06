@@ -3,7 +3,9 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@src/*": ["src/*"]
+      "@src/*": ["src/*"],
+      "@workspace/ui/*": ["../../packages/ui/src/*"],
+      "@workspace/types/*": ["../../packages/ui/src/*"],
     },
     "useUnknownInCatchVariables": false,
     "types": ["vitest/globals"],
