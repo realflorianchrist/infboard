@@ -7,7 +7,7 @@ import Paths from '@src/common/constants/Paths';
                                 Setup
 ******************************************************************************/
 
-const apiRouter = Router();
+const apiRouter: Router = Router();
 
 
 // // ** Add UserRouter ** //

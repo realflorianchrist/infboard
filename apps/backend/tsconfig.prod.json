@@ -13,7 +13,7 @@
     "tests",
     "src/public/",
     "scripts",
-    "eslint.config.ts",
+    "eslint.config.js",
     "vitest.config.js"
   ]
 }
