@@ -10,16 +10,14 @@ import {ensureBucketExists} from "@src/config/s3";
 
 
 // **** Configuration **** //
-
 const corsConfig: cors.CorsOptions | cors.CorsOptionsDelegate = {
-    origin: process.env.FRONTEND_URL,
+    origin: ENV.FrontendUrl,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }
 
 // **** Http-Server **** //
-
 const app = express();
 
 // **** Middleware **** //

@@ -17,6 +17,9 @@ const ENV = jetEnv({
   Port: num,
   Host: str,
 
+  // Frontend url
+  FrontendUrl: str,
+
   // Logger
   JetLoggerMode: str,
   JetLoggerFilepath: str,

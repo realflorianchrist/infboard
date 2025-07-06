@@ -2,7 +2,7 @@ import ENV from "@src/common/constants/ENV";
 import {CreateBucketCommand, HeadBucketCommand, S3Client} from "@aws-sdk/client-s3";
 import logger from "jet-logger";
 
-const s3 = new S3Client({
+export const s3 = new S3Client({
     region: ENV.S3Region,
     endpoint: ENV.S3Endpoint,
     credentials: {
