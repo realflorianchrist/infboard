@@ -9,6 +9,7 @@ import {ensureBucketExists} from "@src/config/s3";
 import dispatcher from "@src/api/controllers/dispatcher";
 import {Routes} from "@workspace/routes/routes";
 import {ENV} from "@src/constants/ENV";
+import {errorHandler} from "@src/middleware/errorHandler";
 
 
 // **** Configuration **** //
@@ -43,7 +44,7 @@ if (ENV.NODE_ENV === NodeEnvs.Production) {
 }
 
 app.use(Routes.base, dispatcher);
-// app.use(errorHandler);
+app.use(errorHandler);
 
 
 (async () => {
