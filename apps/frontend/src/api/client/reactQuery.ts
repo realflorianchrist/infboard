@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import {apiFetch, FetchOptions, HttpMethod} from "@/src/api/client/client";
 import {ErrorType} from "@workspace/types/apiResponses";
+import {joinRoute} from "@/src/utils/joinRoute";
 
 /**
  * React Query hook for performing a typed GET request.
@@ -24,18 +25,23 @@ import {ErrorType} from "@workspace/types/apiResponses";
  * @returns A typed `useQuery` hook result for performing the GET request.
  */
 export const useApiQuery = <TApiResponse, TTransformed = TApiResponse>(
-    path: string,
+    path: string | string[],
     options?: {
         requestOptions?: Omit<FetchOptions, "method">;
         queryOptions?: Omit<UseQueryOptions<TApiResponse, ErrorType, TTransformed>, "queryFn" | "queryKey">;
     },
 ) => {
     const {requestOptions, queryOptions} = options ?? {};
+    const joinedPath = Array.isArray(path)
+        ? joinRoute(path)
+        : path;
 
     return useQuery<TApiResponse, ErrorType, TTransformed, QueryKey>({
-        queryKey: [path, requestOptions?.params],
+        queryKey: requestOptions?.params
+            ? [joinedPath, requestOptions.params]
+            : [joinedPath],
         queryFn: () =>
-            apiFetch<TApiResponse>(path, {
+            apiFetch<TApiResponse>(joinedPath, {
                 ...requestOptions,
                 method: HttpMethod.GET,
             }),
@@ -61,7 +67,7 @@ export const useApiQuery = <TApiResponse, TTransformed = TApiResponse>(
  * @returns A typed `useMutation` hook result for performing the API call.
  */
 export const useApiMutation = <TApiResponse, TRequestBody>(
-    path: string,
+    path: string | string[],
     method: HttpMethod,
     options?: {
         requestOptions?: Omit<FetchOptions, "method"> | ((variables: TRequestBody) => Omit<FetchOptions, "method">),
@@ -71,6 +77,9 @@ export const useApiMutation = <TApiResponse, TRequestBody>(
 ) => {
     const queryClient = useQueryClient();
     const {requestOptions, mutationOptions, invalidatePaths} = options ?? {};
+    const joinedPath = Array.isArray(path)
+        ? joinRoute(path)
+        : path;
 
     return useMutation<TApiResponse, ErrorType, TRequestBody>({
         mutationFn: async (requestBody?: TRequestBody): Promise<TApiResponse> => {
@@ -80,7 +89,7 @@ export const useApiMutation = <TApiResponse, TRequestBody>(
                         ? requestOptions(requestBody) : {}
                     : requestOptions ?? {}
 
-            return apiFetch<TApiResponse>(path, {
+            return apiFetch<TApiResponse>(joinedPath, {
                 ...resolvedRequestOptions,
                 method,
                 body: requestBody ? JSON.stringify(requestBody) : undefined,

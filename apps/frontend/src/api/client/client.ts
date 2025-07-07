@@ -1,7 +1,7 @@
 import {ApiErrorResponse, ApiResponse, ErrorType} from "@workspace/types/apiResponses";
 
 // const API_BASE_URL = env.API_URL || "http://localhost:8080";
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "http://localhost:8080/api";
 
 export type FetchOptions = Omit<RequestInit, "method"> & {
     method?: HttpMethod;
