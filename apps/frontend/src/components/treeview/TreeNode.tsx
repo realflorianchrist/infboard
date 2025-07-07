@@ -4,7 +4,6 @@ import {useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
 import {FolderPathSegment} from "@workspace/types/folderPath";
 import {IoFolderOutline} from "react-icons/io5";
-import {FaRegFile} from "react-icons/fa";
 
 export default function TreeNode(
     {

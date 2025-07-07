@@ -14,6 +14,7 @@ export const FileSchema = z.object({
     meta: z.array(z.string()).optional(),
     comment: z.string().optional(),
     downloads: z.string().optional(),
+    parentFolderId: z.string().optional(),
 });
 
 export type IFile = z.infer<typeof FileSchema>;
@@ -45,6 +46,7 @@ const FileMongooseSchema = new Schema<FileDocument>(
         meta: [String],
         comment: String,
         downloads: String,
+        parentFolderId: { type: Schema.Types.ObjectId, ref: 'Folder', required: true },
     },
     {
         timestamps: { createdAt: 'created', updatedAt: 'updatedAt' },

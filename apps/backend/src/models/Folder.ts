@@ -4,12 +4,9 @@ import { FileSchema } from './File';
 
 export const FolderSchema = z.object({
     id: z.string().optional(),
-    created: z.date().optional(),
     name: z.string(),
-
-    get children() {
-        return z.array(FolderSchema).optional();
-    },
+    created: z.date().optional(),
+    parentId: z.string().nullable().optional(),
     files: z.array(FileSchema).optional(),
 });
 
@@ -20,7 +17,7 @@ export const newFolder = (input: Partial<IFolder> = {}): IFolder => {
         id: '',
         name: '',
         created: new Date(),
-        children: [],
+        parentId: null,
         files: [],
         ...input,
     });
@@ -29,12 +26,13 @@ export const newFolder = (input: Partial<IFolder> = {}): IFolder => {
 export type FolderDocument = Omit<IFolder, 'id' | 'created'> & Document & {
     _id: Types.ObjectId;
     created: Date;
+    parentId?: Types.ObjectId | null;
 };
 
 const FolderMongooseSchema = new Schema<FolderDocument>(
     {
         name: { type: String, required: true },
-        children: [{ type: Schema.Types.ObjectId, ref: 'Folder' }],
+        parentId: { type: Schema.Types.ObjectId, ref: 'Folder', default: null },
         files: [{ type: Schema.Types.ObjectId, ref: 'File' }],
     },
     {
