@@ -1,5 +1,8 @@
 import {Request, Response, NextFunction} from 'express';
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ApiErrorResponse, ErrorType} from "@workspace/types/apiResponses";
+import {ApiError} from "@src/api/utils/apiError";
+import {StatusCodes} from "http-status-codes";
+import logger from "jet-logger";
 
 
 export function errorHandler(
@@ -8,17 +11,19 @@ export function errorHandler(
     res: Response,
     next: NextFunction
 ) {
-    let errorType: ErrorType = ErrorType.API_ERROR;
+    let errorType: ErrorType = ErrorType.INTERNAL_SERVER_ERROR;
+    let status = StatusCodes.INTERNAL_SERVER_ERROR;
 
-    // if (err instanceof AppError && err.errorType) {
-    //     errorType = err.errorType;
-    // } else {
-    //     logger.error("Unhandled Error:", err);
-    // }
-    //
-    // const statusCode = ERROR_STATUS_MAP[errorType] || 400;
+    if (err instanceof ApiError && err.errorType) {
+        errorType = err.errorType;
+        status = err.status;
+    } else {
+        logger.err(`Unhandled Error: ${err}`);
+    }
 
-    res.status(400).json({
+    const errorResponse: ApiErrorResponse = {
         errorType: errorType,
-    });
+    }
+
+    res.status(status).json(errorResponse);
 }

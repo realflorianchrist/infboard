@@ -10,6 +10,7 @@ folderController.get(
     handleRequest<{}, { message: string }, { id: string }>(
         async (req) => {
             const {id} = req.params;
+
             return {
                 status: StatusCodes.OK,
                 data: {message: `success${id}`},

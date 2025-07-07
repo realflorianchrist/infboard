@@ -6,6 +6,7 @@ export enum ErrorType {
     TOKEN_INVALID = "TOKEN_INVALID",
     VALIDATION_ERROR = "VALIDATION_ERROR",
     API_ERROR = "API_ERROR",
+    INTERNAL_SERVER_ERROR =  "INTERNAL_SERVER_ERROR",
 }
 
 export type ApiErrorResponse = {

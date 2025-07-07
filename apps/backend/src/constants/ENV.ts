@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import {NodeEnvs} from "@src/constants/index";
 
 const envSchema = z.object({
     // Environment
-    NODE_ENV: z.enum(['development', 'test', 'production']),
+    NODE_ENV: z.nativeEnum(NodeEnvs),
 
     // Server
     PORT: z.coerce.number(),
