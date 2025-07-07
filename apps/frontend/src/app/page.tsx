@@ -8,7 +8,7 @@ import {ScrollArea} from "@workspace/ui/components/scroll-area";
 
 export default function Home() {
     return (
-        <main>
+        <>
             <div className={'mb-4'}>
                 <FolderPath/>
             </div>
@@ -26,14 +26,12 @@ export default function Home() {
                 <ResizableHandle/>
                 <ResizablePanel
                     defaultSize={85}
-                    // minSize={70}
-                    // maxSize={90}
                 >
                     <div className={'p-2'}>
                         <DataTable/>
                     </div>
                 </ResizablePanel>
             </ResizablePanelGroup>
-        </main>
+        </>
     );
 }
