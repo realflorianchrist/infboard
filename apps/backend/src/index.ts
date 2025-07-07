@@ -1,17 +1,19 @@
 import logger from 'jet-logger';
 import cors from "cors";
-import ENV from '@src/common/constants/ENV';
 import express from 'express';
-import {NodeEnvs} from '@src/common/constants';
+import {NodeEnvs} from '@src/constants';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import {connectDB} from "@src/config/database";
 import {ensureBucketExists} from "@src/config/s3";
+import dispatcher from "@src/api/controllers/dispatcher";
+import {Routes} from "@workspace/routes/routes";
+import {ENV} from "@src/constants/ENV";
 
 
 // **** Configuration **** //
 const corsConfig: cors.CorsOptions | cors.CorsOptionsDelegate = {
-    origin: ENV.FrontendUrl,
+    origin: ENV.FRONTEND_URL,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -28,17 +30,21 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 // Show routes called in console during development
-if (ENV.NodeEnv === NodeEnvs.Dev) {
+if (ENV.NODE_ENV === NodeEnvs.Dev) {
     app.use(morgan('dev'));
 }
 
 // Security
-if (ENV.NodeEnv === NodeEnvs.Production) {
+if (ENV.NODE_ENV === NodeEnvs.Production) {
     // eslint-disable-next-line n/no-process-env
     if (!process.env.DISABLE_HELMET) {
         app.use(helmet());
     }
 }
+
+app.use(Routes.base, dispatcher);
+// app.use(errorHandler);
+
 
 (async () => {
 
@@ -49,11 +55,11 @@ if (ENV.NodeEnv === NodeEnvs.Production) {
     await ensureBucketExists();
 
     // Start the server
-    app.listen(ENV.Port, err => {
+    app.listen(ENV.PORT, err => {
         if (!!err) {
             logger.err(err.message);
         } else {
-            logger.info('Express server started on port: ' + ENV.Port.toString());
+            logger.info('Express server started on port: ' + ENV.PORT.toString());
         }
     });
 

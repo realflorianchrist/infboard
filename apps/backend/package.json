@@ -22,15 +22,16 @@
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
+    "http-status-codes": "^2.3.0",
     "inserturlparams": "^2.0.5",
-    "jet-env": "^1.1.4",
     "jet-logger": "^2.0.1",
     "jet-paths": "^1.1.0",
-    "jet-validators": "^1.4.3",
     "jsonfile": "^6.1.0",
     "module-alias": "^2.2.3",
     "mongoose": "^8.16.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "zod": "^3.24.2",
+    "@workspace/routes": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

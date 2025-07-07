@@ -1,5 +1,8 @@
+import {z} from "zod";
 
-export interface IModel {
-  id: number;
-  created: Date;
-}
+export const ModelSchema = z.object({
+  id: z.string(),
+  created: z.coerce.date(),
+});
+
+export type IModel = z.infer<typeof ModelSchema>;

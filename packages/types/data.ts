@@ -3,14 +3,14 @@ export type Folder = {
     id: string;
     isOpen?: boolean;
     children?: Folder[];
-    files?: FileMeta[];
+    files?: File[];
 };
 
-export type FileMeta = {
+export type File = {
     id: string;
     url: string;
     name: string;
-    version: number;
+    version?: number;
     extension?: string;
     size?: number;
     updatedAt?: string;

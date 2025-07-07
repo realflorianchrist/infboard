@@ -1,0 +1,34 @@
+import { z } from 'zod';
+
+const envSchema = z.object({
+    // Environment
+    NODE_ENV: z.enum(['development', 'test', 'production']),
+
+    // Server
+    PORT: z.coerce.number(),
+    HOST: z.string(),
+
+    // Frontend
+    FRONTEND_URL: z.string().url(),
+
+    // Logger
+    JET_LOGGER_MODE: z.string(),
+    JET_LOGGER_FILEPATH: z.string(),
+    JET_LOGGER_TIMESTAMP: z.coerce.boolean(),
+    JET_LOGGER_FORMAT: z.string(),
+
+    // MongoDB
+    MONGO_HOST: z.string(),
+    MONGO_DATABASE: z.string(),
+    MONGO_USER: z.string(),
+    MONGO_PASSWORD: z.string(),
+
+    // S3
+    S3_REGION: z.string(),
+    S3_ENDPOINT: z.string().url(),
+    S3_ACCESS_KEY: z.string(),
+    S3_SECRET_KEY: z.string(),
+    S3_BUCKET: z.string(),
+});
+
+export const ENV = envSchema.parse(process.env);

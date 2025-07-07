@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import logger from "jet-logger";
-import ENV from "@src/common/constants/ENV";
+import {ENV} from "@src/constants/ENV";
 
-const username = encodeURIComponent(ENV.MongoUser);
-const password = encodeURIComponent(ENV.MongoPassword);
-const database = ENV.MongoDatabase;
-const authSource = ENV.MongoDatabase;
-const mongoHost = ENV.MongoHost;
+const username = encodeURIComponent(ENV.MONGO_USER);
+const password = encodeURIComponent(ENV.MONGO_PASSWORD);
+const database = ENV.MONGO_DATABASE;
+const authSource = ENV.MONGO_DATABASE;
+const mongoHost = ENV.MONGO_HOST;
 
 const uri = `mongodb://${username}:${password}@${mongoHost}/${database}?authSource=${authSource}`;
 
