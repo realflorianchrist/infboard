@@ -122,12 +122,16 @@
     @apply border-border outline-ring/50;
   }
 
+  /*html {*/
+  /*  @apply h-screen;*/
+  /*}*/
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground h-screen flex flex-col max-h-screen;
   }
 
   main {
-    @apply p-4;
+    @apply flex flex-col flex-1 p-4 overflow-y-auto;
   }
 }
 

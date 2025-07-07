@@ -4,7 +4,6 @@ import {StatusCodes} from "http-status-codes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {FolderModel} from "@src/models/Folder";
 import {Folder} from "@workspace/types/data";
-import {iFolderToFolderMapper} from "@src/api/mapper/folderMapper";
 import {getFolderTree} from "@src/services/folderService";
 
 const folderController: Router = express.Router();

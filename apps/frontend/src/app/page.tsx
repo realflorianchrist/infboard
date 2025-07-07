@@ -3,20 +3,32 @@ import Treeview from "@/src/components/treeview/Treeview";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@workspace/ui/components/resizable";
 import FolderPath from "@/src/components/FolderPath";
 import DataTable from "@/src/components/data_table/DataTable";
+import {ScrollArea} from "@workspace/ui/components/scroll-area";
 
 
 export default function Home() {
     return (
-        <main className={'flex flex-col'}>
+        <main>
             <div className={'mb-4'}>
                 <FolderPath/>
             </div>
             <ResizablePanelGroup direction="horizontal">
-                <ResizablePanel defaultSize={15}>
-                    <Treeview/>
+                <ResizablePanel
+                    defaultSize={15}
+                    minSize={15}
+                    maxSize={25}
+                    className={'h-full overflow-hidden'}
+                >
+                    <ScrollArea className={'h-full'}>
+                        <Treeview/>
+                    </ScrollArea>
                 </ResizablePanel>
                 <ResizableHandle/>
-                <ResizablePanel>
+                <ResizablePanel
+                    defaultSize={85}
+                    // minSize={70}
+                    // maxSize={90}
+                >
                     <div className={'p-2'}>
                         <DataTable/>
                     </div>
