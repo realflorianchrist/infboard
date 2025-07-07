@@ -57,7 +57,4 @@ FileMongooseSchema.virtual('id').get(function (this: FileDocument) {
     return this._id.toHexString();
 });
 
-FileMongooseSchema.set('toJSON', { virtuals: true });
-FileMongooseSchema.set('toObject', { virtuals: true });
-
 export const FileModel = model<FileDocument>('File', FileMongooseSchema);

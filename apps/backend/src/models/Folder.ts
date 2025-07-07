@@ -48,7 +48,4 @@ FolderMongooseSchema.virtual('id').get(function (this: FolderDocument) {
     return this._id.toHexString();
 });
 
-FolderMongooseSchema.set('toJSON', { virtuals: true });
-FolderMongooseSchema.set('toObject', { virtuals: true });
-
 export const FolderModel = model<FolderDocument>('Folder', FolderMongooseSchema);
