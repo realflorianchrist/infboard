@@ -5,9 +5,16 @@ import FolderPath from "@/src/components/FolderPath";
 import DataTable from "@/src/components/data_table/DataTable";
 import {ScrollArea} from "@workspace/ui/components/scroll-area";
 import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
+import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 
 
 export default function Home() {
+    const {
+        openNewFolderModal,
+        setIsSelectMode,
+        openUploadFileModal,
+    } = useContextMenu();
+
     return (
         <>
             <div className={'mb-4'}>
@@ -21,9 +28,9 @@ export default function Home() {
                     className={'h-full overflow-hidden'}
                 >
                     <DataContextMenu
-                        onNewFolder={() => {}}
-                        onSelect={() => {}}
-                        onUploadFile={() => {}}
+                        onNewFolder={() => openNewFolderModal(null)}
+                        onSelect={() => setIsSelectMode(true)}
+                        onUploadFile={() => openUploadFileModal(null)}
                     >
                         <ScrollArea className={'h-full'}>
                             <Treeview/>
@@ -36,9 +43,9 @@ export default function Home() {
                     className={'h-full overflow-hidden'}
                 >
                     <DataContextMenu
-                        onNewFolder={() => {}}
-                        onSelect={() => {}}
-                        onUploadFile={() => {}}
+                        onNewFolder={() => openNewFolderModal(null)}
+                        onSelect={() => setIsSelectMode(true)}
+                        onUploadFile={() => openUploadFileModal(null)}
                     >
                         <ScrollArea className={'h-full pl-4'}>
                             <DataTable/>

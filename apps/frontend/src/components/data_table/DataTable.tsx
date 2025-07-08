@@ -147,7 +147,7 @@ export default function DataTable() {
                                     const folder = result?.folder.children?.find(f => f.id === item.id);
                                     if (folder) addSelected(folder);
                                 }}
-                                onUploadFile={() => openUploadFileModal()}
+                                onUploadFile={() => openUploadFileModal(item.id)}
                             >
                                 <TableRow
                                     className={'cursor-pointer select-none'}

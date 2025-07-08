@@ -20,7 +20,14 @@ export default function TreeNode(
     }) {
 
     const {path, setPath} = useFolderPath();
-    const { openRenameFolderModal, openDeleteFolderModal } = useContextMenu();
+    const {
+        openNewFolderModal,
+        openRenameFolderModal,
+        openDeleteFolderModal,
+        setIsSelectMode,
+        addSelected,
+        openUploadFileModal,
+    } = useContextMenu();
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -33,11 +40,14 @@ export default function TreeNode(
     return (
         <div>
             <DataContextMenu
-                onNewFolder={() => {}}
+                onNewFolder={() => openNewFolderModal(folder.id)}
                 onRename={() => openRenameFolderModal(folder.id, folder.name)}
                 onDelete={() => openDeleteFolderModal(folder.id)}
-                onSelect={() => {}}
-                onUploadFile={() => {}}
+                // onSelect={() => {
+                //     setIsSelectMode(true);
+                //     addSelected(folder);
+                // }}
+                onUploadFile={() => openUploadFileModal(folder.id)}
             >
                 <div
                     className={`cursor-pointer select-none flex items-center gap-2 text-sm
