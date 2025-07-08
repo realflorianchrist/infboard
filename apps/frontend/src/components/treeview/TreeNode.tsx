@@ -5,7 +5,7 @@ import {useEffect, useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
 import {FolderPathSegment} from "@workspace/types/folderPath";
 import {IoFolderOutline} from "react-icons/io5";
-import FolderContextMenu from "@/src/components/context_menus/FolderContextMenu";
+import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
 
 export default function TreeNode(
     {
@@ -30,7 +30,13 @@ export default function TreeNode(
 
     return (
         <div>
-            <FolderContextMenu>
+            <DataContextMenu
+                onNewFolder={() => {}}
+                onRename={() => {}}
+                onDelete={() => {}}
+                onSelect={() => {}}
+                onUploadFile={() => {}}
+            >
                 <div
                     className={`cursor-pointer select-none flex items-center gap-2 text-sm
                           px-2 py-1 rounded
@@ -62,7 +68,7 @@ export default function TreeNode(
                         </div>
                     </div>
                 </div>
-            </FolderContextMenu>
+            </DataContextMenu>
 
             {isOpen &&
                 folder.children?.map((child) => (

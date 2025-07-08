@@ -1,13 +1,12 @@
 'use client'
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@workspace/ui/components/table";
-import {Fragment, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {IoFolderOutline} from "react-icons/io5";
 import {GoFile} from "react-icons/go";
 import {useGetFolderById} from "@/src/api/hooks/folderHooks";
-import FolderContextMenu from "@/src/components/context_menus/FolderContextMenu";
-import FileContextMenu from "@/src/components/context_menus/FileContextMenu";
+import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
 
 type Row = {
     id: string;
@@ -127,16 +126,29 @@ export default function DataTable() {
 
                     return (
                         isFolder ? (
-                            <FolderContextMenu key={row.id}>
+                            <DataContextMenu
+                                key={row.id}
+                                onNewFolder={() => {}}
+                                onRename={() => {}}
+                                onDelete={() => {}}
+                                onSelect={() => {}}
+                                onUploadFile={() => {}}
+                            >
                                 <TableRow
                                     className={'cursor-pointer select-none'}
                                     onDoubleClick={() => pushFolder({id: item.id, name: item.name})}
                                 >
                                     {Cells()}
                                 </TableRow>
-                            </FolderContextMenu>
+                            </DataContextMenu>
                         ) : (
-                            <FileContextMenu key={row.id}>
+                            <DataContextMenu
+                                key={row.id}
+                                onRename={() => {}}
+                                onDelete={() => {}}
+                                onSelect={() => {}}
+                                onUploadFile={() => {}}
+                            >
                                 <TableRow
                                     className={'cursor-pointer select-none'}
                                     onDoubleClick={() => {
@@ -145,7 +157,7 @@ export default function DataTable() {
                                 >
                                     {Cells()}
                                 </TableRow>
-                            </FileContextMenu>
+                            </DataContextMenu>
                         )
                     );
                 })}

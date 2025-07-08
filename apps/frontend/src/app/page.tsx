@@ -4,6 +4,7 @@ import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@workspace/u
 import FolderPath from "@/src/components/FolderPath";
 import DataTable from "@/src/components/data_table/DataTable";
 import {ScrollArea} from "@workspace/ui/components/scroll-area";
+import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
 
 
 export default function Home() {
@@ -19,18 +20,30 @@ export default function Home() {
                     maxSize={25}
                     className={'h-full overflow-hidden'}
                 >
-                    <ScrollArea className={'h-full'}>
-                        <Treeview/>
-                    </ScrollArea>
+                    <DataContextMenu
+                        onNewFolder={() => {}}
+                        onSelect={() => {}}
+                        onUploadFile={() => {}}
+                    >
+                        <ScrollArea className={'h-full'}>
+                            <Treeview/>
+                        </ScrollArea>
+                    </DataContextMenu>
                 </ResizablePanel>
                 <ResizableHandle/>
                 <ResizablePanel
                     defaultSize={85}
                     className={'h-full overflow-hidden'}
                 >
-                    <ScrollArea className={'h-full pl-4'}>
-                        <DataTable/>
-                    </ScrollArea>
+                    <DataContextMenu
+                        onNewFolder={() => {}}
+                        onSelect={() => {}}
+                        onUploadFile={() => {}}
+                    >
+                        <ScrollArea className={'h-full pl-4'}>
+                            <DataTable/>
+                        </ScrollArea>
+                    </DataContextMenu>
                 </ResizablePanel>
             </ResizablePanelGroup>
         </>
