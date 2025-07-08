@@ -26,10 +26,11 @@ export default function Home() {
                 <ResizableHandle/>
                 <ResizablePanel
                     defaultSize={85}
+                    className={'h-full overflow-hidden'}
                 >
-                    <div className={'p-2'}>
+                    <ScrollArea className={'h-full pl-4'}>
                         <DataTable/>
-                    </div>
+                    </ScrollArea>
                 </ResizablePanel>
             </ResizablePanelGroup>
         </>

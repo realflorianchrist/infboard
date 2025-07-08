@@ -17,7 +17,7 @@ export default function SearchBar(
             />
             <Button
                 onClick={() => setIsSearching(false)}
-                className={'rounded-l-none bg-accent hover:bg-accent/80 text-foreground'}
+                className={'rounded-l-none bg-accent hover:bg-accent/80 text-foreground text-xl'}
             >
                 &times;
             </Button>
