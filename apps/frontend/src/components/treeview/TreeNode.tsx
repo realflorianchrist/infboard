@@ -4,6 +4,7 @@ import {useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
 import {FolderPathSegment} from "@workspace/types/folderPath";
 import {IoFolderOutline} from "react-icons/io5";
+import FolderContextMenu from "@/src/components/context_menus/FolderContextMenu";
 
 export default function TreeNode(
     {
@@ -18,37 +19,43 @@ export default function TreeNode(
 
     const {path, setPath} = useFolderPath();
 
-    const [isOpen, setIsOpen] = useState(folder.isOpen ?? false);
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <div>
-            <div
-                className={`
-          cursor-pointer flex items-center gap-2 text-sm
-          px-2 py-1 rounded
-          hover:bg-accent/10
-          ${path[path.length - 1]?.id === folder.id ? 'bg-accent/20' : ''}
-        `}
-                style={{paddingLeft: `${depth * 1}rem`}}
-                onClick={() =>
-                    setPath([...parents, {id: folder.id, name: folder.name}])
-                }
-            >
-                {folder.children?.length ? (
-                    <button
-                        className={`cursor-pointer`}
-                        onClick={() => setIsOpen(!isOpen)}
+            <FolderContextMenu>
+                <div
+                    className={`cursor-pointer flex items-center gap-2 text-sm
+                          px-2 py-1 rounded
+                          hover:bg-accent/10
+                          ${path[path.length - 1]?.id === folder.id ? 'bg-accent/20' : ''}
+                        `}
+                    style={{paddingLeft: `${depth * 1}rem`}}
+
+                >
+                    {folder.children?.length ? (
+                        <button
+                            className={`cursor-pointer`}
+                            onClick={() => setIsOpen(!isOpen)}
+                        >
+                            {isOpen ? <VscChevronDown/> : <VscChevronRight/>}
+                        </button>
+                    ) : (
+                        <div className="w-4"/>
+                    )}
+                    <div
+                        className="flex items-center gap-2"
+                        onClick={() =>
+                            setPath([...parents, {id: folder.id, name: folder.name}])
+                        }
                     >
-                        {isOpen ? <VscChevronDown/> : <VscChevronRight/>}
-                    </button>
-                ) : (
-                    <div className="w-4"/>
-                )}
-                <div className="flex items-center gap-2">
-                    <IoFolderOutline/>
-                    {folder.name}
+                        <IoFolderOutline/>
+                        <div>
+                            {folder.name}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </FolderContextMenu>
 
             {isOpen &&
                 folder.children?.map((child) => (
@@ -59,6 +66,7 @@ export default function TreeNode(
                         parents={[...parents, {id: folder.id, name: folder.name}]}
                     />
                 ))}
+
         </div>
     );
 }
