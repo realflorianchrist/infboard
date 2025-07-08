@@ -1,5 +1,4 @@
 'use client';
-
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from '@workspace/ui/components/dialog';
 import {Input} from '@workspace/ui/components/input';
 import {Button} from '@workspace/ui/components/button';

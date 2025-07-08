@@ -20,7 +20,7 @@ export default function TreeNode(
     }) {
 
     const {path, setPath} = useFolderPath();
-    const { openRenameFolderModal } = useModal();
+    const { openRenameFolderModal, openDeleteFolderModal } = useModal();
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -35,7 +35,7 @@ export default function TreeNode(
             <DataContextMenu
                 onNewFolder={() => {}}
                 onRename={() => openRenameFolderModal(folder.id, folder.name)}
-                onDelete={() => {}}
+                onDelete={() => openDeleteFolderModal(folder.id)}
                 onSelect={() => {}}
                 onUploadFile={() => {}}
             >

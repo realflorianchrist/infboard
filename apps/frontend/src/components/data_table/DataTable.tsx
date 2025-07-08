@@ -25,7 +25,7 @@ type Row = {
 
 export default function DataTable() {
     const {path, pushFolder} = useFolderPath();
-    const { openRenameFolderModal } = useModal();
+    const { openRenameFolderModal, openDeleteFolderModal } = useModal();
 
     const columnHelper = createColumnHelper<Row>();
 
@@ -132,7 +132,7 @@ export default function DataTable() {
                                 key={row.id}
                                 onNewFolder={() => {}}
                                 onRename={() => openRenameFolderModal(item.id, item.name)}
-                                onDelete={() => {}}
+                                onDelete={() => openDeleteFolderModal(item.id)}
                                 onSelect={() => {}}
                                 onUploadFile={() => {}}
                             >
