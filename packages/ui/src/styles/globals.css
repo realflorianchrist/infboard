@@ -129,6 +129,12 @@
   main {
     @apply flex flex-col flex-1 p-4 overflow-y-auto;
   }
+
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
 }
 
 @layer utilities {
