@@ -1,6 +1,7 @@
+'use client'
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {Folder} from "@workspace/types/data";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
 import {FolderPathSegment} from "@workspace/types/folderPath";
 import {IoFolderOutline} from "react-icons/io5";
@@ -20,6 +21,12 @@ export default function TreeNode(
     const {path, setPath} = useFolderPath();
 
     const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setIsOpen(path.some(s => s.id === folder.id));
+        }
+    }, [path]);
 
     return (
         <div>
@@ -48,7 +55,6 @@ export default function TreeNode(
                         onClick={() =>
                             setPath([...parents, {id: folder.id, name: folder.name}])
                         }
-                        onDoubleClick={() => setIsOpen(!isOpen)}
                     >
                         <IoFolderOutline/>
                         <div>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {Separator} from "@workspace/ui/components/separator";
 import SearchBar from "@/src/components/header/SearchBar";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
 export default function Navigation() {
     const path = usePathname();
@@ -51,6 +51,5 @@ export default function Navigation() {
                 <SearchBar setIsSearching={setIsSearching}/>
             </div>
         </nav>
-
     );
 }
