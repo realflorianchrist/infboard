@@ -4,6 +4,7 @@ import "@workspace/ui/globals.css"
 import Header from "../components/header/Header";
 import {ThemeProvider} from "../providers/ThemeProvider";
 import Providers from "@/src/providers/Providers";
+import ModalAnchor from "@/src/components/modals/ModalAnchor";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout(
             <main>
                 {children}
             </main>
+            <ModalAnchor/>
         </Providers>
         </body>
         </html>

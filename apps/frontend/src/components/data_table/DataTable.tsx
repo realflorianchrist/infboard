@@ -7,6 +7,7 @@ import {IoFolderOutline} from "react-icons/io5";
 import {GoFile} from "react-icons/go";
 import {useGetFolderById} from "@/src/api/hooks/folderHooks";
 import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
+import {useModal} from "@/src/providers/ModalProvider";
 
 type Row = {
     id: string;
@@ -24,6 +25,7 @@ type Row = {
 
 export default function DataTable() {
     const {path, pushFolder} = useFolderPath();
+    const { openRenameFolderModal } = useModal();
 
     const columnHelper = createColumnHelper<Row>();
 
@@ -129,7 +131,7 @@ export default function DataTable() {
                             <DataContextMenu
                                 key={row.id}
                                 onNewFolder={() => {}}
-                                onRename={() => {}}
+                                onRename={() => openRenameFolderModal(item.id)}
                                 onDelete={() => {}}
                                 onSelect={() => {}}
                                 onUploadFile={() => {}}

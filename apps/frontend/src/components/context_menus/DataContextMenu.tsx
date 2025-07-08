@@ -12,11 +12,11 @@ import menuOptions from "@/src/constants/menuOptions";
 type FolderContextMenuProps = {
     children: ReactNode;
     onNewFolder?: () => void;
+    onUploadFile?: () => void;
     onRename?: () => void;
     onDelete?: () => void;
     onDownload?: () => void;
     onSelect?: () => void;
-    onUploadFile?: () => void;
     onMove?: () => void;
 };
 
@@ -43,6 +43,11 @@ export default function DataContextMenu(
                         {menuOptions.newFolder}
                     </ContextMenuItem>
                 )}
+                {onUploadFile && (
+                    <ContextMenuItem onClick={onUploadFile}>
+                        {menuOptions.uploadFile}
+                    </ContextMenuItem>
+                )}
                 {onRename && (
                     <ContextMenuItem onClick={onRename}>
                         {menuOptions.rename}
@@ -61,11 +66,6 @@ export default function DataContextMenu(
                 {onSelect && (
                     <ContextMenuItem onClick={onSelect}>
                         {menuOptions.select}
-                    </ContextMenuItem>
-                )}
-                {onUploadFile && (
-                    <ContextMenuItem onClick={onUploadFile}>
-                        {menuOptions.uploadFile}
                     </ContextMenuItem>
                 )}
                 {onMove && (
