@@ -131,7 +131,7 @@ export default function DataTable() {
                             <DataContextMenu
                                 key={row.id}
                                 onNewFolder={() => {}}
-                                onRename={() => openRenameFolderModal(item.id)}
+                                onRename={() => openRenameFolderModal(item.id, item.name)}
                                 onDelete={() => {}}
                                 onSelect={() => {}}
                                 onUploadFile={() => {}}

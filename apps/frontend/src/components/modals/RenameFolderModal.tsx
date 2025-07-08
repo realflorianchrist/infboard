@@ -1,20 +1,18 @@
 'use client';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@workspace/ui/components/dialog';
-import { Input } from '@workspace/ui/components/input';
-import { Button } from '@workspace/ui/components/button';
-import { useModal } from '@/src/providers/ModalProvider';
-import { useState, useEffect } from 'react';
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from '@workspace/ui/components/dialog';
+import {Input} from '@workspace/ui/components/input';
+import {Button} from '@workspace/ui/components/button';
+import {useModal} from '@/src/providers/ModalProvider';
+import {useEffect, useState} from 'react';
 
 export default function RenameFolderModal() {
-    const { renameFolderModal, closeRenameFolderModal } = useModal();
+    const {renameFolderModal, closeRenameFolderModal} = useModal();
     const [newName, setNewName] = useState('');
 
     useEffect(() => {
-        if (!renameFolderModal.open) {
-            setNewName('');
-        }
-    }, [renameFolderModal.open]);
+        setNewName(renameFolderModal.folderName ?? '');
+    }, [renameFolderModal.folderName]);
 
     const handleRename = () => {
         if (!renameFolderModal.folderId) return;

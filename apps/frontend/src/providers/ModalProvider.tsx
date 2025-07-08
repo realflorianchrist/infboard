@@ -1,8 +1,8 @@
 import { createContext, useContext, useState } from "react";
 
 type ModalContextType = {
-    renameFolderModal: { open: boolean; folderId: string | null };
-    openRenameFolderModal: (folderId: string) => void;
+    renameFolderModal: { open: boolean; folderId: string | null; folderName: string | null };
+    openRenameFolderModal: (folderId: string, folderName: string) => void;
     closeRenameFolderModal: () => void;
 
     deleteFolderModal: { open: boolean; folderId: string | null };
@@ -17,9 +17,10 @@ type ModalContextType = {
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
-    const [renameFolderModal, setRenameFolderModal] = useState<{ open: boolean; folderId: string | null }>({
+    const [renameFolderModal, setRenameFolderModal] = useState<{ open: boolean; folderId: string | null; folderName: string | null }>({
         open: false,
         folderId: null,
+        folderName: null,
     });
 
     const [deleteFolderModal, setDeleteFolderModal] = useState<{ open: boolean; folderId: string | null }>({
@@ -35,8 +36,8 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
         <ModalContext.Provider
             value={{
                 renameFolderModal,
-                openRenameFolderModal: (id) => setRenameFolderModal({ open: true, folderId: id }),
-                closeRenameFolderModal: () => setRenameFolderModal({ open: false, folderId: null }),
+                openRenameFolderModal: (id, folderName) => setRenameFolderModal({ open: true, folderId: id, folderName }),
+                closeRenameFolderModal: () => setRenameFolderModal({ open: false, folderId: null, folderName: null }),
 
                 deleteFolderModal,
                 openDeleteFolderModal: (id) => setDeleteFolderModal({ open: true, folderId: id }),
