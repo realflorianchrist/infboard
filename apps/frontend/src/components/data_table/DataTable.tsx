@@ -7,7 +7,7 @@ import {IoFolderOutline} from "react-icons/io5";
 import {GoFile} from "react-icons/go";
 import {useGetFolderById} from "@/src/api/hooks/folderHooks";
 import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
-import {useModal} from "@/src/providers/ModalProvider";
+import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 
 type Row = {
     id: string;
@@ -25,7 +25,16 @@ type Row = {
 
 export default function DataTable() {
     const {path, pushFolder} = useFolderPath();
-    const { openRenameFolderModal, openDeleteFolderModal } = useModal();
+    const {
+        openNewFolderModal,
+        openRenameFolderModal,
+        openDeleteFolderModal,
+        openDeleteFileModal,
+        setIsSelectMode,
+        addSelected,
+        openUploadFileModal,
+        openRenameFileModal,
+    } = useContextMenu();
 
     const columnHelper = createColumnHelper<Row>();
 
@@ -130,11 +139,15 @@ export default function DataTable() {
                         isFolder ? (
                             <DataContextMenu
                                 key={row.id}
-                                onNewFolder={() => {}}
+                                onNewFolder={() => openNewFolderModal(item.id)}
                                 onRename={() => openRenameFolderModal(item.id, item.name)}
                                 onDelete={() => openDeleteFolderModal(item.id)}
-                                onSelect={() => {}}
-                                onUploadFile={() => {}}
+                                onSelect={() => {
+                                    setIsSelectMode(true)
+                                    const folder = result?.folder.children?.find(f => f.id === item.id);
+                                    if (folder) addSelected(folder);
+                                }}
+                                onUploadFile={() => openUploadFileModal()}
                             >
                                 <TableRow
                                     className={'cursor-pointer select-none'}
@@ -146,16 +159,16 @@ export default function DataTable() {
                         ) : (
                             <DataContextMenu
                                 key={row.id}
-                                onRename={() => {}}
-                                onDelete={() => {}}
-                                onSelect={() => {}}
-                                onUploadFile={() => {}}
+                                onRename={() => openRenameFileModal(item.id, item.name)}
+                                onDelete={() => openDeleteFileModal(item.id)}
+                                onSelect={() => {
+                                    setIsSelectMode(true);
+                                    const file = result?.folder.files?.find(f => f.id === item.id);
+                                    if (file) addSelected(file);
+                                }}
                             >
                                 <TableRow
                                     className={'cursor-pointer select-none'}
-                                    onDoubleClick={() => {
-                                        // folder actions
-                                    }}
                                 >
                                     {Cells()}
                                 </TableRow>

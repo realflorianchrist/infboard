@@ -3,7 +3,7 @@ import {PropsWithChildren, useState} from "react";
 import {FolderPathProvider} from "@/src/providers/FolderPathProvider";
 import {ThemeProvider} from "@/src/providers/ThemeProvider";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {ModalProvider} from "@/src/providers/ModalProvider";
+import {ContextMenuProvider} from "@/src/providers/ContextMenuProvider";
 
 export default function Providers({children}: Readonly<PropsWithChildren>) {
     const [queryClient] = useState(() => new QueryClient());
@@ -12,9 +12,9 @@ export default function Providers({children}: Readonly<PropsWithChildren>) {
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
                 <FolderPathProvider>
-                    <ModalProvider>
+                    <ContextMenuProvider>
                         {children}
-                    </ModalProvider>
+                    </ContextMenuProvider>
                 </FolderPathProvider>
             </ThemeProvider>
         </QueryClientProvider>

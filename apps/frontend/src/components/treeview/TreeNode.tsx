@@ -6,7 +6,7 @@ import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
 import {FolderPathSegment} from "@workspace/types/folderPath";
 import {IoFolderOutline} from "react-icons/io5";
 import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
-import {useModal} from "@/src/providers/ModalProvider";
+import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 
 export default function TreeNode(
     {
@@ -20,7 +20,7 @@ export default function TreeNode(
     }) {
 
     const {path, setPath} = useFolderPath();
-    const { openRenameFolderModal, openDeleteFolderModal } = useModal();
+    const { openRenameFolderModal, openDeleteFolderModal } = useContextMenu();
 
     const [isOpen, setIsOpen] = useState(false);
 

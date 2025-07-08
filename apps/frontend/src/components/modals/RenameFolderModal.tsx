@@ -2,11 +2,11 @@
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from '@workspace/ui/components/dialog';
 import {Input} from '@workspace/ui/components/input';
 import {Button} from '@workspace/ui/components/button';
-import {useModal} from '@/src/providers/ModalProvider';
+import {useContextMenu} from '@/src/providers/ContextMenuProvider';
 import {useEffect, useState} from 'react';
 
 export default function RenameFolderModal() {
-    const {renameFolderModal, closeRenameFolderModal} = useModal();
+    const {renameFolderModal, closeRenameFolderModal} = useContextMenu();
     const [newName, setNewName] = useState('');
 
     useEffect(() => {

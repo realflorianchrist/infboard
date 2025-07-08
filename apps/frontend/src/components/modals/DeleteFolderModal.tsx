@@ -1,10 +1,10 @@
 'use client';
-import {useModal} from "@/src/providers/ModalProvider";
+import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
 
 export default function DeleteFolderModal() {
-    const {deleteFolderModal, closeDeleteFolderModal} = useModal();
+    const {deleteFolderModal, closeDeleteFolderModal} = useContextMenu();
 
     const handleDelete = () => {
         if (!deleteFolderModal.folderId) return;
