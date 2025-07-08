@@ -13,7 +13,7 @@ export const FileSchema = z.object({
     userName: z.string().optional(),
     meta: z.array(z.string()).optional(),
     comment: z.string().optional(),
-    downloads: z.string().optional(),
+    downloads: z.number().optional(),
     parentFolderId: z.string().optional(),
 });
 
@@ -29,7 +29,7 @@ export const newFile = (input: Partial<IFile> = {}): IFile => {
     });
 };
 
-interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
+export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
     _id: Types.ObjectId;
     created: Date;
 }

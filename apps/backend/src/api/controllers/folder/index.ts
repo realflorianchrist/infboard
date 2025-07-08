@@ -1,15 +1,20 @@
 import express, {Router} from "express";
-import {Routes} from "@workspace/routes/routes";
+import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {StatusCodes} from "http-status-codes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {FolderModel} from "@src/models/Folder";
 import {Folder} from "@workspace/types/data";
-import {getFolderTree} from "@src/services/folderService";
+import {getFolderContents, getFolderTree} from "@src/services/dataService";
+import {ApiError} from "@src/api/utils/apiError";
+import {ErrorType} from "@workspace/types/apiResponses";
+import {FileModel} from "@src/models/File";
+import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
+import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 
 const folderController: Router = express.Router();
 
 folderController.get(
-    Routes.folders.all,
+    ApiRoutes.folders.all,
     handleRequest<{}, { folders: Folder[] }>(
         async () => {
 
@@ -24,31 +29,18 @@ folderController.get(
 );
 
 folderController.get(
-    Routes.folders.byId(':id'),
-    handleRequest<{}, { message: string }, { id: string }>(
+    ApiRoutes.folders.byId(':id'),
+    handleRequest<{}, { folder: Folder }, { id: string }>(
         async (req) => {
             const {id} = req.params;
 
-            const projects = await FolderModel.create({ name: 'Projects' });
-            const archive = await FolderModel.create({ name: 'Archive' });
+            const folder = await getFolderContents(id);
 
-            // Projects subtree
-            const alpha = await FolderModel.create({ name: 'Project Alpha', parentId: projects._id });
-            const beta = await FolderModel.create({ name: 'Project Beta', parentId: projects._id });
-
-            await FolderModel.create({ name: 'Designs', parentId: alpha._id });
-            await FolderModel.create({ name: 'Reports', parentId: alpha._id });
-            await FolderModel.create({ name: 'Specs', parentId: beta._id });
-
-            // Archive subtree
-            const y2022 = await FolderModel.create({ name: '2022', parentId: archive._id });
-            const y2023 = await FolderModel.create({ name: '2023', parentId: archive._id });
-
-            await FolderModel.create({ name: 'Q1', parentId: y2023._id });
+            if (!folder) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FOLDER_NOT_FOUND);
 
             return {
                 status: StatusCodes.OK,
-                data: {message: `success${id}`},
+                data: {folder},
             };
         }
     )

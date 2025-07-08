@@ -1,4 +1,4 @@
-export const Routes = {
+export const ApiRoutes = {
     base: '/api',
 
     folders: {

@@ -1,7 +1,7 @@
 export type Folder = {
     name: string;
     id: string;
-    isOpen?: boolean;
+    parentFolderId?: string;
     children?: Folder[];
     files?: File[];
 };
@@ -13,9 +13,9 @@ export type File = {
     version?: number;
     extension?: string;
     size?: number;
-    updatedAt?: string;
+    updatedAt?: Date;
     userName?: string;
     meta?: string[];
     comment?: string;
-    downloads?: string;
+    downloads?: number;
 };

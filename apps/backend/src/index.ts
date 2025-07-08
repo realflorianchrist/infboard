@@ -7,7 +7,7 @@ import helmet from 'helmet';
 import {connectDB} from "@src/config/database";
 import {ensureBucketExists} from "@src/config/s3";
 import dispatcher from "@src/api/controllers/dispatcher";
-import {Routes} from "@workspace/routes/routes";
+import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {ENV} from "@src/constants/ENV";
 import {errorHandler} from "@src/middleware/errorHandler";
 
@@ -43,7 +43,7 @@ if (ENV.NODE_ENV === NodeEnvs.Production) {
     }
 }
 
-app.use(Routes.base, dispatcher);
+app.use(ApiRoutes.base, dispatcher);
 app.use(errorHandler);
 
 

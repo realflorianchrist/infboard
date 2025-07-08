@@ -2,21 +2,20 @@
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@workspace/ui/components/table";
 import {useEffect, useState} from "react";
-import {dummyFolderTree} from "@/src/constants/dummyFiles";
-import {Folder} from "@workspace/types/data";
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {IoFolderOutline} from "react-icons/io5";
 import {GoFile} from "react-icons/go";
+import {useGetFolderById} from "@/src/api/hooks/folderHooks";
 
 type Row = {
     id: string;
     name: string;
     type: 'folder' | 'file';
-    updatedAt?: string;
+    updatedAt?: Date;
     userName?: string;
     version?: number;
     comment?: string;
-    downloads?: string;
+    downloads?: number;
     size?: number;
     // meta?: string[];
 }
@@ -55,26 +54,16 @@ const columns = [
     }),
 ];
 
-const findFolderByPath = (tree: Folder[], path: { id: string }[]): Folder | null => {
-    let current: Folder | undefined;
-    let currentLevel = tree;
-
-    for (const segment of path) {
-        current = currentLevel.find(f => f.id === segment.id);
-        if (!current) return null;
-        currentLevel = current.children ?? [];
-    }
-
-    return current ?? null;
-}
-
 export default function DataTable() {
     const {path} = useFolderPath();
 
     const [data, setData] = useState<Row[]>([]);
 
+    const folderId = path?.[path.length - 1]?.id;
+    const { data: result } = useGetFolderById(folderId ?? 'root');
+
     useEffect(() => {
-        const currentFolder = findFolderByPath(dummyFolderTree, path);
+        const currentFolder = result?.folder;
         if (!currentFolder) return;
 
         const folderRows: Row[] = (currentFolder.children ?? []).map(f => ({
@@ -95,7 +84,7 @@ export default function DataTable() {
         }));
 
         setData([...folderRows, ...fileRows]);
-    }, [path]);
+    }, [result]);
 
     const table = useReactTable({
         data,
