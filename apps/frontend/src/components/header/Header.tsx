@@ -1,4 +1,3 @@
-import ThemeSwitch from "@/src/components/ThemeSwitch";
 import Link from "next/link";
 import Routes from "@/src/constants/routes";
 import Navigation from "./Navigation";

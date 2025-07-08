@@ -4,12 +4,6 @@ import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@workspace/u
 import FolderPath from "@/src/components/FolderPath";
 import DataTable from "@/src/components/data_table/DataTable";
 import {ScrollArea} from "@workspace/ui/components/scroll-area";
-import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuTrigger
-} from "@workspace/ui/components/context-menu";
 
 
 export default function Home() {

@@ -1,11 +1,13 @@
 'use client'
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@workspace/ui/components/table";
-import {useEffect, useState} from "react";
+import {Fragment, useEffect, useState} from "react";
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {IoFolderOutline} from "react-icons/io5";
 import {GoFile} from "react-icons/go";
 import {useGetFolderById} from "@/src/api/hooks/folderHooks";
+import FolderContextMenu from "@/src/components/context_menus/FolderContextMenu";
+import FileContextMenu from "@/src/components/context_menus/FileContextMenu";
 
 type Row = {
     id: string;
@@ -20,47 +22,16 @@ type Row = {
     // meta?: string[];
 }
 
-const columnHelper = createColumnHelper<Row>()
-
-const columns = [
-    columnHelper.accessor('name', {
-        header: () => <>Name</>,
-        cell: info => {
-            const row = info.row.original;
-            return (
-                <div className="flex items-center gap-2">
-                    {row.type === 'folder' ? <IoFolderOutline/> : <GoFile/>} {row.name}
-                </div>
-            );
-        },
-    }),
-    columnHelper.accessor('updatedAt', {
-        header: () => <>Änderungsdatum</>
-    }),
-    columnHelper.accessor('userName', {
-        header: () => <>Geändert von</>
-    }),
-    columnHelper.accessor('version', {
-        header: () => <>Version</>
-    }),
-    columnHelper.accessor('comment', {
-        header: () => <>Kommentar</>
-    }),
-    columnHelper.accessor('downloads', {
-        header: () => <>Downloads</>
-    }),
-    columnHelper.accessor('size', {
-        header: () => <>Grösse</>
-    }),
-];
 
 export default function DataTable() {
-    const {path} = useFolderPath();
+    const {path, pushFolder} = useFolderPath();
+
+    const columnHelper = createColumnHelper<Row>();
 
     const [data, setData] = useState<Row[]>([]);
 
     const folderId = path?.[path.length - 1]?.id;
-    const { data: result } = useGetFolderById(folderId ?? 'root');
+    const {data: result} = useGetFolderById(folderId ?? 'root');
 
     useEffect(() => {
         const currentFolder = result?.folder;
@@ -85,6 +56,39 @@ export default function DataTable() {
 
         setData([...folderRows, ...fileRows]);
     }, [result]);
+
+
+    const columns = [
+        columnHelper.accessor('name', {
+            header: () => <>Name</>,
+            cell: info => {
+                const row = info.row.original;
+                return (
+                    <div className={'flex items-center gap-2'}>
+                        {row.type === 'folder' ? <IoFolderOutline/> : <GoFile/>} {row.name}
+                    </div>
+                );
+            },
+        }),
+        columnHelper.accessor('updatedAt', {
+            header: () => <>Änderungsdatum</>
+        }),
+        columnHelper.accessor('userName', {
+            header: () => <>Geändert von</>
+        }),
+        columnHelper.accessor('version', {
+            header: () => <>Version</>
+        }),
+        columnHelper.accessor('comment', {
+            header: () => <>Kommentar</>
+        }),
+        columnHelper.accessor('downloads', {
+            header: () => <>Downloads</>
+        }),
+        columnHelper.accessor('size', {
+            header: () => <>Grösse</>
+        }),
+    ];
 
     const table = useReactTable({
         data,
@@ -111,15 +115,40 @@ export default function DataTable() {
                 ))}
             </TableHeader>
             <TableBody>
-                {table.getRowModel().rows.map(row => (
-                    <TableRow key={row.id}>
-                        {row.getVisibleCells().map(cell => (
+                {table.getRowModel().rows.map(row => {
+                    const item = row.original;
+                    const isFolder = item.type === "folder";
+                    const Cells = () =>
+                        row.getVisibleCells().map(cell => (
                             <TableCell key={cell.id}>
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>
-                        ))}
-                    </TableRow>
-                ))}
+                        ))
+
+                    return (
+                        isFolder ? (
+                            <FolderContextMenu key={row.id}>
+                                <TableRow
+                                    className={'cursor-pointer select-none'}
+                                    onDoubleClick={() => pushFolder({id: item.id, name: item.name})}
+                                >
+                                    {Cells()}
+                                </TableRow>
+                            </FolderContextMenu>
+                        ) : (
+                            <FileContextMenu key={row.id}>
+                                <TableRow
+                                    className={'cursor-pointer select-none'}
+                                    onDoubleClick={() => {
+                                        // folder actions
+                                    }}
+                                >
+                                    {Cells()}
+                                </TableRow>
+                            </FileContextMenu>
+                        )
+                    );
+                })}
             </TableBody>
         </Table>
     );

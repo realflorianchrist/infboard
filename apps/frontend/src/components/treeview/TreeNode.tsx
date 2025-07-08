@@ -25,7 +25,7 @@ export default function TreeNode(
         <div>
             <FolderContextMenu>
                 <div
-                    className={`cursor-pointer flex items-center gap-2 text-sm
+                    className={`cursor-pointer select-none flex items-center gap-2 text-sm
                           px-2 py-1 rounded
                           hover:bg-accent/10
                           ${path[path.length - 1]?.id === folder.id ? 'bg-accent/20' : ''}
@@ -48,6 +48,7 @@ export default function TreeNode(
                         onClick={() =>
                             setPath([...parents, {id: folder.id, name: folder.name}])
                         }
+                        onDoubleClick={() => setIsOpen(!isOpen)}
                     >
                         <IoFolderOutline/>
                         <div>
