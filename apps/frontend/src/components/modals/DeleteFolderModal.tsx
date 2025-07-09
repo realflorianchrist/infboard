@@ -13,9 +13,9 @@ export default function DeleteFolderModal() {
     const handleDelete = () => {
         if (!deleteFolderModal.folderId) return;
 
-        mutate({ id: deleteFolderModal.folderId });
-
-        closeDeleteFolderModal();
+        mutate({id: deleteFolderModal.folderId}, {
+            onSuccess: () => closeDeleteFolderModal()
+        });
     };
 
     return (

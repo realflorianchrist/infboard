@@ -46,9 +46,9 @@ export default function Home() {
                     className={'h-full overflow-hidden'}
                 >
                     <DataContextMenu
-                        onNewFolder={() => openNewFolderModal(path[path.length - 1]?.id)}
+                        onNewFolder={() => openNewFolderModal(path[path.length - 1]?.id ?? null)}
                         onSelect={() => setIsSelectMode(true)}
-                        onUploadFile={() => openUploadFileModal(path[path.length - 1]?.id)}
+                        onUploadFile={() => openUploadFileModal(path[path.length - 1]?.id ?? null)}
                     >
                         <ScrollArea className={'h-full pl-4'}>
                             <DataTable/>

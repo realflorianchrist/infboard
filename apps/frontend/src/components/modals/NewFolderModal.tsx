@@ -25,9 +25,9 @@ export default function NewFolderModal() {
 
     const handleAddNewFolder = () => {
 
-        mutate({name, parentFolderId: newFolderModal.parentFolderId});
-
-        close();
+        mutate({name, parentFolderId: newFolderModal.parentFolderId}, {
+            onSuccess: () => close()
+        });
     };
 
     const close = () => {
@@ -56,22 +56,26 @@ export default function NewFolderModal() {
                         ))}
                     </BreadcrumbList>
                 </Breadcrumb>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    handleAddNewFolder();
+                }}>
+                    <Input
+                        autoFocus
+                        placeholder="Ordnername"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
 
-                <Input
-                    autoFocus
-                    placeholder="Ordnername"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
-
-                <div className="flex justify-end gap-2 mt-4">
-                    <Button variant="secondary" onClick={close}>
-                        Abbrechen
-                    </Button>
-                    <Button onClick={handleAddNewFolder}>
-                        Speichern
-                    </Button>
-                </div>
+                    <div className="flex justify-end gap-2 mt-4">
+                        <Button type="button" variant="secondary" onClick={close}>
+                            Abbrechen
+                        </Button>
+                        <Button type="submit" disabled={!name.trim()}>
+                            Speichern
+                        </Button>
+                    </div>
+                </form>
             </DialogContent>
         </Dialog>
     )

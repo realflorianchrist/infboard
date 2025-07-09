@@ -4,9 +4,12 @@ import {Input} from '@workspace/ui/components/input';
 import {Button} from '@workspace/ui/components/button';
 import {useContextMenu} from '@/src/providers/ContextMenuProvider';
 import {useEffect, useState} from 'react';
+import {useUpdateFolder} from "@/src/api/hooks/folderHooks";
 
 export default function RenameFolderModal() {
     const {renameFolderModal, closeRenameFolderModal} = useContextMenu();
+    const {mutate} = useUpdateFolder();
+
     const [newName, setNewName] = useState('');
 
     useEffect(() => {
@@ -14,12 +17,11 @@ export default function RenameFolderModal() {
     }, [renameFolderModal.folderName]);
 
     const handleRename = () => {
-        if (!renameFolderModal.folderId) return;
+        if (!renameFolderModal.folderId || !newName) return;
 
-        // TODO: Call rename mutation or service function here
-        console.log('Renaming folder', renameFolderModal.folderId, 'to', newName);
-
-        closeRenameFolderModal();
+        mutate({folder: {id: renameFolderModal.folderId, name: newName}}, {
+            onSuccess: () => closeRenameFolderModal()
+        })
     };
 
     return (
@@ -28,20 +30,25 @@ export default function RenameFolderModal() {
                 <DialogHeader>
                     <DialogTitle>Ordner umbenennen</DialogTitle>
                 </DialogHeader>
-                <Input
-                    autoFocus
-                    placeholder="Neuer Ordnername"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                />
-                <div className="flex justify-end gap-2 mt-4">
-                    <Button variant="secondary" onClick={closeRenameFolderModal}>
-                        Abbrechen
-                    </Button>
-                    <Button onClick={handleRename} disabled={!newName.trim()}>
-                        Speichern
-                    </Button>
-                </div>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    handleRename();
+                }}>
+                    <Input
+                        autoFocus
+                        placeholder="Neuer Ordnername"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                    />
+                    <div className="flex justify-end gap-2 mt-4">
+                        <Button type="button" variant="secondary" onClick={closeRenameFolderModal}>
+                            Abbrechen
+                        </Button>
+                        <Button type="submit" disabled={!newName.trim()}>
+                            Speichern
+                        </Button>
+                    </div>
+                </form>
             </DialogContent>
         </Dialog>
     );

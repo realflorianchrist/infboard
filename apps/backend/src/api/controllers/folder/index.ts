@@ -70,6 +70,37 @@ folderController.post(
     )
 );
 
+folderController.put(
+    ApiRoutes.folders.update,
+    handleRequest<{ folder: Folder }, { folder: Folder }>(
+        async (req) => {
+
+            const {folder} = req.body;
+
+            const updatedFolder = await FolderModel.findByIdAndUpdate(
+                folder.id,
+                { name: folder.name },
+                { new: true }
+            );
+
+            if (!updatedFolder) {
+                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+            }
+
+            return {
+                status: StatusCodes.OK,
+                data: {
+                    folder: {
+                        id: updatedFolder._id.toString(),
+                        name: updatedFolder.name,
+                        parentFolderId: updatedFolder.parentFolderId?.toString(),
+                    },
+                },
+            };
+        }
+    )
+);
+
 folderController.delete(
     ApiRoutes.folders.delete(':id'),
     handleRequest<{ id: string }, { folder: Folder }>(

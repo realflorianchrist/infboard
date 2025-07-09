@@ -17,6 +17,7 @@ import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {cn} from "@workspace/ui/lib/utils";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
+import {ScrollArea} from "@workspace/ui/components/scroll-area";
 
 type Row = {
     id: string;
@@ -146,7 +147,7 @@ export default function DataTable() {
 
     return (
         <Table>
-            <TableHeader>
+            <TableHeader className={'sticky top-0 z-10 bg-background'}>
                 {table.getHeaderGroups().map(headerGroup => (
                     <TableRow key={headerGroup.id}>
                         {headerGroup.headers.map(header => (

@@ -36,6 +36,23 @@ export const useCreateFolder = () =>
         }
     );
 
+export const useUpdateFolder = () =>
+    useApiMutation<
+        { folder: Folder },
+        { folder: Folder }
+    >(
+        [baseRoute, ApiRoutes.folders.update],
+        HttpMethod.PUT,
+        {
+            invalidatePaths: (data) => {
+                return [
+                    `${baseRoute}${ApiRoutes.folders.all}`,
+                    `${baseRoute}${ApiRoutes.folders.byId(data.folder.parentFolderId ?? 'root')}`
+                ];
+            }
+        }
+    );
+
 export const useDeleteFolder = () =>
     useApiMutation<
         { folder: Folder },
