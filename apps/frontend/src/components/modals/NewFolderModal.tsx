@@ -10,22 +10,22 @@ import {
 } from "@workspace/ui/components/breadcrumb";
 import {Fragment, useState} from "react";
 import {Input} from "@workspace/ui/components/input";
-import useGetFolderPath from "@/src/hooks/useGetFolderPath";
 import findPathInTree from "@/src/utils/findPathInTree";
-import {useGetAllFolders} from "@/src/api/hooks/folderHooks";
+import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/folderHooks";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();
+    const {mutate} = useCreateFolder();
 
     const {data} = useGetAllFolders();
-    const path = findPathInTree(data?.folders, newFolderModal?.parentFolderId);
+    const path = findPathInTree(data?.folders ?? null, newFolderModal?.parentFolderId);
 
     const [name, setName] = useState('');
 
 
     const handleAddNewFolder = () => {
 
-        // TODO: Call rename mutation or service function here
+        mutate({name, parentFolderId: newFolderModal.parentFolderId});
 
         close();
     };
@@ -45,7 +45,7 @@ export default function NewFolderModal() {
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>Home</BreadcrumbItem>
-                        {path?.length > 0 && <BreadcrumbSeparator/>}
+                        {(path?.length ?? 0) > 0 && <BreadcrumbSeparator/>}
                         {path?.map((pathSegment, index) => (
                             <Fragment key={pathSegment.id}>
                                 <BreadcrumbItem>

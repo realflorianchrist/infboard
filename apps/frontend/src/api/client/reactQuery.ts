@@ -67,7 +67,7 @@ export const useApiQuery = <TApiResponse, TTransformed = TApiResponse>(
  * @returns A typed `useMutation` hook result for performing the API call.
  */
 export const useApiMutation = <TApiResponse, TRequestBody>(
-    path: string | string[],
+    path: string | string[] | ((variables: TRequestBody) => string | string[]),
     method: HttpMethod,
     options?: {
         requestOptions?: Omit<FetchOptions, "method"> | ((variables: TRequestBody) => Omit<FetchOptions, "method">),
@@ -77,9 +77,13 @@ export const useApiMutation = <TApiResponse, TRequestBody>(
 ) => {
     const queryClient = useQueryClient();
     const {requestOptions, mutationOptions, invalidatePaths} = options ?? {};
-    const joinedPath = Array.isArray(path)
-        ? joinRoute(path)
-        : path;
+    const resolvedPath = (requestBody?: TRequestBody) => {
+        const dynamicPath = typeof path === 'function'
+            ? path(requestBody as TRequestBody)
+            : path;
+
+        return Array.isArray(dynamicPath) ? joinRoute(dynamicPath) : dynamicPath;
+    };
 
     return useMutation<TApiResponse, ErrorType, TRequestBody>({
         mutationFn: async (requestBody?: TRequestBody): Promise<TApiResponse> => {
@@ -89,7 +93,7 @@ export const useApiMutation = <TApiResponse, TRequestBody>(
                         ? requestOptions(requestBody) : {}
                     : requestOptions ?? {}
 
-            return apiFetch<TApiResponse>(joinedPath, {
+            return apiFetch<TApiResponse>(resolvedPath(requestBody), {
                 ...resolvedRequestOptions,
                 method,
                 body: requestBody ? JSON.stringify(requestBody) : undefined,

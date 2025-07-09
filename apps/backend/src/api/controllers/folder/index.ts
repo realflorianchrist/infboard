@@ -7,9 +7,6 @@ import {Folder} from "@workspace/types/data";
 import {getFolderContents, getFolderTree} from "@src/services/dataService";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
-import {FileModel} from "@src/models/File";
-import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
-import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 
 const folderController: Router = express.Router();
 
@@ -41,6 +38,61 @@ folderController.get(
             return {
                 status: StatusCodes.OK,
                 data: {folder},
+            };
+        }
+    )
+);
+
+folderController.post(
+    ApiRoutes.folders.add,
+    handleRequest<{ name: string, parentFolderId: string | null }, { folder: Folder }>(
+        async (req) => {
+
+            const {name, parentFolderId} = req.body;
+
+            try {
+                const newFolder = await FolderModel.create({name, parentFolderId});
+
+                return {
+                    status: StatusCodes.OK,
+                    data: {
+                        folder: {
+                            id: newFolder._id.toString(),
+                            name: newFolder.name,
+                            parentFolderId: newFolder.parentFolderId?.toString(),
+                        },
+                    },
+                };
+            } catch (error) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.API_ERROR);
+            }
+        }
+    )
+);
+
+folderController.delete(
+    ApiRoutes.folders.delete(':id'),
+    handleRequest<{ id: string }, { folder: Folder }>(
+        async (req) => {
+
+            const {id} = req.body;
+
+            const folder = await FolderModel.findById(id);
+            if (!folder) {
+                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+            }
+
+            await folder.deleteOne();
+
+            return {
+                status: StatusCodes.OK,
+                data: {
+                    folder: {
+                        id: folder._id.toString(),
+                        name: folder.name,
+                        parentFolderId: folder.parentFolderId?.toString(),
+                    },
+                },
             };
         }
     )

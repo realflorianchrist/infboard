@@ -1,6 +1,7 @@
-import {useApiQuery} from "@/src/api/client/reactQuery";
+import {useApiMutation, useApiQuery} from "@/src/api/client/reactQuery";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {Folder} from "@workspace/types/data";
+import {HttpMethod} from "@/src/api/client/client";
 
 const baseRoute = ApiRoutes.folders.base;
 
@@ -11,9 +12,43 @@ export const useGetAllFolders = () =>
         [baseRoute, ApiRoutes.folders.all],
     );
 
-export const useGetFolderById = (id: string) =>
+export const useGetFolderDataById = (id: string) =>
     useApiQuery<
         { folder: Folder }
     >(
         [baseRoute, ApiRoutes.folders.byId(id)],
+    );
+
+export const useCreateFolder = () =>
+    useApiMutation<
+        { folder: Folder },
+        { name: string, parentFolderId: string | null }
+    >(
+        [baseRoute, ApiRoutes.folders.add],
+        HttpMethod.POST,
+        {
+            invalidatePaths: (data) => {
+                return [
+                    `${baseRoute}${ApiRoutes.folders.all}`,
+                    `${baseRoute}${ApiRoutes.folders.byId(data.folder.parentFolderId ?? 'root')}`
+                ];
+            }
+        }
+    );
+
+export const useDeleteFolder = () =>
+    useApiMutation<
+        { folder: Folder },
+        { id: string }
+    >(
+        ({ id }) => [baseRoute, ApiRoutes.folders.delete(id)],
+        HttpMethod.DELETE,
+        {
+            invalidatePaths: (data) => {
+                return [
+                    `${baseRoute}${ApiRoutes.folders.all}`,
+                    `${baseRoute}${ApiRoutes.folders.byId(data.folder.parentFolderId ?? 'root')}`
+                ];
+            }
+        }
     );

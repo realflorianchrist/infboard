@@ -16,7 +16,7 @@ export default function UploadFileModal() {
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const {data} = useGetAllFolders();
-    const path = findPathInTree(data?.folders, uploadFileModal?.parentFolderId);
+    const path = findPathInTree(data?.folders ?? null, uploadFileModal?.parentFolderId);
 
     const handleUploadFile = () => {
         if (files.length === 0) return;
@@ -59,7 +59,7 @@ export default function UploadFileModal() {
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>Home</BreadcrumbItem>
-                        {path?.length > 0 && <BreadcrumbSeparator/>}
+                        {(path?.length ?? 0) > 0 && <BreadcrumbSeparator/>}
                         {path?.map((pathSegment, index) => (
                             <Fragment key={pathSegment.id}>
                                 <BreadcrumbItem>

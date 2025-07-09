@@ -2,15 +2,18 @@
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
+import {useDeleteFolder} from "@/src/api/hooks/folderHooks";
+import {useEffect, useState} from "react";
 
 export default function DeleteFolderModal() {
     const {deleteFolderModal, closeDeleteFolderModal} = useContextMenu();
 
+    const {mutate} = useDeleteFolder();
+
     const handleDelete = () => {
         if (!deleteFolderModal.folderId) return;
 
-        // TODO: Call rename mutation or service function here
-        console.log('Deleted folder', deleteFolderModal.folderId);
+        mutate({ id: deleteFolderModal.folderId });
 
         closeDeleteFolderModal();
     };

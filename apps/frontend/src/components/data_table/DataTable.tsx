@@ -12,7 +12,7 @@ import {useEffect, useState} from "react";
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {IoFolderOutline} from "react-icons/io5";
 import {GoFile} from "react-icons/go";
-import {useGetFolderById} from "@/src/api/hooks/folderHooks";
+import {useGetFolderDataById} from "@/src/api/hooks/folderHooks";
 import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {cn} from "@workspace/ui/lib/utils";
@@ -51,7 +51,7 @@ export default function DataTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const folderId = path?.[path.length - 1]?.id;
-    const {data: result} = useGetFolderById(folderId ?? 'root');
+    const {data: result} = useGetFolderDataById(folderId ?? 'root');
 
     useEffect(() => {
         const currentFolder = result?.folder;
