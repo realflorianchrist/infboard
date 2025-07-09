@@ -56,14 +56,14 @@ export default function UploadFileModal() {
                     onDrop={handleDrop}
                     onDragOver={(e) => e.preventDefault()}
                     className={cn(
-                        "flex flex-col gap-4 border border-dashed border-border rounded-md p-6 cursor-pointer justify-center items-center",
-                        "hover:border-accent transition-colors text-muted-foreground"
+                        'flex flex-col gap-4 border border-dashed border-border rounded-md p-6 cursor-pointer justify-center items-center',
+                        'hover:border-accent transition-colors text-muted-foreground'
                     )}
                     onClick={openFilePicker}
                 >
                     <FiUpload className={'text-4xl'}/>
                     <p>Dateien hierher ziehen oder klicken zum Auswählen</p>
-                    <p className="text-xs">
+                    <p className={'text-xs'}>
                         {files.length > 0 ? `${files.length} Datei(en) ausgewählt` : "Keine Datei ausgewählt"}
                     </p>
                     <input
@@ -75,7 +75,7 @@ export default function UploadFileModal() {
                     />
                 </div>
 
-                <div className="flex justify-end gap-2 mt-4">
+                <div className={"flex justify-end gap-2 mt-4"}>
                     <Button variant="secondary" onClick={close}>
                         Abbrechen
                     </Button>
