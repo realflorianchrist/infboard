@@ -9,7 +9,7 @@ import {
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {Fragment} from "react";
 
-export default function FolderPath() {
+export function FolderPath({withLinks}: { withLinks?: boolean }) {
 
     const {path, setPath, resetPath} = useFolderPath();
 
@@ -17,31 +17,33 @@ export default function FolderPath() {
         <Breadcrumb>
             <BreadcrumbList>
                 <BreadcrumbItem>
-                    <BreadcrumbLink asChild>
-                        <button
-                            className={'cursor-pointer'}
+                    {withLinks ? (
+                        <BreadcrumbLink
+                            asChild
                             onClick={() => resetPath()}
+                            className={'cursor-pointer'}
                         >
-                            Home
-                        </button>
-                    </BreadcrumbLink>
+                            <span>Home</span>
+                        </BreadcrumbLink>
+                    ) : (
+                        <span>Home</span>
+                    )}
                 </BreadcrumbItem>
                 {path.length > 0 && <BreadcrumbSeparator/>}
                 {path.map((pathSegment, index) => (
                     <Fragment key={pathSegment.id}>
                         <BreadcrumbItem>
-                            <BreadcrumbLink asChild>
-                                {index < path.length - 1 ? (
-                                    <button
-                                        className="cursor-pointer"
-                                        onClick={() => setPath(path.slice(0, index + 1))}
-                                    >
-                                        {pathSegment.name}
-                                    </button>
-                                ) : (
-                                    <span className="text-muted-foreground">{pathSegment.name}</span>
-                                )}
-                            </BreadcrumbLink>
+                            {index < path.length - 1 && withLinks ? (
+                                <BreadcrumbLink
+                                    asChild
+                                    onClick={() => setPath(path.slice(0, index + 1))}
+                                    className={'cursor-pointer'}
+                                >
+                                    <span>{pathSegment.name}</span>
+                                </BreadcrumbLink>
+                            ) : (
+                                <span>{pathSegment.name}</span>
+                            )}
                         </BreadcrumbItem>
                         {index < path.length - 1 && <BreadcrumbSeparator/>}
                     </Fragment>
