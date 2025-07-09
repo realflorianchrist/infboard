@@ -2,15 +2,21 @@
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
-import {FolderPath} from "@/src/components/FolderPath";
+import {FolderPathCrumbs} from "@/src/components/FolderPathCrumbs";
 import {cn} from "@workspace/ui/lib/utils";
-import {useRef, useState} from "react";
+import {Fragment, useRef, useState} from "react";
 import {FiUpload} from "react-icons/fi";
+import {useGetAllFolders} from "@/src/api/hooks/folderHooks";
+import findPathInTree from "@/src/utils/findPathInTree";
+import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@workspace/ui/components/breadcrumb";
 
 export default function UploadFileModal() {
     const {uploadFileModal, closeUploadFileModal} = useContextMenu();
     const [files, setFiles] = useState<File[]>([]);
     const inputRef = useRef<HTMLInputElement | null>(null);
+
+    const {data} = useGetAllFolders();
+    const path = findPathInTree(data?.folders, uploadFileModal?.parentFolderId);
 
     const handleUploadFile = () => {
         if (files.length === 0) return;
@@ -50,7 +56,20 @@ export default function UploadFileModal() {
                     <DialogTitle>Datei hochladen</DialogTitle>
                 </DialogHeader>
 
-                <FolderPath/>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>Home</BreadcrumbItem>
+                        {path?.length > 0 && <BreadcrumbSeparator/>}
+                        {path?.map((pathSegment, index) => (
+                            <Fragment key={pathSegment.id}>
+                                <BreadcrumbItem>
+                                    <span>{pathSegment.name}</span>
+                                </BreadcrumbItem>
+                                {index < path?.length - 1 && <BreadcrumbSeparator/>}
+                            </Fragment>
+                        ))}
+                    </BreadcrumbList>
+                </Breadcrumb>
 
                 <div
                     onDrop={handleDrop}

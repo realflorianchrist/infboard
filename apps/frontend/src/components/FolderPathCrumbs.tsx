@@ -9,7 +9,7 @@ import {
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {Fragment} from "react";
 
-export function FolderPath({withLinks}: { withLinks?: boolean }) {
+export function FolderPathCrumbs({withLinks}: { withLinks?: boolean }) {
 
     const {path, setPath, resetPath} = useFolderPath();
 

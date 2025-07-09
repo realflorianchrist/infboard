@@ -13,6 +13,7 @@ export const getFolderTree = async (): Promise<Folder[]> => {
         folderMap.set(f._id.toString(), {
             id: f._id.toString(),
             name: f.name,
+            parentFolderId: f.parentFolderId?.toString(),
             children: [],
             files: [],
         });

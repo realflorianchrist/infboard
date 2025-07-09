@@ -1,8 +1,7 @@
 'use client'
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
-import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -11,10 +10,15 @@ import {
 } from "@workspace/ui/components/breadcrumb";
 import {Fragment, useState} from "react";
 import {Input} from "@workspace/ui/components/input";
-import {FolderPath} from "@/src/components/FolderPath";
+import useGetFolderPath from "@/src/hooks/useGetFolderPath";
+import findPathInTree from "@/src/utils/findPathInTree";
+import {useGetAllFolders} from "@/src/api/hooks/folderHooks";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();
+
+    const {data} = useGetAllFolders();
+    const path = findPathInTree(data?.folders, newFolderModal?.parentFolderId);
 
     const [name, setName] = useState('');
 
@@ -38,7 +42,20 @@ export default function NewFolderModal() {
                     <DialogTitle>Neuer Ordner</DialogTitle>
                 </DialogHeader>
 
-                <FolderPath/>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>Home</BreadcrumbItem>
+                        {path?.length > 0 && <BreadcrumbSeparator/>}
+                        {path?.map((pathSegment, index) => (
+                            <Fragment key={pathSegment.id}>
+                                <BreadcrumbItem>
+                                    <span>{pathSegment.name}</span>
+                                </BreadcrumbItem>
+                                {index < path?.length - 1 && <BreadcrumbSeparator/>}
+                            </Fragment>
+                        ))}
+                    </BreadcrumbList>
+                </Breadcrumb>
 
                 <Input
                     autoFocus
