@@ -6,6 +6,7 @@ import DataTable from "@/src/components/data_table/DataTable";
 import {ScrollArea} from "@workspace/ui/components/scroll-area";
 import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
+import {useFolderPath} from "@/src/providers/FolderPathProvider";
 
 
 export default function Home() {
@@ -14,6 +15,8 @@ export default function Home() {
         setIsSelectMode,
         openUploadFileModal,
     } = useContextMenu();
+
+    const {path} = useFolderPath();
 
     return (
         <>
@@ -43,9 +46,9 @@ export default function Home() {
                     className={'h-full overflow-hidden'}
                 >
                     <DataContextMenu
-                        onNewFolder={() => openNewFolderModal(null)}
+                        onNewFolder={() => openNewFolderModal(path[path.length - 1]?.id)}
                         onSelect={() => setIsSelectMode(true)}
-                        onUploadFile={() => openUploadFileModal(null)}
+                        onUploadFile={() => openUploadFileModal(path[path.length - 1]?.id)}
                     >
                         <ScrollArea className={'h-full pl-4'}>
                             <DataTable/>
