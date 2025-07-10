@@ -41,7 +41,6 @@ export default function DataTable() {
         openRenameFolderModal,
         openDeleteFolderModal,
         openDeleteFileModal,
-        isSelectMode,
         selected,
         isSelected,
         setSelected,
@@ -96,7 +95,7 @@ export default function DataTable() {
                         checked={allSelected}
                         onCheckedChange={(checked) => {
                             if (checked) {
-                                if (result?.folder) setSelected([result.folder]);
+                                if (result?.folder) setSelected(visibleItems);
                             } else {
                                 setSelected([]);
                             }
@@ -112,8 +111,9 @@ export default function DataTable() {
                 return (
                     <Checkbox
                         className={cn(
-                            'opacity-0 group-hover:opacity-100 transition-opacity',
-                            selected && 'opacity-100'
+                            'opacity-0 group-hover:opacity-100 transition-opacity', {
+                                'opacity-100': selected
+                            }
                         )}
                         checked={selected}
                         onCheckedChange={(checked) => {
@@ -250,6 +250,10 @@ export default function DataTable() {
                             </TableCell>
                         ))
 
+                    const rowClassNames = cn('cursor-pointer select-none group', {
+                        'bg-accent/10 hover:bg-accent/20': isSelected(item.id)
+                    });
+
                     return (
                         isFolder ? (
                             <DataContextMenu
@@ -264,8 +268,11 @@ export default function DataTable() {
                                 onUploadFile={() => openUploadFileModal(item.id)}
                             >
                                 <TableRow
-                                    className={'cursor-pointer select-none group'}
-                                    onDoubleClick={() => pushFolder({id: item.id, name: item.name})}
+                                    className={rowClassNames}
+                                    onDoubleClick={() => {
+                                        pushFolder({id: item.id, name: item.name});
+                                        setSelected([]);
+                                    }}
                                 >
                                     {Cells()}
                                 </TableRow>
@@ -281,7 +288,7 @@ export default function DataTable() {
                                 }}
                             >
                                 <TableRow
-                                    className={'cursor-pointer select-none group'}
+                                    className={rowClassNames}
                                 >
                                     {Cells()}
                                 </TableRow>

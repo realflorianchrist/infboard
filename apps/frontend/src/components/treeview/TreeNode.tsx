@@ -24,7 +24,7 @@ export default function TreeNode(
         openNewFolderModal,
         openRenameFolderModal,
         openDeleteFolderModal,
-        setIsSelectMode,
+        setSelected,
         addSelected,
         openUploadFileModal,
     } = useContextMenu();
@@ -43,10 +43,6 @@ export default function TreeNode(
                 onNewFolder={() => openNewFolderModal(folder.id)}
                 onRename={() => openRenameFolderModal(folder.id, folder.name)}
                 onDelete={() => openDeleteFolderModal(folder.id)}
-                // onSelect={() => {
-                //     setIsSelectMode(true);
-                //     addSelected(folder);
-                // }}
                 onUploadFile={() => openUploadFileModal(folder.id)}
             >
                 <div
@@ -70,9 +66,10 @@ export default function TreeNode(
                     )}
                     <div
                         className="flex items-center gap-2"
-                        onClick={() =>
-                            setPath([...parents, {id: folder.id, name: folder.name}])
-                        }
+                        onClick={() => {
+                            setPath([...parents, {id: folder.id, name: folder.name}]);
+                            setSelected([]);
+                        }}
                     >
                         <IoFolderOutline/>
                         <div>
