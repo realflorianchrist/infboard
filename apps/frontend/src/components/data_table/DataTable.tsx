@@ -44,6 +44,7 @@ export default function DataTable() {
         openDeleteFileModal,
         isSelectMode,
         selected,
+        isSelected,
         setSelected,
         addSelected,
         removeSelected,
@@ -89,9 +90,7 @@ export default function DataTable() {
             header: () => {
 
                 const visibleItems = [...(result?.folder.children ?? []), ...(result?.folder.files ?? [])];
-
                 const allSelected = visibleItems.length > 0 && visibleItems.every(i => selected.some(s => s.id === i.id));
-                const partiallySelected = visibleItems.some(i => selected.some(s => s.id === i.id)) && !allSelected;
 
                 return (
                     <Checkbox
@@ -111,14 +110,14 @@ export default function DataTable() {
 
                 return (
                     <Checkbox
-                        checked={selected.some(f => f.id === row.id)}
+                        checked={isSelected(row.id)}
                         onCheckedChange={(checked) => {
                             const folder = result?.folder.children?.find(f => f.id === row.id);
                             const file = result?.folder.files?.find(f => f.id === row.id);
 
                             if (checked) {
                                 if (folder) addSelected(folder);
-                                else if (file) addSelected(file);
+                                if (file) addSelected(file);
                             } else {
                                 removeSelected(row.id);
                             }
@@ -254,8 +253,10 @@ export default function DataTable() {
                                 onRename={() => openRenameFolderModal(item.id, item.name)}
                                 onDelete={() => openDeleteFolderModal(item.id)}
                                 onSelect={() => {
-                                    const folder = result?.folder.children?.find(f => f.id === item.id);
-                                    if (folder) addSelected(folder);
+                                    if (isSelected(item.id)) {
+                                        const folder = result?.folder.children?.find(f => f.id === item.id);
+                                        if (folder) addSelected(folder);
+                                    }
                                 }}
                                 onUploadFile={() => openUploadFileModal(item.id)}
                             >
@@ -272,8 +273,10 @@ export default function DataTable() {
                                 onRename={() => openRenameFileModal(item.id, item.name)}
                                 onDelete={() => openDeleteFileModal(item.id)}
                                 onSelect={() => {
-                                    const file = result?.folder.files?.find(f => f.id === item.id);
-                                    if (file) addSelected(file);
+                                    if (isSelected(item.id)) {
+                                        const file = result?.folder.files?.find(f => f.id === item.id);
+                                        if (file) addSelected(file);
+                                    }
                                 }}
                             >
                                 <TableRow

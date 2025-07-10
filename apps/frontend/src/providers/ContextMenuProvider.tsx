@@ -28,8 +28,8 @@ type ContextMenuContextType = {
     closeUploadFileModal: () => void;
 
     isSelectMode: boolean;
-    setIsSelectMode: (value: boolean) => void;
     selected: (File | Folder)[];
+    isSelected: (id: string) => boolean;
     setSelected: (data: (File | Folder)[]) => void;
     addSelected: (data: (File | Folder)) => void;
     removeSelected: (id: string) => void;
@@ -77,17 +77,9 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
         parentFolderId: null
     });
 
-    const [isSelectMode, setIsSelectMode] = useState(false);
-
     const [selected, setSelected] = useState<(File | Folder)[]>([]);
 
-    useEffect(() => {
-        if (selected.length > 0) {
-            setIsSelectMode(true);
-        } else {
-            setIsSelectMode(false);
-        }
-    }, [selected.length]);
+    const isSelectMode = selected.length > 0;
 
     return (
         <ContextMenuContext.Provider
@@ -117,8 +109,8 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
                 closeUploadFileModal: () => setUploadFileModal({open: false, parentFolderId: null}),
 
                 isSelectMode,
-                setIsSelectMode,
                 selected,
+                isSelected: (id: string) => selected.some(item => item.id === id),
                 setSelected: (data) => setSelected(data),
                 addSelected: (item) =>
                     setSelected((prev) =>
