@@ -15,9 +15,7 @@ import {GoFile} from "react-icons/go";
 import {useGetFolderDataById} from "@/src/api/hooks/folderHooks";
 import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
-import {cn} from "@workspace/ui/lib/utils";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
-import {ScrollArea} from "@workspace/ui/components/scroll-area";
 import {Checkbox} from "@workspace/ui/components/checkbox";
 
 type Row = {
@@ -110,6 +108,7 @@ export default function DataTable() {
 
                 return (
                     <Checkbox
+                        className={'opacity-0 group-hover:opacity-100 transition-opacity'}
                         checked={isSelected(row.id)}
                         onCheckedChange={(checked) => {
                             const folder = result?.folder.children?.find(f => f.id === row.id);
@@ -253,15 +252,13 @@ export default function DataTable() {
                                 onRename={() => openRenameFolderModal(item.id, item.name)}
                                 onDelete={() => openDeleteFolderModal(item.id)}
                                 onSelect={() => {
-                                    if (isSelected(item.id)) {
-                                        const folder = result?.folder.children?.find(f => f.id === item.id);
-                                        if (folder) addSelected(folder);
-                                    }
+                                    const folder = result?.folder.children?.find(f => f.id === item.id);
+                                    if (!isSelected(item.id) && folder) addSelected(folder);
                                 }}
                                 onUploadFile={() => openUploadFileModal(item.id)}
                             >
                                 <TableRow
-                                    className={'cursor-pointer select-none'}
+                                    className={'cursor-pointer select-none group'}
                                     onDoubleClick={() => pushFolder({id: item.id, name: item.name})}
                                 >
                                     {Cells()}
@@ -273,14 +270,12 @@ export default function DataTable() {
                                 onRename={() => openRenameFileModal(item.id, item.name)}
                                 onDelete={() => openDeleteFileModal(item.id)}
                                 onSelect={() => {
-                                    if (isSelected(item.id)) {
-                                        const file = result?.folder.files?.find(f => f.id === item.id);
-                                        if (file) addSelected(file);
-                                    }
+                                    const file = result?.folder.files?.find(f => f.id === item.id);
+                                    if (!isSelected(item.id) && file) addSelected(file);
                                 }}
                             >
                                 <TableRow
-                                    className={'cursor-pointer select-none'}
+                                    className={'cursor-pointer select-none group'}
                                 >
                                     {Cells()}
                                 </TableRow>
