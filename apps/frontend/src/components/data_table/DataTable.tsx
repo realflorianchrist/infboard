@@ -18,8 +18,10 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {cn} from "@workspace/ui/lib/utils";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {ScrollArea} from "@workspace/ui/components/scroll-area";
+import {Checkbox} from "@workspace/ui/components/checkbox";
 
 type Row = {
+    select?: boolean;
     id: string;
     name: string;
     type: 'folder' | 'file';
@@ -40,8 +42,11 @@ export default function DataTable() {
         openRenameFolderModal,
         openDeleteFolderModal,
         openDeleteFileModal,
-        setIsSelectMode,
+        isSelectMode,
+        selected,
+        setSelected,
         addSelected,
+        removeSelected,
         openUploadFileModal,
         openRenameFileModal,
     } = useContextMenu();
@@ -80,9 +85,54 @@ export default function DataTable() {
 
 
     const columns = [
+        columnHelper.accessor('select', {
+            header: () => {
+
+                const visibleItems = [...(result?.folder.children ?? []), ...(result?.folder.files ?? [])];
+
+                const allSelected = visibleItems.length > 0 && visibleItems.every(i => selected.some(s => s.id === i.id));
+                const partiallySelected = visibleItems.some(i => selected.some(s => s.id === i.id)) && !allSelected;
+
+                return (
+                    <Checkbox
+                        checked={allSelected}
+                        onCheckedChange={(checked) => {
+                            if (checked) {
+                                if (result?.folder) setSelected([result.folder]);
+                            } else {
+                                setSelected([]);
+                            }
+                        }}
+                    />
+                )
+            },
+            cell: (info) => {
+                const row = info.row.original;
+
+                return (
+                    <Checkbox
+                        checked={selected.some(f => f.id === row.id)}
+                        onCheckedChange={(checked) => {
+                            const folder = result?.folder.children?.find(f => f.id === row.id);
+                            const file = result?.folder.files?.find(f => f.id === row.id);
+
+                            if (checked) {
+                                if (folder) addSelected(folder);
+                                else if (file) addSelected(file);
+                            } else {
+                                removeSelected(row.id);
+                            }
+                        }}
+                    />
+                )
+            },
+            size: 0,
+            enableSorting: false,
+            enableResizing: false
+        }),
         columnHelper.accessor('name', {
             header: () => <>Name</>,
-            cell: info => {
+            cell: (info) => {
                 const row = info.row.original;
                 return (
                     <div className={'flex items-center gap-2'}>
@@ -204,7 +254,6 @@ export default function DataTable() {
                                 onRename={() => openRenameFolderModal(item.id, item.name)}
                                 onDelete={() => openDeleteFolderModal(item.id)}
                                 onSelect={() => {
-                                    setIsSelectMode(true)
                                     const folder = result?.folder.children?.find(f => f.id === item.id);
                                     if (folder) addSelected(folder);
                                 }}
@@ -223,7 +272,6 @@ export default function DataTable() {
                                 onRename={() => openRenameFileModal(item.id, item.name)}
                                 onDelete={() => openDeleteFileModal(item.id)}
                                 onSelect={() => {
-                                    setIsSelectMode(true);
                                     const file = result?.folder.files?.find(f => f.id === item.id);
                                     if (file) addSelected(file);
                                 }}

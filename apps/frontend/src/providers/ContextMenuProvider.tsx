@@ -1,5 +1,5 @@
 'use client'
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {Folder, File} from "@workspace/types/data";
 
 type ContextMenuContextType = {
@@ -81,6 +81,14 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
 
     const [selected, setSelected] = useState<(File | Folder)[]>([]);
 
+    useEffect(() => {
+        if (selected.length > 0) {
+            setIsSelectMode(true);
+        } else {
+            setIsSelectMode(false);
+        }
+    }, [selected.length]);
+
     return (
         <ContextMenuContext.Provider
             value={{
@@ -101,8 +109,8 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
                 closeDeleteFolderModal: () => setDeleteFolderModal({open: false, folderId: null}),
 
                 deleteFileModal,
-                openDeleteFileModal: (id) => setDeleteFileModal({ open: true, fileId: id }),
-                closeDeleteFileModal: () => setDeleteFileModal({ open: false, fileId: null }),
+                openDeleteFileModal: (id) => setDeleteFileModal({open: true, fileId: id}),
+                closeDeleteFileModal: () => setDeleteFileModal({open: false, fileId: null}),
 
                 uploadFileModal,
                 openUploadFileModal: (id) => setUploadFileModal({open: true, parentFolderId: id}),
