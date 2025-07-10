@@ -2,29 +2,86 @@
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
-import {FolderPathCrumbs} from "@/src/components/FolderPathCrumbs";
 import {cn} from "@workspace/ui/lib/utils";
 import {Fragment, useRef, useState} from "react";
 import {FiUpload} from "react-icons/fi";
 import {useGetAllFolders} from "@/src/api/hooks/folderHooks";
 import findPathInTree from "@/src/utils/findPathInTree";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@workspace/ui/components/breadcrumb";
+import {useUploadFile} from "@/src/api/hooks/fileHooks";
+import {useQueryClient} from "@tanstack/react-query";
+import {ApiRoutes} from "@workspace/routes/apiRoutes";
 
 export default function UploadFileModal() {
+    const queryClient = useQueryClient();
+
     const {uploadFileModal, closeUploadFileModal} = useContextMenu();
+
     const [files, setFiles] = useState<File[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const {data} = useGetAllFolders();
     const path = findPathInTree(data?.folders ?? null, uploadFileModal?.parentFolderId);
 
-    const handleUploadFile = () => {
+    const {mutate} = useUploadFile();
+
+    const handleUploadFile = async () => {
         if (files.length === 0) return;
 
-        // TODO: upload logic (service / mutation)
-        console.log("Uploading files:", files);
+        setIsLoading(true);
 
-        closeUploadFileModal();
+        try {
+            const uploadPromises = files.map(file => {
+                return new Promise<void>((resolve, reject) => {
+                    mutate({
+                        file: {
+                            name: file.name,
+                            contentType: file.type,
+                            size: file.size,
+                            parentFolderId: uploadFileModal.parentFolderId ?? undefined,
+                        }
+                    }, {
+                        onSuccess: async (response) => {
+                            try {
+                                const res = await fetch(response.file.url, {
+                                    method: "PUT",
+                                    headers: {
+                                        'Content-Type': file.type
+                                    },
+                                    body: file
+                                });
+
+                                if (!res.ok) {
+                                    console.error("Upload failed:", res.statusText);
+                                    reject(new Error("Upload failed"));
+                                } else {
+                                    resolve();
+                                }
+                            } catch (err) {
+                                console.error("Upload error:", err);
+                                reject(err);
+                            }
+                        },
+                        onError: reject,
+                    });
+                });
+            });
+
+            await Promise.all(uploadPromises);
+            close();
+
+        } catch (error) {
+            // todo: db rollback
+            console.error("Ein oder mehrere Uploads sind fehlgeschlagen.", error);
+        } finally {
+            setIsLoading(false);
+            await queryClient.invalidateQueries({
+                queryKey:
+                    [`${ApiRoutes.folders.base}${ApiRoutes.folders.byId(uploadFileModal.parentFolderId ?? 'root')}`]
+            });
+        }
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,14 +151,18 @@ export default function UploadFileModal() {
                     />
                 </div>
 
-                <div className={"flex justify-end gap-2 mt-4"}>
-                    <Button variant="secondary" onClick={close}>
-                        Abbrechen
-                    </Button>
-                    <Button onClick={handleUploadFile}>
-                        Hochladen
-                    </Button>
-                </div>
+                {isLoading ? (
+                    <div>Loading...</div>
+                ) : (
+                    <div className={"flex justify-end gap-2 mt-4"}>
+                        <Button variant="secondary" onClick={close}>
+                            Abbrechen
+                        </Button>
+                        <Button onClick={handleUploadFile}>
+                            Hochladen
+                        </Button>
+                    </div>
+                )}
             </DialogContent>
         </Dialog>
     )

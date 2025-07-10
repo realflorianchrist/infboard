@@ -4,10 +4,10 @@ import { model, Schema, Types, Document } from 'mongoose';
 export const FileSchema = z.object({
     id: z.string().optional(),
     created: z.date().optional(),
-    url: z.string(),
+    url: z.string().optional(),
     name: z.string(),
     version: z.number().optional(),
-    extension: z.string().optional(),
+    contentType: z.string(),
     size: z.number().optional(),
     updatedAt: z.date().optional(),
     userName: z.string().optional(),
@@ -25,6 +25,7 @@ export const newFile = (input: Partial<IFile> = {}): IFile => {
         created: new Date(),
         url: '',
         name: '',
+        contentType: '',
         ...input,
     });
 };
@@ -36,17 +37,17 @@ export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
 
 const FileMongooseSchema = new Schema<FileDocument>(
     {
-        url: { type: String, required: true },
+        url: String,
         name: { type: String, required: true },
         version: Number,
-        extension: String,
+        contentType: String,
         size: Number,
         updatedAt: Date,
         userName: String,
         meta: [String],
         comment: String,
         downloads: String,
-        parentFolderId: { type: Schema.Types.ObjectId, ref: 'Folder', required: true },
+        parentFolderId: { type: Schema.Types.ObjectId, ref: 'Folder' },
     },
     {
         timestamps: { createdAt: 'created', updatedAt: 'updatedAt' },

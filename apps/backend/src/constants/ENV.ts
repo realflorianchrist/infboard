@@ -30,6 +30,8 @@ const envSchema = z.object({
     S3_ACCESS_KEY: z.string(),
     S3_SECRET_KEY: z.string(),
     S3_BUCKET: z.string(),
+    S3_UPLOAD_FOLDER: z.string(),
+    S3_EXPIRE_URL_SECONDS: z.coerce.number(),
 });
 
 export const ENV = envSchema.parse(process.env);

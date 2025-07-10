@@ -15,7 +15,9 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.842.0",
+    "@aws-sdk/client-s3": "^3.844.0",
+    "@aws-sdk/s3-request-presigner": "^3.844.0",
+    "@workspace/routes": "workspace:*",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
@@ -30,8 +32,7 @@
     "module-alias": "^2.2.3",
     "mongoose": "^8.16.1",
     "morgan": "^1.10.0",
-    "zod": "^3.24.2",
-    "@workspace/routes": "workspace:*"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

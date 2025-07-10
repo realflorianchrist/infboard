@@ -3,19 +3,26 @@ export type Folder = {
     id: string;
     parentFolderId?: string;
     children?: Folder[];
-    files?: File[];
+    files?: FileMeta[];
 };
 
-export type File = {
+export type BaseFileMeta = {
+    name: string;
+    contentType: string;
+    size?: number;
+    comment?: string;
+    parentFolderId?: string;
+};
+
+export type NewFileInput = BaseFileMeta;
+
+export type FileMeta = BaseFileMeta & {
     id: string;
     url: string;
-    name: string;
     version?: number;
-    extension?: string;
-    size?: number;
     updatedAt?: Date;
     userName?: string;
     meta?: string[];
-    comment?: string;
     downloads?: number;
 };
+
