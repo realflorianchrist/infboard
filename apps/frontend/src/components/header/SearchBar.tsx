@@ -1,5 +1,7 @@
 import {Input} from "@workspace/ui/components/input";
 import {Button} from "@workspace/ui/components/button";
+import {XIcon} from "lucide-react";
+import * as React from "react";
 
 export default function SearchBar(
     {
@@ -19,7 +21,7 @@ export default function SearchBar(
                 onClick={() => setIsSearching(false)}
                 className={'rounded-l-none bg-accent hover:bg-accent/80 text-foreground text-xl'}
             >
-                &times;
+                <XIcon />
             </Button>
         </div>
     );

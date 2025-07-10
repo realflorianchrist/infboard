@@ -17,6 +17,7 @@ import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {Checkbox} from "@workspace/ui/components/checkbox";
+import {cn} from "@workspace/ui/lib/utils";
 
 type Row = {
     select?: boolean;
@@ -106,10 +107,15 @@ export default function DataTable() {
             cell: (info) => {
                 const row = info.row.original;
 
+                const selected = isSelected(row.id);
+
                 return (
                     <Checkbox
-                        className={'opacity-0 group-hover:opacity-100 transition-opacity'}
-                        checked={isSelected(row.id)}
+                        className={cn(
+                            'opacity-0 group-hover:opacity-100 transition-opacity',
+                            selected && 'opacity-100'
+                        )}
+                        checked={selected}
                         onCheckedChange={(checked) => {
                             const folder = result?.folder.children?.find(f => f.id === row.id);
                             const file = result?.folder.files?.find(f => f.id === row.id);
