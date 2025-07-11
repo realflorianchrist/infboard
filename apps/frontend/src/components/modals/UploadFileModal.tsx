@@ -14,19 +14,16 @@ export default function UploadFileModal() {
     const {uploadFileModal, closeUploadFileModal} = useContextMenu();
 
     const [files, setFiles] = useState<File[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
 
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const {data} = useGetAllFolders();
     const path = findPathInTree(data?.folders ?? null, uploadFileModal?.parentFolderId);
 
-    const {uploadFiles} = useUploadFiles();
+    const {uploadFiles, isUploading} = useUploadFiles();
 
     const handleUploadFile = async () => {
         if (files.length === 0) return;
-
-        setIsLoading(true);
 
         const results = await uploadFiles(files, uploadFileModal.parentFolderId!);
         const failed = results.filter(r => r.status === 'error');
@@ -36,7 +33,6 @@ export default function UploadFileModal() {
         } else {
             close();
         }
-        setIsLoading(false);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +102,7 @@ export default function UploadFileModal() {
                     />
                 </div>
 
-                {isLoading ? (
+                {isUploading ? (
                     <div>Loading...</div>
                 ) : (
                     <div className={"flex justify-end gap-2 mt-4"}>
