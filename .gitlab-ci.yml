@@ -44,14 +44,18 @@ deploy-dev:
     # NB: environment variables must be overridden in the docker compose file.
     # ------------------------------------------------------------------------------------------------------------------
   before_script:
-    - apk update && apk add openssh-client
+    - apk update
+    # install ssh client and add the deployment key
+    - apk add openssh-client
+    - eval $(ssh-agent -s)
+    # Masking CI/CD variables in Gitlab does not work for SSH private keys, as they
+    # include whitespaces and line breaks. We replaced whitespaces with '_' and line breaks
+    # with '__', so that Gitlab accepts the value, and now we need to fix the key again.
+    - modified_key=$(echo "$DEPLOYMENT_KEY" | sed 's/__/\n/g' | tr '_' ' ')
+    - echo "$modified_key" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - printf '%s' "$SSH_KEY_DEV" | base64 -d > ~/.ssh/id_ed25519
-    - chmod 600 ~/.ssh/id_ed25519
-    - eval "$(ssh-agent -s)"
-    - ssh-add ~/.ssh/id_ed25519
-    - echo "Host *" > ~/.ssh/config
+    - echo "HOST *" > ~/.ssh/config
     - echo "StrictHostKeyChecking no" >> ~/.ssh/config
     # create Docker auth config
     - mkdir -p ~/.docker
