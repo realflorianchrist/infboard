@@ -55,7 +55,6 @@ deploy-dev:
     - chmod 600 ~/.ssh/config
   script:
     - echo "running deploy job to $DOCKER_HOST"
-    - # create Docker auth config
     - mkdir -p ~/.docker
     - echo $DOCKER_AUTH_CONFIG > ~/.docker/config.json
     - docker login $CI_REGISTRY
