@@ -40,9 +40,6 @@ deploy-dev:
   variables:
     DOCKER_TLS_CERTDIR: ""
     DOCKER_HOST: "ssh://$DEPLOY_USER@$DEPLOY_HOST"
-    # ------------------------------------------------------------------------------------------------------------------
-    # NB: environment variables must be overridden in the docker compose file.
-    # ------------------------------------------------------------------------------------------------------------------
   before_script:
     - apk add --no-cache openssh-client
     - mkdir -p ~/.ssh
@@ -50,12 +47,11 @@ deploy-dev:
     - chmod 600 ~/.ssh/id_ed25519_gitlabci
     - eval "$(ssh-agent -s)"
     - ssh-add ~/.ssh/id_ed25519_gitlabci
-    - echo "Host *" > ~/.ssh/config
     - echo -e "Host *\n  StrictHostKeyChecking no\n  IdentityFile ~/.ssh/id_ed25519_gitlabci" > ~/.ssh/config
     - chmod 600 ~/.ssh/config
   script:
-    - scp docker-compose.dev.yml deploy@$SERVER_HOST:/opt/infboard/docker-compose.yml
-    - ssh deploy@$SERVER_HOST '
+    - scp docker-compose.dev.yml $DEPLOY_USER@$DEPLOY_HOST:/opt/infboard/docker-compose.yml
+    - ssh $DEPLOY_USER@$DEPLOY_HOST '
       cd /opt/infboard &&
       docker compose pull &&
       docker compose up -d --remove-orphans &&
