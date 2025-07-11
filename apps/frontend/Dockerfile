@@ -1,6 +1,8 @@
 ARG NODE_VERSION=22
 FROM node:${NODE_VERSION}-alpine AS base
 
+ARG NEXT_PUBLIC_API_BASE_URL
+
 WORKDIR /usr/src/app
 
 COPY package.json pnpm-lock.yaml ./
@@ -13,6 +15,10 @@ COPY apps/frontend ./apps/frontend
 FROM base AS builder
 
 WORKDIR /usr/src/app/apps/frontend
+
+ARG NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+
 RUN pnpm build
 
 FROM node:${NODE_VERSION}-alpine AS runner
