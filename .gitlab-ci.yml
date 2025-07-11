@@ -51,7 +51,7 @@ deploy-dev:
     # Masking CI/CD variables in Gitlab does not work for SSH private keys, as they
     # include whitespaces and line breaks. We replaced whitespaces with '_' and line breaks
     # with '__', so that Gitlab accepts the value, and now we need to fix the key again.
-    - modified_key=$(echo "$DEPLOYMENT_KEY" | sed 's/__/\n/g' | tr '_' ' ')
+    - modified_key=$(echo "$SSH_KEY_DEV" | sed 's/__/\n/g' | tr '_' ' ')
     - echo "$modified_key" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
