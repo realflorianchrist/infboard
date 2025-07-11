@@ -25,5 +25,7 @@ COPY --from=builder /usr/src/app/packages ./packages
 
 RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
 
+WORKDIR /usr/src/app/apps/backend
+
 EXPOSE 8080
 CMD ["node", "./dist/index.js"]

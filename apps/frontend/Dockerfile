@@ -26,7 +26,7 @@ FROM node:${NODE_VERSION}-alpine AS runner
 
 ENV NODE_ENV=production
 
-WORKDIR /usr/src/app/apps/frontend
+WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/app/apps/frontend/.next ./.next
 COPY --from=builder /usr/src/app/apps/frontend/public ./public
@@ -37,6 +37,7 @@ COPY --from=builder /usr/src/app/apps/frontend/next.config.js ./next.config.js
 
 RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
 
-EXPOSE 3000
+WORKDIR /usr/src/app/apps/frontend
 
+EXPOSE 3000
 CMD ["pnpm", "start"]
