@@ -47,7 +47,7 @@ deploy-dev:
     - apk update && apk add openssh-client
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - echo "$SSH_KEY_DEV" | base64 -d > ~/.ssh/id_ed25519
+    - printf '%s' "$SSH_KEY_DEV" | base64 -d > ~/.ssh/id_ed25519
     - chmod 600 ~/.ssh/id_ed25519
     - eval "$(ssh-agent -s)"
     - ssh-add ~/.ssh/id_ed25519
