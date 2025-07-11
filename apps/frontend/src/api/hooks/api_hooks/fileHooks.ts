@@ -5,7 +5,7 @@ import {HttpMethod} from "@/src/api/client/client";
 
 const baseRoute = ApiRoutes.files.base;
 
-export const useUploadFile = () =>
+export const useAddFile = () =>
     useApiMutation<{
         file: FileMeta
     }, {

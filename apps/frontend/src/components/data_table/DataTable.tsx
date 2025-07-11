@@ -12,7 +12,7 @@ import {useEffect, useState} from "react";
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {IoFolderOutline} from "react-icons/io5";
 import {GoFile} from "react-icons/go";
-import {useGetFolderDataById} from "@/src/api/hooks/folderHooks";
+import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
 import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";

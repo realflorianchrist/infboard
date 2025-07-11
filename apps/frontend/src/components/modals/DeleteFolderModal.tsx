@@ -2,7 +2,7 @@
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
-import {useDeleteFolder} from "@/src/api/hooks/folderHooks";
+import {useDeleteFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useEffect, useState} from "react";
 
 export default function DeleteFolderModal() {

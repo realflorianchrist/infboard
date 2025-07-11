@@ -5,16 +5,12 @@ import {Button} from "@workspace/ui/components/button";
 import {cn} from "@workspace/ui/lib/utils";
 import {Fragment, useRef, useState} from "react";
 import {FiUpload} from "react-icons/fi";
-import {useGetAllFolders} from "@/src/api/hooks/folderHooks";
+import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import findPathInTree from "@/src/utils/findPathInTree";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@workspace/ui/components/breadcrumb";
-import {useUploadFile} from "@/src/api/hooks/fileHooks";
-import {useQueryClient} from "@tanstack/react-query";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {useUploadFiles} from "@/src/hooks/uploadFile";
 
 export default function UploadFileModal() {
-    const queryClient = useQueryClient();
-
     const {uploadFileModal, closeUploadFileModal} = useContextMenu();
 
     const [files, setFiles] = useState<File[]>([]);
@@ -25,63 +21,22 @@ export default function UploadFileModal() {
     const {data} = useGetAllFolders();
     const path = findPathInTree(data?.folders ?? null, uploadFileModal?.parentFolderId);
 
-    const {mutate} = useUploadFile();
+    const {uploadFiles} = useUploadFiles();
 
     const handleUploadFile = async () => {
         if (files.length === 0) return;
 
         setIsLoading(true);
 
-        try {
-            const uploadPromises = files.map(file => {
-                return new Promise<void>((resolve, reject) => {
-                    mutate({
-                        file: {
-                            name: file.name,
-                            contentType: file.type,
-                            size: file.size,
-                            parentFolderId: uploadFileModal.parentFolderId ?? undefined,
-                        }
-                    }, {
-                        onSuccess: async (response) => {
-                            try {
-                                const res = await fetch(response.file.url, {
-                                    method: "PUT",
-                                    headers: {
-                                        'Content-Type': file.type
-                                    },
-                                    body: file
-                                });
+        const results = await uploadFiles(files, uploadFileModal.parentFolderId!);
+        const failed = results.filter(r => r.status === 'error');
 
-                                if (!res.ok) {
-                                    console.error("Upload failed:", res.statusText);
-                                    reject(new Error("Upload failed"));
-                                } else {
-                                    resolve();
-                                }
-                            } catch (err) {
-                                console.error("Upload error:", err);
-                                reject(err);
-                            }
-                        },
-                        onError: reject,
-                    });
-                });
-            });
-
-            await Promise.all(uploadPromises);
+        if (failed.length > 0) {
+            console.error("Fehler beim Upload folgender Dateien:", failed.map(f => f.file.name));
+        } else {
             close();
-
-        } catch (error) {
-            // todo: db rollback
-            console.error("Ein oder mehrere Uploads sind fehlgeschlagen.", error);
-        } finally {
-            setIsLoading(false);
-            await queryClient.invalidateQueries({
-                queryKey:
-                    [`${ApiRoutes.folders.base}${ApiRoutes.folders.byId(uploadFileModal.parentFolderId ?? 'root')}`]
-            });
         }
+        setIsLoading(false);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -11,7 +11,7 @@ import {
 import {Fragment, useState} from "react";
 import {Input} from "@workspace/ui/components/input";
 import findPathInTree from "@/src/utils/findPathInTree";
-import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/folderHooks";
+import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();

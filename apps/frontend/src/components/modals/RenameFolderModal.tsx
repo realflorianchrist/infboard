@@ -4,7 +4,7 @@ import {Input} from '@workspace/ui/components/input';
 import {Button} from '@workspace/ui/components/button';
 import {useContextMenu} from '@/src/providers/ContextMenuProvider';
 import {useEffect, useState} from 'react';
-import {useUpdateFolder} from "@/src/api/hooks/folderHooks";
+import {useUpdateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 
 export default function RenameFolderModal() {
     const {renameFolderModal, closeRenameFolderModal} = useContextMenu();
