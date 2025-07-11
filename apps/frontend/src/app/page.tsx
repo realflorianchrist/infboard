@@ -4,9 +4,10 @@ import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@workspace/u
 import {FolderPathCrumbs} from "@/src/components/FolderPathCrumbs";
 import DataTable from "@/src/components/data_table/DataTable";
 import {ScrollArea} from "@workspace/ui/components/scroll-area";
-import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
+import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
+import Toolbox from "@/src/components/menus/Toolbox";
 
 
 export default function Home() {
@@ -19,8 +20,11 @@ export default function Home() {
 
     return (
         <>
-            <div className={'mb-4'}>
+            <div className={'mb-4 flex items-center w-full justify-between'}>
                 <FolderPathCrumbs withLinks={true}/>
+                <div className={'right-0 relative'}>
+                    <Toolbox/>
+                </div>
             </div>
             <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel

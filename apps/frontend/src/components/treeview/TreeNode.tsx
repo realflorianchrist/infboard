@@ -5,7 +5,7 @@ import {useEffect, useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
 import {FolderPathSegment} from "@workspace/types/folderPath";
 import {IoFolderOutline} from "react-icons/io5";
-import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
+import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 
 export default function TreeNode(

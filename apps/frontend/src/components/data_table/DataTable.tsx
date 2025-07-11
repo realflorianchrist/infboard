@@ -13,7 +13,7 @@ import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {IoFolderOutline} from "react-icons/io5";
 import {GoFile} from "react-icons/go";
 import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
-import DataContextMenu from "@/src/components/context_menus/DataContextMenu";
+import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {Checkbox} from "@workspace/ui/components/checkbox";
