@@ -1,35 +1,35 @@
-build-backend:
-  stage: build
-  image: docker:latest
-  variables:
-    DOCKER_IMAGE_TAG: "$CI_REGISTRY_IMAGE/backend-$CI_COMMIT_REF_SLUG:latest"
-  services:
-    - docker:dind
-  script:
-    - docker info
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build
-      --pull -t $DOCKER_IMAGE_TAG -f apps/backend/Dockerfile .
-    - docker push $DOCKER_IMAGE_TAG
-  only:
-    - dev
-
-build-frontend:
-  stage: build
-  image: docker:latest
-  variables:
-    DOCKER_IMAGE_TAG: "$CI_REGISTRY_IMAGE/frontend-$CI_COMMIT_REF_SLUG:latest"
-  services:
-    - docker:dind
-  script:
-    - docker info
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build
-      --build-arg NEXT_PUBLIC_API_BASE_URL=$API_BASE_URL
-      --pull -t $DOCKER_IMAGE_TAG -f apps/frontend/Dockerfile .
-    - docker push $DOCKER_IMAGE_TAG
-  only:
-    - dev
+#build-backend:
+#  stage: build
+#  image: docker:latest
+#  variables:
+#    DOCKER_IMAGE_TAG: "$CI_REGISTRY_IMAGE/backend-$CI_COMMIT_REF_SLUG:latest"
+#  services:
+#    - docker:dind
+#  script:
+#    - docker info
+#    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#    - docker build
+#      --pull -t $DOCKER_IMAGE_TAG -f apps/backend/Dockerfile .
+#    - docker push $DOCKER_IMAGE_TAG
+#  only:
+#    - dev
+#
+#build-frontend:
+#  stage: build
+#  image: docker:latest
+#  variables:
+#    DOCKER_IMAGE_TAG: "$CI_REGISTRY_IMAGE/frontend-$CI_COMMIT_REF_SLUG:latest"
+#  services:
+#    - docker:dind
+#  script:
+#    - docker info
+#    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#    - docker build
+#      --build-arg NEXT_PUBLIC_API_BASE_URL=$API_BASE_URL
+#      --pull -t $DOCKER_IMAGE_TAG -f apps/frontend/Dockerfile .
+#    - docker push $DOCKER_IMAGE_TAG
+#  only:
+#    - dev
 
 #--------------------$
 # Deploy Docker images (dev)
@@ -44,18 +44,14 @@ deploy-dev:
     # NB: environment variables must be overridden in the docker compose file.
     # ------------------------------------------------------------------------------------------------------------------
   before_script:
-    - apk update
-    # install ssh client and add the deployment key
-    - apk add openssh-client
+    - apk update && apk add openssh-client
     - eval $(ssh-agent -s)
-    # Masking CI/CD variables in Gitlab does not work for SSH private keys, as they
-    # include whitespaces and line breaks. We replaced whitespaces with '_' and line breaks
-    # with '__', so that Gitlab accepts the value, and now we need to fix the key again.
-    - modified_key=$(echo "$SSH_KEY_DEV" | sed 's/__/\n/g' | tr '_' ' ')
-    - echo "$modified_key" | tr -d '\r' | ssh-add -
+    # SSH-Key entschlüsseln und laden
+    - echo "$SSH_KEY_DEV_B64" | base64 -d > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+    - ssh-add ~/.ssh/id_ed25519
     - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - echo "HOST *" > ~/.ssh/config
+    - echo "Host *" > ~/.ssh/config
     - echo "StrictHostKeyChecking no" >> ~/.ssh/config
     # create Docker auth config
     - mkdir -p ~/.docker
