@@ -41,6 +41,12 @@ export const useUploadFiles = () => {
                     results.push({ file, status: "success" });
                 } catch (uploadError) {
                     // TODO: Rollback
+                    // try {
+                    //     await deleteFile({ fileId: response.file.id });
+                    //     console.warn(Rollback erfolgreich für Datei ${file.name});
+                    // } catch (rollbackError) {
+                    //     console.error(Rollback fehlgeschlagen für Datei ${file.name}, rollbackError);
+                    // }
                     results.push({
                         file,
                         status: "error",

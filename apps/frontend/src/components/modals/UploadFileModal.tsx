@@ -8,7 +8,7 @@ import {FiUpload} from "react-icons/fi";
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import findPathInTree from "@/src/utils/findPathInTree";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@workspace/ui/components/breadcrumb";
-import {useUploadFiles} from "@/src/hooks/uploadFile";
+import {useUploadFiles} from "@/src/hooks/uploadFiles";
 
 export default function UploadFileModal() {
     const {uploadFileModal, closeUploadFileModal} = useContextMenu();
