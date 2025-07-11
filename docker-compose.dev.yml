@@ -1,17 +1,13 @@
 services:
   backend:
-    build:
-      context: .
-      dockerfile: apps/backend/Dockerfile
+    image: registry.gitlab.com/realflorianchrist/infboard/backend-dev:latest
     ports:
       - "8080:8080"
     env_file:
       - backend/.env
 
   frontend:
-    build:
-      context: .
-      dockerfile: apps/frontend/Dockerfile
+    image: registry.gitlab.com/realflorianchrist/infboard/frontend-dev:latest
     ports:
       - "3000:3000"
 
