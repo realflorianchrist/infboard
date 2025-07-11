@@ -50,8 +50,12 @@ deploy-dev:
     - echo -e "Host *\n  StrictHostKeyChecking no\n  IdentityFile ~/.ssh/id_ed25519_gitlabci" > ~/.ssh/config
     - chmod 600 ~/.ssh/config
   script:
+    - echo "$DOCKER_AUTH_CONFIG" > docker-config.json
+    - scp docker-config.json $DEPLOY_USER@$DEPLOY_HOST:/opt/infboard/.docker-config.json
     - scp docker-compose.dev.yml $DEPLOY_USER@$DEPLOY_HOST:/opt/infboard/docker-compose.yml
     - ssh $DEPLOY_USER@$DEPLOY_HOST '
+      mkdir -p ~/.docker &&
+      cp /opt/infboard/.docker-config.json ~/.docker/config.json &&
       cd /opt/infboard &&
       docker compose pull &&
       docker compose up -d --remove-orphans &&
