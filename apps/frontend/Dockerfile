@@ -13,12 +13,14 @@ RUN npm install -g pnpm && pnpm install --frozen-lockfile
 COPY apps/frontend ./apps/frontend
 
 FROM base AS builder
-WORKDIR /usr/src/app/apps/frontend
+WORKDIR /usr/src/app
 
 ARG NEXT_PUBLIC_API_BASE_URL
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 
 RUN pnpm install --filter ./apps/frontend... --frozen-lockfile
+
+WORKDIR /usr/src/app/apps/frontend
 
 RUN pnpm build
 

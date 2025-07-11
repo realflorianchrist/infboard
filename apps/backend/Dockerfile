@@ -10,12 +10,15 @@ COPY apps/backend ./apps/backend
 RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
 FROM base AS builder
-WORKDIR /usr/src/app/apps/backend
 
-RUN pnpm install --filter backend... --frozen-lockfile
+WORKDIR /usr/src/app
+
+RUN pnpm install --filter ./apps/backend... --frozen-lockfile
+
+WORKDIR /usr/src/app/apps/backend
 RUN pnpm build
 
-FROM node:${NODE_VERSION}-alpine
+FROM node:${NODE_VERSION}-alpine AS runner
 WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/app/apps/backend/dist ./dist
