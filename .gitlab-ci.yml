@@ -44,9 +44,8 @@ deploy-dev:
     # NB: environment variables must be overridden in the docker compose file.
     # ------------------------------------------------------------------------------------------------------------------
   before_script:
-    - apk update
     # install ssh client and add the deployment key
-    - apk add openssh-client
+    - apk add --no-cache openssh-client
     - eval $(ssh-agent -s)
     # Masking CI/CD variables in Gitlab does not work for SSH private keys, as they
     # include whitespaces and line breaks. We replaced whitespaces with '_' and line breaks
