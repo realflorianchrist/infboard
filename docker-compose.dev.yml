@@ -1,0 +1,52 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - backend/.env
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    ports:
+      - "3000:3000"
+
+  minio:
+    image: quay.io/minio/minio
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web UI
+    command: server /data --console-address ":9001"
+    env_file:
+      - backend/s3/.env
+    volumes:
+      - minio-data:/data
+
+  mongodb:
+    image: mongo
+    container_name: mongodb_lokal
+    ports:
+      - "27017:27017"
+    env_file:
+      - backend/db/.env
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_express
+    ports:
+      - "8081:8081"
+    env_file:
+      - backend/db/.env
+
+volumes:
+  minio-data:
+  mongo_data:
+  mongo_config:
