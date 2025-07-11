@@ -12,7 +12,6 @@ import {useFolderPath} from "@/src/providers/FolderPathProvider";
 export default function Home() {
     const {
         openNewFolderModal,
-        setIsSelectMode,
         openUploadFileModal,
     } = useContextMenu();
 
@@ -28,31 +27,29 @@ export default function Home() {
                     defaultSize={15}
                     minSize={15}
                     maxSize={25}
-                    className={'h-full overflow-hidden'}
+                    className={'h-full'}
                 >
                     <DataContextMenu
                         onNewFolder={() => openNewFolderModal(null)}
-                        onSelect={() => setIsSelectMode(true)}
                         onUploadFile={() => openUploadFileModal(null)}
                     >
-                        <ScrollArea className={'h-full'}>
+                        <div className={'h-full overflow-auto'}>
                             <Treeview/>
-                        </ScrollArea>
+                        </div>
                     </DataContextMenu>
                 </ResizablePanel>
                 <ResizableHandle/>
                 <ResizablePanel
                     defaultSize={85}
-                    className={'h-full overflow-hidden'}
+                    className={'h-full'}
                 >
                     <DataContextMenu
                         onNewFolder={() => openNewFolderModal(path[path.length - 1]?.id ?? null)}
-                        onSelect={() => setIsSelectMode(true)}
                         onUploadFile={() => openUploadFileModal(path[path.length - 1]?.id ?? null)}
                     >
-                        <ScrollArea className={'h-full pl-4'}>
+                        <div className={'flex h-full pl-4 overflow-auto'}>
                             <DataTable/>
-                        </ScrollArea>
+                        </div>
                     </DataContextMenu>
                 </ResizablePanel>
             </ResizablePanelGroup>

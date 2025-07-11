@@ -130,56 +130,62 @@ export default function DataTable() {
                     />
                 )
             },
-            size: 0,
+            size: 40,
             enableSorting: false,
             enableResizing: false
         }),
         columnHelper.accessor('name', {
-            header: () => <>Name</>,
+            header: () => <span className={'truncate'}>Name</span>,
             cell: (info) => {
                 const row = info.row.original;
                 return (
-                    <div className={'flex items-center gap-2'}>
-                        {row.type === 'folder' ? <IoFolderOutline/> : <GoFile/>} {row.name}
+                    <div
+                        className="flex items-center gap-2 overflow-hidden max-w-full"
+                        title={row.name}
+                    >
+                        <span className="shrink-0">
+                            {row.type === 'folder' ? <IoFolderOutline/> : <GoFile/>}
+                        </span>
+                        <span className="truncate whitespace-nowrap">{row.name}</span>
                     </div>
                 );
             },
-            size: 400,
+            size: 300,
             minSize: 200,
-            maxSize: 600,
+            maxSize: 400,
         }),
         columnHelper.accessor('updatedAt', {
-            header: () => <>Änderungsdatum</>,
+            header: () => <span className={'truncate'}>Geändert</span>,
             size: 150,
             minSize: 75,
             maxSize: 300,
         }),
         columnHelper.accessor('userName', {
-            header: () => <>Geändert von</>,
+            header: () => <span className={'truncate'}>Geändert von</span>,
             size: 150,
             minSize: 75,
             maxSize: 300,
         }),
         columnHelper.accessor('version', {
-            header: () => <>Version</>,
+            header: () => <span className={'truncate'}>Version</span>,
             size: 150,
             minSize: 75,
             maxSize: 300,
         }),
         columnHelper.accessor('comment', {
-            header: () => <>Kommentar</>,
-            size: 300,
+            header: () => <span className={'truncate'}>Kommentar</span>,
+            size: 200,
             minSize: 150,
             maxSize: 600,
         }),
         columnHelper.accessor('downloads', {
-            header: () => <>Downloads</>,
+            header: () => <span className={'truncate'}>Downloads</span>,
             size: 150,
             minSize: 75,
             maxSize: 300,
         }),
         columnHelper.accessor('size', {
-            header: () => <>Grösse</>,
+            header: () => <span className={'truncate'}>Grösse</span>,
             size: 150,
             minSize: 75,
             maxSize: 300,
@@ -200,40 +206,46 @@ export default function DataTable() {
     });
 
     return (
-        <Table>
+        <Table className={'table-fixed'}>
             <TableHeader className={'sticky top-0 z-10 bg-background'}>
                 {table.getHeaderGroups().map(headerGroup => (
                     <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map(header => (
+                        {headerGroup.headers.map((header) => (
                             <TableHead
                                 key={header.id}
                                 style={{width: header.getSize()}}
-                                onClick={header.column.getToggleSortingHandler()}
-                                className={"relative group select-none cursor-pointer"}
+                                className="relative group select-none"
                             >
-                                <div className="flex gap-2 items-center">
+                                <div className="flex gap-2 items-center cursor-pointer"
+                                     onClick={header.column.getToggleSortingHandler()}
+                                >
                                     {!header.isPlaceholder && (
                                         <>
                                             {flexRender(header.column.columnDef.header, header.getContext())}
                                             <span className="w-4 flex justify-center">
                                                 {{
-                                                        asc: <FaCaretUp/>,
-                                                        desc: <FaCaretDown/>,
-                                                    }[header.column.getIsSorted() as string] ??
-                                                    <span className="invisible"><FaCaretUp/></span>
-                                                }
+                                                    asc: <FaCaretUp/>,
+                                                    desc: <FaCaretDown/>,
+                                                }[header.column.getIsSorted() as string] ?? (
+                                                    <span className="invisible">
+                                                        <FaCaretUp/>
+                                                    </span>
+                                                )}
                                             </span>
                                         </>
                                     )}
                                 </div>
-                                {/*{header.column.getCanResize() && (*/}
-                                {/*    <div*/}
-                                {/*        onMouseDown={header.getResizeHandler()}*/}
-                                {/*        onTouchStart={header.getResizeHandler()}*/}
-                                {/*        className={cn("absolute right-0 top-0 h-full w-1 cursor-col-resize bg-border",*/}
-                                {/*            "transition-opacity opacity-0 group-hover:opacity-100")}*/}
-                                {/*    />*/}
-                                {/*)}*/}
+
+                                {header.column.getCanResize() && (
+                                    <div
+                                        onMouseDown={header.getResizeHandler()}
+                                        onTouchStart={header.getResizeHandler()}
+                                        className={cn(
+                                            "absolute right-0 top-0 h-full w-1 cursor-col-resize bg-border",
+                                            "transition-opacity opacity-0 group-hover:opacity-100"
+                                        )}
+                                    />
+                                )}
                             </TableHead>
                         ))}
                     </TableRow>

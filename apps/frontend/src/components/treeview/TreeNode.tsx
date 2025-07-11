@@ -71,7 +71,7 @@ export default function TreeNode(
                             setSelected([]);
                         }}
                     >
-                        <IoFolderOutline/>
+                        <IoFolderOutline className={'shrink-0'}/>
                         <div>
                             {folder.name}
                         </div>
