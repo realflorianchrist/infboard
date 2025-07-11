@@ -4,10 +4,10 @@ import {FileMeta} from "@workspace/types/data";
 export const fileDocumentToFileMapper = (fileDocument: FileDocument): FileMeta => {
     return {
         id: fileDocument._id.toString(),
-        url: fileDocument.url,
+        url: fileDocument.url ?? '',
+        contentType: fileDocument.contentType,
         name: fileDocument.name,
         version: fileDocument.version,
-        extension: fileDocument.contentType,
         size: fileDocument.size,
         updatedAt: fileDocument.updatedAt,
         userName: fileDocument.userName,
