@@ -39,7 +39,7 @@ deploy-dev:
   image: docker:latest
   variables:
     DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: "ssh://$DEPLOYMENT_USER@$DEPLOYMENT_HOST"
+    DOCKER_HOST: "ssh://$DEPLOY_USER@$DEPLOY_HOST"
     # ------------------------------------------------------------------------------------------------------------------
     # NB: environment variables must be overridden in the docker compose file.
     # ------------------------------------------------------------------------------------------------------------------
