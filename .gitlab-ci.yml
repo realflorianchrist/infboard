@@ -57,7 +57,7 @@ deploy-dev:
     - echo "running deploy job to $DOCKER_HOST"
     - mkdir -p ~/.docker
     - echo $DOCKER_AUTH_CONFIG > ~/.docker/config.json
-    - docker login $CI_REGISTRY
+    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
     - export COMPOSE_PROJECT_NAME=infboard
     - export COMPOSE_FILE=docker-compose.dev.yml
     - docker compose pull
