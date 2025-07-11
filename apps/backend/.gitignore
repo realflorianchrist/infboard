@@ -3,3 +3,5 @@ dist/
 temp/
 **/**/*.log
 config.js
+config.d.ts
+config.d.ts.map

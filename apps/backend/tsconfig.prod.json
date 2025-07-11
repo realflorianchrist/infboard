@@ -2,9 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "esnext",
-    "outDir": "temp",
+    "outDir": "dist",
+    "removeComments": true,
     "sourceMap": false,
-    "removeComments": true
+    "esModuleInterop": true,
+    "isolatedModules": false
   },
   "include": [
     "src/**/*.ts",

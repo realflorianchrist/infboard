@@ -1,8 +1,9 @@
 {
-  "extends": "@workspace/typescript-config/nextjs.json",
+  "extends": "@workspace/typescript-config/base.json",
   "compilerOptions": {
     "module": "CommonJS",
     "baseUrl": "./",
+    "moduleResolution": "node",
     "paths": {
       "@src/*": ["src/*"],
       "@workspace/ui/*": ["../../packages/ui/src/*"],
@@ -11,7 +12,9 @@
     },
     "useUnknownInCatchVariables": false,
     "types": ["vitest/globals"],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
   "ts-node": {
     "swc": true,

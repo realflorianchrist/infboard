@@ -29,7 +29,7 @@ COPY --from=builder /usr/src/app/apps/frontend/public ./public
 COPY --from=builder /usr/src/app/apps/frontend/package.json ./package.json
 COPY --from=builder /usr/src/app/pnpm-lock.yaml ../../pnpm-lock.yaml
 COPY --from=builder /usr/src/app/packages ../../packages
-COPY --from=builder /usr/src/app/apps/frontend/next.config.js ./next.config.js
+COPY --from=builder /usr/src/app/apps/frontend/next.config.ts ./next.config.ts
 
 RUN npm install -g pnpm && pnpm install --filter ./apps/frontend --prod --frozen-lockfile
 
