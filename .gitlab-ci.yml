@@ -54,15 +54,13 @@ deploy-dev:
     - echo -e "Host *\n  StrictHostKeyChecking no\n  IdentityFile ~/.ssh/id_ed25519_gitlabci" > ~/.ssh/config
     - chmod 600 ~/.ssh/config
   script:
-    - echo "running deploy job to $DOCKER_HOST"
-    - mkdir -p ~/.docker
-    - echo $DOCKER_AUTH_CONFIG > ~/.docker/config.json
-    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
-    - export COMPOSE_PROJECT_NAME=infboard
-    - export COMPOSE_FILE=docker-compose.dev.yml
-    - docker compose pull
-    - docker compose up -d --remove-orphans
-    - docker image prune -a -f
+    - scp docker-compose.dev.yml deploy@$SERVER_HOST:/opt/infboard/docker-compose.yml
+    - ssh deploy@$SERVER_HOST '
+      cd /home/deploy/infboard &&
+      docker compose pull &&
+      docker compose up -d --remove-orphans &&
+      docker image prune -af
+      '
 #  dependencies:
 #    - build-backend
 #    - build-frontend
