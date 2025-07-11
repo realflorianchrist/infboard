@@ -13,19 +13,20 @@ RUN npm install -g pnpm && pnpm install --frozen-lockfile
 COPY apps/frontend ./apps/frontend
 
 FROM base AS builder
-
 WORKDIR /usr/src/app/apps/frontend
 
 ARG NEXT_PUBLIC_API_BASE_URL
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 
+RUN pnpm install --filter ./apps/frontend... --frozen-lockfile
+
 RUN pnpm build
 
 FROM node:${NODE_VERSION}-alpine AS runner
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/apps/frontend
 
 COPY --from=builder /usr/src/app/apps/frontend/.next ./.next
 COPY --from=builder /usr/src/app/apps/frontend/public ./public

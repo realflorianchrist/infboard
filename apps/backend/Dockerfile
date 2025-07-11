@@ -5,25 +5,25 @@ WORKDIR /usr/src/app
 
 COPY package.json pnpm-lock.yaml ./
 COPY packages ./packages
+COPY apps/backend ./apps/backend
 
 RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
-COPY apps/backend ./apps/backend
-
 FROM base AS builder
 WORKDIR /usr/src/app/apps/backend
+
+RUN pnpm install --filter backend... --frozen-lockfile
 RUN pnpm build
 
 FROM node:${NODE_VERSION}-alpine
-
 WORKDIR /usr/src/app
 
-COPY package.json pnpm-lock.yaml ./
-COPY packages ./packages
-COPY apps/backend ./apps/backend
+COPY --from=builder /usr/src/app/apps/backend/dist ./dist
+COPY --from=builder /usr/src/app/apps/backend/package.json ./package.json
+COPY --from=builder /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder /usr/src/app/packages ./packages
 
-COPY --from=builder /usr/src/app/apps/backend/dist ./apps/backend/dist
+RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
 
 EXPOSE 8080
-
-CMD ["node", "./apps/backend/dist/index.js"]
+CMD ["node", "./dist/index.js"]
