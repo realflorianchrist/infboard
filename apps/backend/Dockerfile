@@ -1,33 +1,15 @@
-ARG NODE_VERSION=22
-FROM node:${NODE_VERSION}-alpine AS base
+FROM node:20-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages ./packages
-COPY apps/backend ./apps/backend
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+COPY . .
 
-FROM base AS builder
+ENV CI=true
 
-WORKDIR /usr/src/app
+RUN pnpm install --frozen-lockfile && pnpm --filter ./apps/backend build
 
-RUN pnpm install --filter ./apps/backend... --frozen-lockfile
+WORKDIR /app/apps/backend
 
-WORKDIR /usr/src/app/apps/backend
-RUN pnpm build
-
-FROM node:${NODE_VERSION}-alpine AS runner
-
-WORKDIR /usr/src/app/apps/backend
-
-COPY --from=builder /usr/src/app/apps/backend/dist ./dist
-COPY --from=builder /usr/src/app/apps/backend/package.json ./package.json
-COPY --from=builder /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=builder /usr/src/app/packages ./packages
-
-RUN npm install -g pnpm && pnpm install --filter ./apps/backend --prod --frozen-lockfile
-
-EXPOSE 8080
-CMD ["node", "./dist/index.js"]
+CMD ["node", "-r", "dotenv/config", "dist/apps/backend/src/index.js"]

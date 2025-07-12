@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "esnext",
+    "module": "CommonJS",
     "outDir": "dist",
     "removeComments": true,
     "sourceMap": false,
@@ -10,7 +10,6 @@
   },
   "include": [
     "src/**/*.ts",
-    "config.ts"
   ],
   "exclude": [
     "tests",
