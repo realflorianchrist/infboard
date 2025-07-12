@@ -61,6 +61,7 @@ app.use(errorHandler);
             logger.err(err.message);
         } else {
             logger.info('Express server started on port: ' + ENV.PORT.toString());
+            logger.info(`Frontend URL: ${ENV.FRONTEND_URL}`);
         }
     });
 
