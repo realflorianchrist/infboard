@@ -27,7 +27,6 @@ const app = express();
 
 // Basic middleware
 app.use(cors(corsConfig));
-app.options('*', cors(corsConfig));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
@@ -37,12 +36,12 @@ if (ENV.NODE_ENV === NodeEnvs.Dev) {
 }
 
 // Security
-if (ENV.NODE_ENV === NodeEnvs.Production) {
-    // eslint-disable-next-line n/no-process-env
-    if (!process.env.DISABLE_HELMET) {
-        app.use(helmet());
-    }
-}
+// if (ENV.NODE_ENV === NodeEnvs.Production) {
+//     // eslint-disable-next-line n/no-process-env
+//     if (!process.env.DISABLE_HELMET) {
+//         app.use(helmet());
+//     }
+// }
 
 app.use(ApiRoutes.base, dispatcher);
 app.use(errorHandler);
