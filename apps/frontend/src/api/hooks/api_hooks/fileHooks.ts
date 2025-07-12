@@ -1,4 +1,4 @@
-import {useApiMutation} from "@/src/api/client/reactQuery";
+import {useApiMutation, useApiQuery} from "@/src/api/client/reactQuery";
 import {FileMeta, NewFileInput} from "@workspace/types/data";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {HttpMethod} from "@/src/api/client/client";
@@ -13,5 +13,14 @@ export const useAddFile = () =>
     }
     >(
         [baseRoute, ApiRoutes.files.add],
+        HttpMethod.POST,
+    );
+
+export const useGetFileDownloadUrl = () =>
+    useApiMutation<
+        { url: string },
+        { id: string }
+    >(
+        (variables) => [baseRoute, ApiRoutes.files.downloadUrlById(variables.id)],
         HttpMethod.POST,
     );

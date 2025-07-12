@@ -4,7 +4,6 @@ import { model, Schema, Types, Document } from 'mongoose';
 export const FileSchema = z.object({
     id: z.string().optional(),
     created: z.date().optional(),
-    url: z.string().optional(),
     name: z.string(),
     version: z.number().optional(),
     contentType: z.string(),
@@ -37,7 +36,6 @@ export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
 
 const FileMongooseSchema = new Schema<FileDocument>(
     {
-        url: String,
         name: { type: String, required: true },
         version: Number,
         contentType: String,

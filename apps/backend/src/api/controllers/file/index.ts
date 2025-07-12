@@ -1,15 +1,36 @@
 import express, {Router} from "express";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {FileMeta, NewFileInput} from "@workspace/types/data";
 import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
 import {FileModel} from "@src/models/File";
-import {generateFileKey, generatePresignedUploadUrl} from "@src/services/s3Service";
+import {generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import logger from "jet-logger";
+import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
+import {ApiRoutes} from "@workspace/routes/apiRoutes";
 
 const fileController: Router = express.Router();
+
+
+fileController.post(
+    ApiRoutes.files.downloadUrlById(':id'),
+    handleRequest<{ id: string }, { url: string }>(
+        async (req) => {
+
+            const {id} = req.body;
+
+            const url = await generatePresignedDownloadUrl(id);
+
+            return {
+                status: StatusCodes.OK,
+                data: {
+                    url: url,
+                },
+            };
+        }
+    )
+);
 
 fileController.post(
     ApiRoutes.files.add,
@@ -28,23 +49,15 @@ fileController.post(
                 });
 
                 const url = await generatePresignedUploadUrl(
-                    generateFileKey(newFile._id.toString()), newFile.contentType
+                    newFile._id.toString(), newFile.contentType
                 );
 
-                await FileModel.findByIdAndUpdate(newFile._id, { url });
+                const fileDto = fileDocumentToFileMapper(newFile, url);
 
                 return {
                     status: StatusCodes.OK,
                     data: {
-                        file: {
-                            id: newFile._id.toString(),
-                            name: newFile.name,
-                            url: url,
-                            contentType: newFile.contentType,
-                            size: newFile.size,
-                            comment: newFile.comment,
-                            parentFolderId: newFile.parentFolderId,
-                        },
+                        file: fileDto,
                     },
                 };
             } catch (error) {

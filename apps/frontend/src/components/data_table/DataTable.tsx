@@ -18,6 +18,7 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {Checkbox} from "@workspace/ui/components/checkbox";
 import {cn} from "@workspace/ui/lib/utils";
+import {useDownloadFile} from "@/src/hooks/downloadFile";
 
 type Row = {
     select?: boolean;
@@ -49,6 +50,8 @@ export default function DataTable() {
         openUploadFileModal,
         openRenameFileModal,
     } = useContextMenu();
+
+    const {downloadFile} = useDownloadFile();
 
     const columnHelper = createColumnHelper<Row>();
 
@@ -301,6 +304,7 @@ export default function DataTable() {
                             >
                                 <TableRow
                                     className={rowClassNames}
+                                    onDoubleClick={() => downloadFile(item.id)}
                                 >
                                     {Cells()}
                                 </TableRow>

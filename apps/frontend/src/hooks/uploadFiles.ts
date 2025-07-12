@@ -37,7 +37,7 @@ export const useUploadFiles = () => {
                 });
 
                 try {
-                    await uploadToUrl({ file, uploadUrl: response.file.url });
+                    await uploadToUrl({ file, uploadUrl: response.file.url! });
                     results.push({ file, status: "success" });
                 } catch (uploadError) {
                     // TODO: Rollback

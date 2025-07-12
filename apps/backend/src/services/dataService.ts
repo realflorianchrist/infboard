@@ -45,7 +45,7 @@ export const getFolderContents = async (folderId: string): Promise<Folder | null
         ]);
 
         const subfolders = subfolderDocs.map(folderDocumentToFolderMapper);
-        const files = fileDocs.map(fileDocumentToFileMapper);
+        const files = fileDocs.map(f => fileDocumentToFileMapper(f));
 
         return {
             id: 'root',
@@ -64,7 +64,7 @@ export const getFolderContents = async (folderId: string): Promise<Folder | null
     ]);
 
     const subfolders = subfolderDocs.map(folderDocumentToFolderMapper);
-    const files = fileDocs.map(fileDocumentToFileMapper);
+    const files = fileDocs.map(f => fileDocumentToFileMapper(f));
 
     return {
         id: folderDoc._id.toString(),

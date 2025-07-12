@@ -18,7 +18,7 @@ export type NewFileInput = BaseFileMeta;
 
 export type FileMeta = BaseFileMeta & {
     id: string;
-    url: string;
+    url?: string;
     version?: number;
     updatedAt?: Date;
     userName?: string;
