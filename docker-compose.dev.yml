@@ -1,5 +1,6 @@
 services:
   backend:
+    container_name: backend
     image: registry.gitlab.com/realflorianchrist/infboard/backend-dev:latest
     ports:
       - "8080:8080"
@@ -7,6 +8,7 @@ services:
       - backend/.env
 
   frontend:
+    container_name: frontend
     image: registry.gitlab.com/realflorianchrist/infboard/frontend-dev:latest
     ports:
       - "80:3000"
