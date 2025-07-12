@@ -14,9 +14,7 @@ import {errorHandler} from "@src/middleware/errorHandler";
 
 // **** Configuration **** //
 const corsConfig: cors.CorsOptions | cors.CorsOptionsDelegate = {
-    origin: (origin, callback) => {
-        callback(null, true);
-    },
+    origin: ENV.FRONTEND_URL,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -38,12 +36,12 @@ if (ENV.NODE_ENV === NodeEnvs.Dev) {
 }
 
 // Security
-// if (ENV.NODE_ENV === NodeEnvs.Production) {
-//     // eslint-disable-next-line n/no-process-env
-//     if (!process.env.DISABLE_HELMET) {
-//         app.use(helmet());
-//     }
-// }
+if (ENV.NODE_ENV === NodeEnvs.Production) {
+    // eslint-disable-next-line n/no-process-env
+    if (!process.env.DISABLE_HELMET) {
+        app.use(helmet());
+    }
+}
 
 app.use(ApiRoutes.base, dispatcher);
 app.use(errorHandler);
