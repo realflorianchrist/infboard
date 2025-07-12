@@ -2,19 +2,25 @@ services:
   backend:
     container_name: backend
     image: registry.gitlab.com/realflorianchrist/infboard/backend-dev:latest
+    restart: always
     ports:
       - "8080:8080"
     env_file:
       - backend/.env
+    depends_on:
+      - mongo
+      - minio
 
   frontend:
     container_name: frontend
     image: registry.gitlab.com/realflorianchrist/infboard/frontend-dev:latest
+    restart: always
     ports:
       - "80:3000"
 
   minio:
     image: quay.io/minio/minio
+    restart: always
     ports:
       - "9000:9000"  # S3 API
       - "9001:9001"  # Web UI
@@ -24,9 +30,10 @@ services:
     volumes:
       - minio-data:/data
 
-  mongodb:
+  mongo:
     image: mongo
-    container_name: mongodb_lokal
+    container_name: mongo
+    restart: always
     ports:
       - "27017:27017"
     env_file:
@@ -39,10 +46,13 @@ services:
   mongo-express:
     image: mongo-express
     container_name: mongo_express
+    restart: always
     ports:
       - "8081:8081"
     env_file:
       - backend/db/.env
+    depends_on:
+      - mongo
 
 volumes:
   minio-data:
