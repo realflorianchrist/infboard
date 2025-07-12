@@ -20,7 +20,7 @@ export default function Navigation() {
             >
                 <Link
                     href={Routes.HOME}
-                    className={path === Routes.HOME ? 'text-accent' : ''}
+                    className={path.includes('folder') ? 'text-accent' : ''}
                 >
                     Daten
                 </Link>

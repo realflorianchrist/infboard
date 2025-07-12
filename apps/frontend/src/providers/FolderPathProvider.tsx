@@ -2,6 +2,7 @@
 import {createContext, useContext, useEffect, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {FolderPath, FolderPathSegment} from '@workspace/types/folderPath';
+import Routes from "@/src/constants/routes";
 
 type FolderPathContextType = {
     path: FolderPath;
@@ -13,68 +14,63 @@ type FolderPathContextType = {
 
 const FolderPathContext = createContext<FolderPathContextType | undefined>(undefined);
 
-const serializePath = (path: FolderPath): string =>
-    path.map(segment => JSON.stringify(segment)).join('.');
+const serializePathToUrl = (path: FolderPath): string => {
+    return '/folder/' + path.map(segment => encodeURIComponent(JSON.stringify(segment))).join('/');
+};
 
-const deserializePath = (param: string | null): FolderPath => {
-    if (!param) return [];
-    return param
-        .split('.')
-        .map(segment => {
-            try {
-                return JSON.parse(segment);
-            } catch {
-                return null;
-            }
-        })
-        .filter(Boolean) as FolderPath;
-}
+const deserializeUrlPath = (pathname: string): FolderPath => {
+    const folderPathPrefix = '/folder/';
+    if (!pathname.startsWith(folderPathPrefix)) return [];
+
+    const parts = pathname.slice(folderPathPrefix.length).split('/');
+    return parts.map(segment => {
+        try {
+            return JSON.parse(decodeURIComponent(segment));
+        } catch {
+            return null;
+        }
+    }).filter(Boolean) as FolderPath;
+};
 
 export const FolderPathProvider = ({children}: { children: React.ReactNode }) => {
     const pathname = usePathname();
     const router = useRouter();
-    const searchParams = useSearchParams();
 
-    const initialPath = deserializePath(searchParams.get('path'));
+    const initialPath = deserializeUrlPath(pathname);
 
     const [path, setPathState] = useState<FolderPath>(initialPath);
 
-    const updateUrlParam = (newPath: FolderPath) => {
-        const params = new URLSearchParams(Array.from(searchParams.entries()));
-        if (newPath.length > 0) {
-            params.set('path', serializePath(newPath));
-        } else {
-            params.delete('path');
-        }
-        router.replace(`${pathname}?${params.toString()}`);
+    const updateUrlPath = (newPath: FolderPath) => {
+        const newUrl = serializePathToUrl(newPath);
+        router.replace(newUrl);
     };
 
     const setPath = (newPath: FolderPath) => {
         setPathState(newPath);
-        updateUrlParam(newPath);
+        updateUrlPath(newPath);
     };
 
     const pushFolder = (segment: FolderPathSegment) => {
         const newPath = [...path, segment];
         setPathState(newPath);
-        updateUrlParam(newPath);
+        updateUrlPath(newPath);
     };
 
     const popFolder = () => {
         const newPath = path.slice(0, -1);
         setPathState(newPath);
-        updateUrlParam(newPath);
+        updateUrlPath(newPath);
     };
 
     const resetPath = () => {
         setPathState([]);
-        updateUrlParam([]);
+        router.push(Routes.HOME);
     };
 
     useEffect(() => {
-        const urlPath = deserializePath(searchParams.get('path'));
+        const urlPath = deserializeUrlPath(pathname);
         setPathState(urlPath);
-    }, [searchParams]);
+    }, [pathname]);
 
     return (
         <FolderPathContext.Provider value={{path, setPath, pushFolder, popFolder, resetPath}}>
