@@ -22,5 +22,18 @@ export const useGetFileDownloadUrl = () =>
         { id: string }
     >(
         (variables) => [baseRoute, ApiRoutes.files.downloadUrlById(variables.id)],
-        HttpMethod.POST,
+        HttpMethod.PUT,
+    );
+
+export const useDeleteFile = () =>
+    useApiMutation<
+        { success: boolean },
+        { id: string, parentFolderId: string | 'root' }
+    >(
+        (variables) => [baseRoute, ApiRoutes.files.delete(variables.id)],
+        HttpMethod.PUT,
+        {
+            invalidatePaths: (data, variables) =>
+                [`${ApiRoutes.folders.base}${ApiRoutes.folders.byId(variables.parentFolderId)}`],
+        }
     );

@@ -79,6 +79,7 @@ export default function DataTable() {
             userName: file.userName,
             version: file.version,
             comment: file.comment,
+            downloads: file.downloads,
             size: file.size,
         }));
 
