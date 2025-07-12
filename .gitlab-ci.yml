@@ -62,7 +62,7 @@ deploy-dev:
       docker compose up -d --remove-orphans &&
       docker image prune -af
       '
-  #  dependencies:
+  dependencies:
     - build-backend
     - build-frontend
   only:

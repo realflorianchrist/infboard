@@ -19,9 +19,8 @@ services:
       - "9000:9000"  # S3 API
       - "9001:9001"  # Web UI
     command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+    env_file:
+      - backend/s3/.env
     volumes:
       - minio-data:/data
 
@@ -30,10 +29,8 @@ services:
     container_name: mongodb_lokal
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: infboard_db
+    env_file:
+      - backend/db/.env
     volumes:
       - mongo_data:/data/db
       - mongo_config:/data/configdb
@@ -44,10 +41,8 @@ services:
     container_name: mongo_express
     ports:
       - "8081:8081"
-    environment:
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: password
-      ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongodb:27017/
+    env_file:
+      - backend/db/.env
 
 volumes:
   minio-data:
