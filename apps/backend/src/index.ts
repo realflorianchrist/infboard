@@ -14,7 +14,9 @@ import {errorHandler} from "@src/middleware/errorHandler";
 
 // **** Configuration **** //
 const corsConfig: cors.CorsOptions | cors.CorsOptionsDelegate = {
-    origin: ENV.FRONTEND_URL,
+    origin: (origin, callback) => {
+        callback(null, true);
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
