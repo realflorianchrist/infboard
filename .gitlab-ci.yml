@@ -53,14 +53,15 @@ deploy-dev:
     - echo -e "Host *\n  StrictHostKeyChecking no\n  IdentityFile ~/.ssh/id_ed25519_gitlabci" > ~/.ssh/config
     - chmod 600 ~/.ssh/config
   script:
-    - mkdir -p ~/.docker
-    - echo "$DOCKER_AUTH_CONFIG" > ~/.docker/config.json
-    - docker login $CI_REGISTRY
-    - export COMPOSE_FILE=docker-compose.dev.yml
-    - docker compose down
-    - docker compose pull
-    - docker compose up -d
-    - docker image prune -a -f
+    - ssh $DEPLOY_USER@$DEPLOY_HOST 'mkdir -p ~/.docker'
+    - echo "$DOCKER_AUTH_CONFIG" | ssh $DEPLOY_USER@$DEPLOY_HOST 'cat > ~/.docker/config.json'
+    - scp docker-compose.dev.yml $DEPLOY_USER@$DEPLOY_HOST:/opt/infboard/docker-compose.yml
+    - ssh $DEPLOY_USER@$DEPLOY_HOST '
+      cd /opt/infboard &&
+      docker compose pull &&
+      docker compose up -d --remove-orphans &&
+      docker image prune -af
+      '
   #  dependencies:
 #    - build-backend
 #    - build-frontend

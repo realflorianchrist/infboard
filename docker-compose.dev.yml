@@ -3,37 +3,8 @@ services:
     image: registry.gitlab.com/realflorianchrist/infboard/backend-dev:latest
     ports:
       - "8080:8080"
-    environment:
-      # Environment
-      NODE_ENV: production
-
-      # Server
-      PORT: 8080
-      HOST: 89.119.48.9
-
-      # Frontend
-      FRONTEND_URL: http://89.119.48.9:80
-
-      # Jet Logger
-      JET_LOGGER_MODE: CONSOLE
-      JET_LOGGER_FILEPATH: jet-logger.log
-      JET_LOGGER_TIMESTAMP: "TRUE"
-      JET_LOGGER_FORMAT: LINE
-
-      # MongoDB
-      MONGO_HOST: localhost:27017
-      MONGO_DATABASE: infboard_db
-      MONGO_USER: infboardUser
-      MONGO_PASSWORD: password
-
-      # S3 / MinIO
-      S3_REGION: us-east-1
-      S3_ENDPOINT: http://localhost:9000
-      S3_ACCESS_KEY: minioadmin
-      S3_SECRET_KEY: minioadmin
-      S3_BUCKET: infboard-bucket
-      S3_UPLOAD_FOLDER: upload
-      S3_EXPIRE_URL_SECONDS: 60
+    env_file:
+      - backend/.env
 
   frontend:
     image: registry.gitlab.com/realflorianchrist/infboard/frontend-dev:latest
