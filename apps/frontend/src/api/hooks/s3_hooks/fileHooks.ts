@@ -6,8 +6,8 @@ type UploadToUrlArgs = {
     uploadUrl: string;
 };
 
-export const usePutFileToUrl = () => {
-    return useMutation<void, Error, UploadToUrlArgs>({
+export const usePutFileToUrl = () =>
+    useMutation<void, Error, UploadToUrlArgs>({
         mutationFn: async ({file, uploadUrl}) => {
             const res = await fetch(uploadUrl, {
                 method: HttpMethod.PUT,
@@ -22,7 +22,21 @@ export const usePutFileToUrl = () => {
             }
         }
     });
-};
+
+export const useGetFileFromUrl = () =>
+    useMutation<Blob, Error, { url: string }>({
+        mutationFn: async ({url}) => {
+            const res = await fetch(url, {
+                method: HttpMethod.GET,
+            });
+
+            if (!res.ok) {
+                throw new Error("Download failed");
+            }
+
+            return res.blob();
+        }
+    });
 
 // export const useDeleteFileFromUrl = () => {
 //     return useMutation<void, Error, { url: string }>({

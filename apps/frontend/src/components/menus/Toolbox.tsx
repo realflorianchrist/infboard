@@ -4,6 +4,7 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import menuOptions from "@/src/constants/menuOptions";
 import {DropdownMenu} from "@workspace/ui/components/dropdown-menu";
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
+import {useDownloadFile} from "@/src/hooks/downloadFile";
 
 export default function Toolbox() {
 
@@ -12,6 +13,7 @@ export default function Toolbox() {
         openRenameFolderModal,
         openDeleteFolderModal,
         openDeleteFileModal,
+        isSelectMode,
         selected,
         isSelected,
         setSelected,
@@ -21,12 +23,28 @@ export default function Toolbox() {
         openRenameFileModal,
     } = useContextMenu();
 
+    const {downloadFile, downloadFiles} = useDownloadFile();
+
     const {path} = useFolderPath();
 
     const folderId = path[path.length - 1]?.id ?? null;
 
     return (
         <div className={'flex gap-2'}>
+            {isSelectMode && (
+                <Button
+                    variant={'secondary'}
+                    onClick={() => {
+                        if (selected.length === 1 && selected[0]) {
+                            downloadFile(selected[0].id);
+                        } else if (selected.length > 1) {
+                            downloadFiles(selected.map((item) => item.id));
+                        }
+                    }}
+                >
+                    {menuOptions.download}
+                </Button>
+            )}
             <Button
                 variant={'secondary'}
                 onClick={() => openNewFolderModal(folderId)}

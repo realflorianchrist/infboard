@@ -25,7 +25,6 @@ export default function TreeNode(
         openRenameFolderModal,
         openDeleteFolderModal,
         setSelected,
-        addSelected,
         openUploadFileModal,
     } = useContextMenu();
 

@@ -18,7 +18,7 @@ export const useAddFile = () =>
 
 export const useGetFileDownloadUrl = () =>
     useApiMutation<
-        { url: string },
+        { url: string, file: FileMeta },
         { id: string }
     >(
         (variables) => [baseRoute, ApiRoutes.files.downloadUrlById(variables.id)],

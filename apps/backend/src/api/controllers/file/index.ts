@@ -54,23 +54,28 @@ fileController.post(
 
 fileController.put(
     ApiRoutes.files.downloadUrlById(':id'),
-    handleRequest<{ id: string }, { url: string }>(
+    handleRequest<{}, { url: string, file: FileMeta }, { id: string }>(
         async (req) => {
 
-            const {id} = req.body;
+            const {id} = req.params;
 
             const url = await generatePresignedDownloadUrl(id);
 
-            await FileModel.findByIdAndUpdate(
+            const fileDoc = await FileModel.findByIdAndUpdate(
                 id,
                 {$inc: {downloads: 1}},
-                {timestamps: false}
+                {timestamps: false, new: true},
             );
+
+            if (!fileDoc) {
+                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            }
 
             return {
                 status: StatusCodes.OK,
                 data: {
                     url: url,
+                    file: fileDocumentToFileMapper(fileDoc)
                 },
             };
         }
@@ -79,15 +84,15 @@ fileController.put(
 
 fileController.put(
     ApiRoutes.files.delete(':id'),
-    handleRequest<{ id: string }, { success: boolean }>(
+    handleRequest<{}, { success: boolean }, { id: string }>(
         async (req) => {
 
-            const {id} = req.body;
+            const {id} = req.params;
 
             await FileModel.findByIdAndUpdate(
                 id,
-                { $set: { deleted: true } },
-                { timestamps: false }
+                {$set: {deleted: true}},
+                {timestamps: false}
             );
 
             return {

@@ -1,6 +1,6 @@
 'use client'
 import {createContext, useContext, useEffect, useState} from 'react';
-import {usePathname, useRouter, useSearchParams} from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 import {FolderPath, FolderPathSegment} from '@workspace/types/folderPath';
 import Routes from "@/src/constants/routes";
 
