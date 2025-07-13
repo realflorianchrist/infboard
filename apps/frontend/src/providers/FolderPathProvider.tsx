@@ -42,7 +42,7 @@ export const FolderPathProvider = ({children}: { children: React.ReactNode }) =>
 
     const updateUrlPath = (newPath: FolderPath) => {
         const newUrl = serializePathToUrl(newPath);
-        router.replace(newUrl);
+        router.push(newUrl);
     };
 
     const setPath = (newPath: FolderPath) => {
