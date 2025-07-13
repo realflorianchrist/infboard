@@ -12,7 +12,7 @@ export default function DeleteFileModal() {
     const handleDelete = () => {
         if (!deleteFileModal.fileId) return;
 
-        mutate({id: deleteFileModal.fileId, parentFolderId: deleteFileModal.parentFolderId ?? 'root'}, {
+        mutate({id: deleteFileModal.fileId}, {
             onSuccess: () => closeDeleteFileModal()
         });
     };

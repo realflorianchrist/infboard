@@ -27,13 +27,13 @@ export const useGetFileDownloadUrl = () =>
 
 export const useDeleteFile = () =>
     useApiMutation<
-        { success: boolean },
-        { id: string, parentFolderId: string | 'root' }
+        { file: FileMeta },
+        { id: string }
     >(
         (variables) => [baseRoute, ApiRoutes.files.delete(variables.id)],
         HttpMethod.PUT,
         {
-            invalidatePaths: (data, variables) =>
-                [`${ApiRoutes.folders.base}${ApiRoutes.folders.byId(variables.parentFolderId)}`],
+            invalidatePaths: (data) =>
+                [`${ApiRoutes.folders.base}${ApiRoutes.folders.byId(data.file.parentFolderId ?? 'root')}`],
         }
     );

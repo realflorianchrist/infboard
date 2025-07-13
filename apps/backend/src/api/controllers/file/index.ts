@@ -84,21 +84,25 @@ fileController.put(
 
 fileController.put(
     ApiRoutes.files.delete(':id'),
-    handleRequest<{}, { success: boolean }, { id: string }>(
+    handleRequest<{}, { file: FileMeta }, { id: string }>(
         async (req) => {
 
             const {id} = req.params;
 
-            await FileModel.findByIdAndUpdate(
+            const fileDoc = await FileModel.findByIdAndUpdate(
                 id,
                 {$set: {deleted: true}},
                 {timestamps: false}
             );
 
+            if (!fileDoc) {
+                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            }
+
             return {
                 status: StatusCodes.OK,
                 data: {
-                    success: true,
+                    file: fileDocumentToFileMapper(fileDoc)
                 },
             };
         }

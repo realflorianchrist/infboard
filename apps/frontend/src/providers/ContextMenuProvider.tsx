@@ -19,8 +19,8 @@ type ContextMenuContextType = {
     openDeleteFolderModal: (folderId: string) => void;
     closeDeleteFolderModal: () => void;
 
-    deleteFileModal: { open: boolean; fileId: string | null, parentFolderId: string | null };
-    openDeleteFileModal: (fileId: string, parentFolderId?: string) => void;
+    deleteFileModal: { open: boolean; fileId: string | null };
+    openDeleteFileModal: (fileId: string) => void;
     closeDeleteFileModal: () => void;
 
     uploadFileModal: { open: boolean; parentFolderId: string | null };
@@ -68,15 +68,9 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
         folderId: null,
     });
 
-    const [deleteFileModal, setDeleteFileModal] = useState<
-        {
-            open: boolean;
-            fileId: string | null,
-            parentFolderId: string | null
-        }>({
+    const [deleteFileModal, setDeleteFileModal] = useState<{ open: boolean; fileId: string | null, }>({
         open: false,
         fileId: null,
-        parentFolderId: null,
     });
 
     const [uploadFileModal, setUploadFileModal] = useState<{ open: boolean; parentFolderId: string | null }>({
@@ -108,8 +102,8 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
                 closeDeleteFolderModal: () => setDeleteFolderModal({open: false, folderId: null}),
 
                 deleteFileModal,
-                openDeleteFileModal: (id, parentFolderId) => setDeleteFileModal({open: true, fileId: id, parentFolderId: parentFolderId ?? null}),
-                closeDeleteFileModal: () => setDeleteFileModal({open: false, fileId: null, parentFolderId: null}),
+                openDeleteFileModal: (id) => setDeleteFileModal({open: true, fileId: id}),
+                closeDeleteFileModal: () => setDeleteFileModal({open: false, fileId: null}),
 
                 uploadFileModal,
                 openUploadFileModal: (id) => setUploadFileModal({open: true, parentFolderId: id}),
