@@ -14,5 +14,6 @@ export const fileDocumentToFileMapper = (fileDocument: FileDocument, url?: strin
         meta: fileDocument.meta,
         comment: fileDocument.comment,
         downloads: fileDocument.downloads,
+        parentFolderId: fileDocument.parentFolderId,
     }
 }
