@@ -29,13 +29,16 @@ export default function TreeNode(
         openUploadFileModal,
     } = useContextMenu();
 
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return sessionStorage.getItem(`open-${folder.id}`) === 'true';
+        }
+        return false;
+    });
 
     useEffect(() => {
-        if (!isOpen) {
-            setIsOpen(path.some(s => s.id === folder.id));
-        }
-    }, [path]);
+        sessionStorage.setItem(`open-${folder.id}`, isOpen.toString());
+    }, [isOpen]);
 
     return (
         <div>
@@ -65,7 +68,7 @@ export default function TreeNode(
                         <div className="w-4"/>
                     )}
                     <div
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 flex-1"
                         onClick={() => {
                             setPath([...parents, {id: folder.id, name: folder.name}]);
                             setSelected([]);
