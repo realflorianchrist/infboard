@@ -19,18 +19,19 @@ import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {Checkbox} from "@workspace/ui/components/checkbox";
 import {cn} from "@workspace/ui/lib/utils";
 import {useDownloadFile} from "@/src/hooks/downloadFile";
+import {formateDate, formatFileSize} from "@/src/utils/formatter";
 
 type Row = {
     select?: boolean;
     id: string;
     name: string;
     type: 'folder' | 'file';
-    updatedAt?: Date;
+    updatedAt?: string;
     userName?: string;
     version?: number;
     comment?: string;
     downloads?: number;
-    size?: number;
+    size?: string;
     // meta?: string[];
 }
 
@@ -75,12 +76,12 @@ export default function DataTable() {
             id: file.id,
             name: file.name,
             type: 'file',
-            updatedAt: file.updatedAt,
+            updatedAt: formateDate(file.updatedAt),
             userName: file.userName,
             version: file.version,
             comment: file.comment,
             downloads: file.downloads,
-            size: file.size,
+            size: formatFileSize(file.size),
         }));
 
         setData([...folderRows, ...fileRows]);
@@ -172,7 +173,7 @@ export default function DataTable() {
         }),
         columnHelper.accessor('version', {
             header: () => <span className={'truncate'}>Version</span>,
-            size: 150,
+            size: 100,
             minSize: 75,
             maxSize: 300,
         }),
@@ -184,13 +185,13 @@ export default function DataTable() {
         }),
         columnHelper.accessor('downloads', {
             header: () => <span className={'truncate'}>Downloads</span>,
-            size: 150,
+            size: 120,
             minSize: 75,
             maxSize: 300,
         }),
         columnHelper.accessor('size', {
             header: () => <span className={'truncate'}>Grösse</span>,
-            size: 150,
+            size: 100,
             minSize: 75,
             maxSize: 300,
         }),
