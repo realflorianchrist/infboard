@@ -29,7 +29,7 @@ export const useFolderPath = () => {
         path: FolderPath = []
     ): FolderPath | null => {
         for (const folder of folders) {
-            const currentPath = [...path, { id: folder.id, name: folder.name }];
+            const currentPath = [...path, {id: folder.id, name: folder.name}];
             if (folder.id === id) return currentPath;
 
             const result = findFolderPathById(folder.children ?? [], id, currentPath);
@@ -38,8 +38,8 @@ export const useFolderPath = () => {
         return null;
     };
 
-    const resolvePathSegments = (paths: string[]): FolderPath => {
-        let currentLevel = folderTree.folders;
+    const resolvePathSegments = (folders: Folder[], paths: string[]): FolderPath => {
+        let currentLevel = folders;
         const resolved: FolderPath = [];
 
         for (const name of paths) {
@@ -57,7 +57,8 @@ export const useFolderPath = () => {
     };
 
     const path: FolderPath = folderTree
-        ? resolvePathSegments(pathname
+        ? resolvePathSegments(folderTree.folders,
+            pathname
             .replace('/folder/', '')
             .split('/')
             .map(decodeURIComponent)
