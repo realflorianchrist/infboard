@@ -7,6 +7,7 @@ import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import Toolbox from "@/src/components/menus/Toolbox";
+import {DndContext, DragEndEvent} from "@dnd-kit/core";
 
 
 export default function FolderPage() {
@@ -17,8 +18,21 @@ export default function FolderPage() {
 
     const {path} = useFolderPath();
 
+    const handleDragEnd = (event: DragEndEvent) => {
+        const {active, over} = event;
+        if (!active || !over) return;
+
+        const draggedId = active.id as string;
+        const targetFolderId = over.id as string;
+
+        if (draggedId && targetFolderId && draggedId !== targetFolderId) {
+            // todo: handle drop
+            console.log(`Move item ${draggedId} to folder ${targetFolderId}`);
+        }
+    }
+
     return (
-        <>
+        <DndContext onDragEnd={handleDragEnd}>
             <div className={'mb-4 flex items-center w-full justify-between'}>
                 <FolderPathCrumbs withLinks={true}/>
                 <div className={'right-0 relative'}>
@@ -56,6 +70,6 @@ export default function FolderPage() {
                     </DataContextMenu>
                 </ResizablePanel>
             </ResizablePanelGroup>
-        </>
+        </DndContext>
     );
 }

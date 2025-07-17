@@ -7,6 +7,8 @@ import {FolderPathSegment} from "@workspace/types/folderPath";
 import {IoFolderOutline} from "react-icons/io5";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
+import {useDroppable} from "@dnd-kit/core";
+import {cn} from "@workspace/ui/lib/utils";
 
 export default function TreeNode(
     {
@@ -28,6 +30,8 @@ export default function TreeNode(
         openUploadFileModal,
     } = useContextMenu();
 
+    const {setNodeRef, isOver} = useDroppable({id: folder.id});
+
     const [isOpen, setIsOpen] = useState(() => {
         if (typeof window !== 'undefined') {
             return sessionStorage.getItem(`open-${folder.id}`) === 'true';
@@ -40,7 +44,10 @@ export default function TreeNode(
     }, [isOpen]);
 
     return (
-        <div>
+        <div
+            ref={setNodeRef}
+            className={cn("p-1 rounded", isOver && "bg-accent")}
+        >
             <DataContextMenu
                 onNewFolder={() => openNewFolderModal(folder.id)}
                 onRename={() => openRenameFolderModal(folder.id, folder.name)}

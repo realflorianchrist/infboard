@@ -20,6 +20,7 @@ import {Checkbox} from "@workspace/ui/components/checkbox";
 import {cn} from "@workspace/ui/lib/utils";
 import {useDownloadFile} from "@/src/hooks/downloadFile";
 import {formateDate, formatFileSize} from "@/src/utils/formatter";
+import {useDraggable} from "@dnd-kit/core";
 
 type Row = {
     select?: boolean;
@@ -143,10 +144,23 @@ export default function DataTable() {
             header: () => <span className={'truncate'}>Name</span>,
             cell: (info) => {
                 const row = info.row.original;
+
+                const {attributes, listeners, setNodeRef, isDragging} = useDraggable({
+                    id: row.id,
+                    disabled: row.type === 'folder',
+                });
+
                 return (
                     <div
-                        className="flex items-center gap-2 overflow-hidden max-w-full"
+                        ref={setNodeRef}
+                        {...attributes}
+                        {...listeners}
                         title={row.name}
+                        className={cn(
+                            'flex items-center gap-2 overflow-hidden max-w-full',
+                            'cursor-grab active:cursor-grabbing',
+                            isDragging && 'opacity-50'
+                        )}
                     >
                         <span className="shrink-0">
                             {row.type === 'folder' ? <IoFolderOutline/> : <GoFile/>}
