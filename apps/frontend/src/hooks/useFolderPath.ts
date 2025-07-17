@@ -59,9 +59,9 @@ export const useFolderPath = () => {
     const path: FolderPath = folderTree
         ? resolvePathSegments(folderTree.folders,
             pathname
-            .replace('/folder/', '')
-            .split('/')
-            .map(decodeURIComponent)
+                .replace('/folder/', '')
+                .split('/')
+                .map(decodeURIComponent)
         )
         : [];
 
