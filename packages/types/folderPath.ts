@@ -1,6 +1,6 @@
 export type FolderPathSegment = {
     id: string;
-    name?: string;
+    name: string;
 };
 
 export type FolderPath = FolderPathSegment[];

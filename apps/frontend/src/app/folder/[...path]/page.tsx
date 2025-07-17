@@ -5,8 +5,8 @@ import {FolderPathCrumbs} from "@/src/components/FolderPathCrumbs";
 import DataTable from "@/src/components/data_table/DataTable";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
-import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import Toolbox from "@/src/components/menus/Toolbox";
+import {useFolderPath} from "@/src/hooks/useFolderPath";
 
 
 export default function FolderPage() {

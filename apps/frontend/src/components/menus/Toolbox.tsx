@@ -3,8 +3,8 @@ import {Button} from "@workspace/ui/components/button";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import menuOptions from "@/src/constants/menuOptions";
 import {DropdownMenu} from "@workspace/ui/components/dropdown-menu";
-import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {useDownloadFile} from "@/src/hooks/downloadFile";
+import {useFolderPath} from "@/src/hooks/useFolderPath";
 
 export default function Toolbox() {
 
