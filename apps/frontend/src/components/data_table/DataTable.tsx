@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@workspace/ui/components/table";
 import {useEffect, useState} from "react";
-import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {IoFolderOutline} from "react-icons/io5";
 import {GoFile} from "react-icons/go";
 import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
@@ -20,6 +19,7 @@ import {Checkbox} from "@workspace/ui/components/checkbox";
 import {cn} from "@workspace/ui/lib/utils";
 import {useDownloadFile} from "@/src/hooks/downloadFile";
 import {formateDate, formatFileSize} from "@/src/utils/formatter";
+import {useFolderPath} from "@/src/hooks/useFolderPath";
 
 type Row = {
     select?: boolean;
@@ -37,7 +37,7 @@ type Row = {
 
 
 export default function DataTable() {
-    const {path, pushFolder} = useFolderPath();
+    const {path, pushFolderById} = useFolderPath();
     const {
         openNewFolderModal,
         openRenameFolderModal,
@@ -59,7 +59,7 @@ export default function DataTable() {
     const [data, setData] = useState<Row[]>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const folderId = path?.[path.length - 1]?.id;
+    const folderId = path[path.length - 1]?.id;
     const {data: result} = useGetFolderDataById(folderId ?? 'root');
 
     useEffect(() => {
@@ -287,7 +287,7 @@ export default function DataTable() {
                                 <TableRow
                                     className={rowClassNames}
                                     onDoubleClick={() => {
-                                        pushFolder({id: item.id, name: item.name});
+                                        pushFolderById(item.id);
                                         setSelected([]);
                                     }}
                                 >

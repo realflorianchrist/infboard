@@ -6,8 +6,8 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator
 } from "@workspace/ui/components/breadcrumb";
-import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {Fragment} from "react";
+import { useFolderPath } from "../hooks/useFolderPath";
 
 export function FolderPathCrumbs({withLinks}: { withLinks?: boolean }) {
 
