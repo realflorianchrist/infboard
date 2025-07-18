@@ -1,4 +1,5 @@
 import {ApiErrorResponse, ApiResponse, ErrorType} from "@workspace/types/apiResponses";
+import {ValidationErrorType} from "@workspace/types/modelValidation";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
 
@@ -6,6 +7,15 @@ export type FetchOptions = Omit<RequestInit, "method"> & {
     method?: HttpMethod;
     params?: Record<string, string | number>;
 };
+
+export class ApiClientError extends Error {
+    constructor(
+        public errorType: ErrorType,
+        public validationErrors?: ValidationErrorType[]
+    ) {
+        super(errorType);
+    }
+}
 
 export const apiFetch = async <T>(
     endpoint: string,
@@ -40,19 +50,22 @@ export const apiFetch = async <T>(
         responseData = await response.json();
     } catch (error) {
         console.error("JSON parsing failed:", error);
-        throw ErrorType.API_ERROR;
+        throw new ApiClientError(ErrorType.API_ERROR);
     }
 
     if (!responseData) {
         console.error("Empty or null JSON response.");
-        throw ErrorType.API_ERROR;
+        throw new ApiClientError(ErrorType.API_ERROR);
     }
 
     if (!response.ok) {
         if (isApiErrorResponse(responseData)) {
-            throw responseData.errorType;
+            throw new ApiClientError(
+                responseData.errorType,
+                responseData.validationErrors
+            );
         }
-        throw ErrorType.API_ERROR;
+        throw new ApiClientError(ErrorType.API_ERROR);
     }
 
     assertSuccessResponse(responseData);

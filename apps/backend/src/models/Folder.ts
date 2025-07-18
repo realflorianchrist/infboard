@@ -1,4 +1,4 @@
-import {z} from 'zod/v4';
+import {z} from 'zod';
 import {model, Schema, Types, Document} from 'mongoose';
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {FolderValidationErrorType} from "@workspace/types/modelValidation";

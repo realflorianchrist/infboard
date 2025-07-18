@@ -1,14 +1,32 @@
-import {z} from 'zod/v4';
+import {z} from 'zod';
 import {model, Schema, Types, Document, Query} from 'mongoose';
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {FileValidationErrorType} from "@workspace/types/modelValidation";
+
 
 export const FileSchema = z.object({
     id: z.string().optional(),
     created: z.date().optional(),
-    name: z.string(),
-    version: z.number().optional(),
-    contentType: z.string(),
-    size: z.number().optional(),
+
+    name: z.string()
+        .min(1, { message: FileValidationErrorType.NAME_EMPTY })
+        .max(100, { message: FileValidationErrorType.NAME_TOO_LONG }),
+
+    version: z.number()
+        .optional()
+        .refine(val => val === undefined || val >= 0, {
+            message: FileValidationErrorType.VERSION_NEGATIVE,
+        }),
+
+    contentType: z.string()
+        .min(1, { message: FileValidationErrorType.CONTENT_TYPE_EMPTY }),
+
+    size: z.number()
+        .optional()
+        .refine(val => val === undefined || val >= 0, {
+            message: FileValidationErrorType.SIZE_NEGATIVE,
+        }),
+
     updatedAt: z.date().optional(),
     userName: z.string().optional(),
     meta: z.array(z.string()).optional(),

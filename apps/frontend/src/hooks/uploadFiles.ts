@@ -3,6 +3,7 @@ import { useAddFile } from "@/src/api/hooks/api_hooks/fileHooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { ApiRoutes } from "@workspace/routes/apiRoutes";
 import { usePutFileToUrl } from "@/src/api/hooks/s3_hooks/fileHooks";
+import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 
 type UploadResult = {
     file: File;
@@ -64,7 +65,7 @@ export const useUploadFiles = () => {
 
         await queryClient.invalidateQueries({
             queryKey: [
-                `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? "root")}`,
+                `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
             ],
         });
 
