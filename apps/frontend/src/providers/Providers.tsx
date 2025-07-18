@@ -11,9 +11,9 @@ export default function Providers({children}: Readonly<PropsWithChildren>) {
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
                 <Suspense>
-                        <ContextMenuProvider>
-                            {children}
-                        </ContextMenuProvider>
+                    <ContextMenuProvider>
+                        {children}
+                    </ContextMenuProvider>
                 </Suspense>
             </ThemeProvider>
         </QueryClientProvider>

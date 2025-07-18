@@ -1,5 +1,6 @@
-import { z } from 'zod/v4';
+import {z} from 'zod/v4';
 import {model, Schema, Types, Document, Query} from 'mongoose';
+import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 
 export const FileSchema = z.object({
     id: z.string().optional(),
@@ -13,22 +14,11 @@ export const FileSchema = z.object({
     meta: z.array(z.string()).optional(),
     comment: z.string().optional(),
     downloads: z.number().optional(),
-    parentFolderId: z.string().optional(),
+    parentFolderId: z.string().default(ROOT_FOLDER_ID),
     deleted: z.boolean().optional(),
 });
 
 export type IFile = z.infer<typeof FileSchema>;
-
-export const newFile = (input: Partial<IFile> = {}): IFile => {
-    return FileSchema.parse({
-        id: undefined,
-        created: new Date(),
-        url: '',
-        name: '',
-        contentType: '',
-        ...input,
-    });
-};
 
 export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
     _id: Types.ObjectId;
@@ -37,7 +27,7 @@ export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
 
 const FileMongooseSchema = new Schema<FileDocument>(
     {
-        name: { type: String, required: true },
+        name: {type: String, required: true},
         version: {type: Number, default: 1},
         contentType: String,
         size: Number,
@@ -46,13 +36,13 @@ const FileMongooseSchema = new Schema<FileDocument>(
         meta: [String],
         comment: String,
         downloads: {type: Number, default: 0},
-        parentFolderId: { type: Schema.Types.ObjectId, ref: 'Folder' },
-        deleted: { type: Boolean, default: false },
+        parentFolderId: {type: String, default: ROOT_FOLDER_ID},
+        deleted: {type: Boolean, default: false},
     },
     {
-        timestamps: { createdAt: 'created', updatedAt: 'updatedAt' },
-        toJSON: { virtuals: true },
-        toObject: { virtuals: true },
+        timestamps: {createdAt: 'created', updatedAt: 'updatedAt'},
+        toJSON: {virtuals: true},
+        toObject: {virtuals: true},
     }
 );
 
@@ -61,9 +51,9 @@ const softDeletePlugin = (schema: Schema) => {
         const queryFilter = this.getFilter();
 
         if (!queryFilter.includeDeleted) {
-            this.where({ deleted: false });
+            this.where({deleted: false});
         } else {
-            const { includeDeleted, ...rest } = queryFilter;
+            const {includeDeleted, ...rest} = queryFilter;
             this.setQuery(rest);
         }
 
@@ -73,8 +63,14 @@ const softDeletePlugin = (schema: Schema) => {
 
 FileMongooseSchema.plugin(softDeletePlugin);
 
+FileMongooseSchema.index({name: 1, parentFolderId: 1}, {unique: true});
+
 FileMongooseSchema.virtual('id').get(function (this: FileDocument) {
     return this._id.toHexString();
 });
 
 export const FileModel = model<FileDocument>('File', FileMongooseSchema);
+
+// (async () => {
+//     await FileModel.syncIndexes();
+// })();
