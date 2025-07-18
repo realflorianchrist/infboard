@@ -33,8 +33,8 @@ export default function FolderPage() {
                     className={'h-full'}
                 >
                     <DataContextMenu
-                        onNewFolder={() => openNewFolderModal(null)}
-                        onUploadFile={() => openUploadFileModal(null)}
+                        onNewFolder={() => openNewFolderModal()}
+                        onUploadFile={() => openUploadFileModal()}
                     >
                         <div className={'h-full overflow-auto'}>
                             <Treeview/>
@@ -47,8 +47,8 @@ export default function FolderPage() {
                     className={'h-full'}
                 >
                     <DataContextMenu
-                        onNewFolder={() => openNewFolderModal(path[path.length - 1]?.id ?? null)}
-                        onUploadFile={() => openUploadFileModal(path[path.length - 1]?.id ?? null)}
+                        onNewFolder={() => openNewFolderModal(path[path.length - 1]?.id)}
+                        onUploadFile={() => openUploadFileModal(path[path.length - 1]?.id)}
                     >
                         <div className={'flex h-full pl-4 overflow-auto'}>
                             <DataTable/>

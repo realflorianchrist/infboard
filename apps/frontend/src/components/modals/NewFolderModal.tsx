@@ -25,7 +25,9 @@ export default function NewFolderModal() {
 
     const handleAddNewFolder = () => {
 
-        mutate({name, parentFolderId: newFolderModal.parentFolderId}, {
+        console.log(newFolderModal?.parentFolderId);
+
+        mutate({name, parentFolderId: newFolderModal?.parentFolderId}, {
             onSuccess: () => close()
         });
     };

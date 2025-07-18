@@ -45,7 +45,7 @@ folderController.get(
 
 folderController.post(
     ApiRoutes.folders.add,
-    handleRequest<{ name: string, parentFolderId: string | null }, { folder: Folder }>(
+    handleRequest<{ name: string, parentFolderId?: string }, { folder: Folder }>(
         async (req) => {
 
             const {name, parentFolderId} = req.body;

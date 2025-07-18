@@ -36,7 +36,7 @@ const FileMongooseSchema = new Schema<FileDocument>(
         meta: [String],
         comment: String,
         downloads: {type: Number, default: 0},
-        parentFolderId: {type: String, default: ROOT_FOLDER_ID},
+        parentFolderId: {type: String, required: true, default: ROOT_FOLDER_ID},
         deleted: {type: Boolean, default: false},
     },
     {

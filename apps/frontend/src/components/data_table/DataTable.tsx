@@ -20,6 +20,7 @@ import {cn} from "@workspace/ui/lib/utils";
 import {useDownloadFile} from "@/src/hooks/downloadFile";
 import {formateDate, formatFileSize} from "@/src/utils/formatter";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
+import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 
 type Row = {
     select?: boolean;
@@ -60,7 +61,7 @@ export default function DataTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const folderId = path[path.length - 1]?.id;
-    const {data: result} = useGetFolderDataById(folderId ?? 'root');
+    const {data: result} = useGetFolderDataById(folderId ?? ROOT_FOLDER_ID);
 
     useEffect(() => {
         const currentFolder = result?.folder;

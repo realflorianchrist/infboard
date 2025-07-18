@@ -1,7 +1,7 @@
 import {Folder} from "@workspace/types/data";
 import {FolderPath} from "@workspace/types/folderPath";
 
-const findPathInTree = (tree: Folder[] | null, targetId: string | null): FolderPath | null => {
+const findPathInTree = (tree: Folder[] | null, targetId?: string): FolderPath | null => {
     if (!tree || !targetId) return null;
 
     for (const node of tree) {

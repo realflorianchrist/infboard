@@ -3,8 +3,8 @@ import {createContext, useContext, useEffect, useState} from "react";
 import {Folder, FileMeta} from "@workspace/types/data";
 
 type ContextMenuContextType = {
-    newFolderModal: { open: boolean; parentFolderId: string | null; };
-    openNewFolderModal: (parentFolderId: string | null) => void;
+    newFolderModal: { open: boolean; parentFolderId?: string; };
+    openNewFolderModal: (parentFolderId?: string) => void;
     closeNewFolderModal: () => void;
 
     renameFolderModal: { open: boolean; folderId: string | null; folderName: string | null };
@@ -23,8 +23,8 @@ type ContextMenuContextType = {
     openDeleteFileModal: (fileId: string) => void;
     closeDeleteFileModal: () => void;
 
-    uploadFileModal: { open: boolean; parentFolderId: string | null };
-    openUploadFileModal: (parentFolderId: string | null) => void;
+    uploadFileModal: { open: boolean; parentFolderId?: string };
+    openUploadFileModal: (parentFolderId?: string) => void;
     closeUploadFileModal: () => void;
 
     isSelectMode: boolean;
@@ -38,9 +38,8 @@ type ContextMenuContextType = {
 const ContextMenuContext = createContext<ContextMenuContextType | undefined>(undefined);
 
 export const ContextMenuProvider = ({children}: { children: React.ReactNode }) => {
-    const [newFolderModal, setNewFolderModal] = useState<{ open: boolean; parentFolderId: string | null; }>({
+    const [newFolderModal, setNewFolderModal] = useState<{ open: boolean; parentFolderId?: string; }>({
         open: false,
-        parentFolderId: null,
     });
 
     const [renameFolderModal, setRenameFolderModal] = useState<{
@@ -73,9 +72,8 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
         fileId: null,
     });
 
-    const [uploadFileModal, setUploadFileModal] = useState<{ open: boolean; parentFolderId: string | null }>({
+    const [uploadFileModal, setUploadFileModal] = useState<{ open: boolean; parentFolderId?: string }>({
         open: false,
-        parentFolderId: null
     });
 
     const [selected, setSelected] = useState<(FileMeta | Folder)[]>([]);
@@ -87,7 +85,7 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
             value={{
                 newFolderModal,
                 openNewFolderModal: (id) => setNewFolderModal({open: true, parentFolderId: id}),
-                closeNewFolderModal: () => setNewFolderModal({open: false, parentFolderId: null}),
+                closeNewFolderModal: () => setNewFolderModal({open: false, parentFolderId: undefined}),
 
                 renameFolderModal,
                 openRenameFolderModal: (id, folderName) => setRenameFolderModal({open: true, folderId: id, folderName}),
@@ -107,7 +105,7 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
 
                 uploadFileModal,
                 openUploadFileModal: (id) => setUploadFileModal({open: true, parentFolderId: id}),
-                closeUploadFileModal: () => setUploadFileModal({open: false, parentFolderId: null}),
+                closeUploadFileModal: () => setUploadFileModal({open: false, parentFolderId: undefined}),
 
                 isSelectMode,
                 selected,

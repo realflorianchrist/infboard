@@ -27,7 +27,7 @@ export default function Toolbox() {
 
     const {path} = useFolderPath();
 
-    const folderId = path[path.length - 1]?.id ?? null;
+    const folderId = path[path.length - 1]?.id;
 
     return (
         <div className={'flex gap-2'}>

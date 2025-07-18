@@ -1,6 +1,7 @@
 export enum FolderValidationErrorType {
     NAME_EMPTY = "FOLDER_NAME_EMPTY",
     ALREADY_EXISTS = "FOLDER_ALREADY_EXISTS",
+    NAME_TOO_LONG = "FOLDER_NAME_TOO_LONG",
 }
 
 export enum FileValidationErrorType {
