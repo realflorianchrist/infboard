@@ -18,5 +18,6 @@ export const ApiRoutes = {
         add: '/add',
         update: '/update',
         delete: (id: string) => `/delete/${id}`,
+        rollback: (id: string) => `/rollback/${id}`,
     },
 };

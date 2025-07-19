@@ -109,4 +109,29 @@ fileController.put(
     )
 );
 
+fileController.put(
+    ApiRoutes.files.rollback(':id'),
+    handleRequest<{}, { file: FileMeta }, { id: string }>(
+        async (req) => {
+
+            const {id} = req.params;
+
+            const fileDoc = await FileModel.findByIdAndDelete(
+                id,
+            );
+
+            if (!fileDoc) {
+                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            }
+
+            return {
+                status: StatusCodes.OK,
+                data: {
+                    file: fileDocumentToFileMapper(fileDoc)
+                },
+            };
+        }
+    )
+);
+
 export default fileController;

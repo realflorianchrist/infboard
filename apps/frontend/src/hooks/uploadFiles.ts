@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAddFile } from "@/src/api/hooks/api_hooks/fileHooks";
+import {useAddFile, useRollbackFile} from "@/src/api/hooks/api_hooks/fileHooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { ApiRoutes } from "@workspace/routes/apiRoutes";
 import { usePutFileToUrl } from "@/src/api/hooks/s3_hooks/fileHooks";
@@ -16,7 +16,7 @@ export const useUploadFiles = () => {
 
     const { mutateAsync: addFile } = useAddFile();
     const { mutateAsync: uploadToUrl } = usePutFileToUrl();
-    // const { mutateAsync: deleteFile } = useDeleteFile();
+    const { mutateAsync: rollbackFile } = useRollbackFile();
     const queryClient = useQueryClient();
 
     const uploadFiles = async (
@@ -41,13 +41,11 @@ export const useUploadFiles = () => {
                     await uploadToUrl({ file, uploadUrl: response.file.url! });
                     results.push({ file, status: "success" });
                 } catch (uploadError) {
-                    // TODO: Rollback
-                    // try {
-                    //     await deleteFile({ fileId: response.file.id });
-                    //     console.warn(Rollback erfolgreich für Datei ${file.name});
-                    // } catch (rollbackError) {
-                    //     console.error(Rollback fehlgeschlagen für Datei ${file.name}, rollbackError);
-                    // }
+                    try {
+                        await rollbackFile({ file: response.file });
+                    } catch (rollbackError) {
+                        console.error(`Rollback failed for file: ${file.name}`, rollbackError);
+                    }
                     results.push({
                         file,
                         status: "error",

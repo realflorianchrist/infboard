@@ -77,7 +77,7 @@ export default function NewFolderModal() {
                     />
 
                     {errorMessage && (
-                        <ul className={'text-red-700'}>
+                        <ul className={'text-error'}>
                             {errorMessage.map((error, i) => (
                                 <li key={i}>{error}</li>
                             ))}

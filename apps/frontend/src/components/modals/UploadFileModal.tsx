@@ -3,7 +3,7 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
 import {cn} from "@workspace/ui/lib/utils";
-import {Fragment, useRef, useState} from "react";
+import {ChangeEvent, DragEvent, Fragment, useRef, useState} from "react";
 import {FiUpload} from "react-icons/fi";
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@workspace/ui/components/breadcrumb";
@@ -14,14 +14,14 @@ import findFolderPathById from "@/src/utils/findFolderPathById";
 export default function UploadFileModal() {
     const {uploadFileModal, closeUploadFileModal} = useContextMenu();
 
-    const [files, setFiles] = useState<File[]>([]);
-
-    const inputRef = useRef<HTMLInputElement | null>(null);
-
+    const {uploadFiles, isUploading} = useUploadFiles();
     const {data} = useGetAllFolders();
     const path = findFolderPathById(data?.folders, uploadFileModal?.parentFolderId);
 
-    const {uploadFiles, isUploading} = useUploadFiles();
+    const inputRef = useRef<HTMLInputElement | null>(null);
+
+    const [files, setFiles] = useState<File[]>([]);
+    const [errorMessage, setErrorMessage] = useState<string[]>([]);
 
     const handleUploadFile = async () => {
         if (files.length === 0) return;
@@ -30,18 +30,18 @@ export default function UploadFileModal() {
         const failed = results.filter(r => r.status === 'error');
 
         if (failed.length > 0) {
-            console.error("Failed to upload following files:", failed.map(f => f.file.name));
+            setErrorMessage(['Beim upload ist ein Fehler aufgetreten!'])
         } else {
             close();
         }
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
         setFiles(Array.from(e.target.files));
     };
 
-    const handleDrop = (e: React.DragEvent) => {
+    const handleDrop = (e: DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
         if (e.dataTransfer.files) {
@@ -56,6 +56,7 @@ export default function UploadFileModal() {
     const close = () => {
         closeUploadFileModal();
         setFiles([]);
+        setErrorMessage([]);
     }
 
     return (
@@ -109,13 +110,21 @@ export default function UploadFileModal() {
                     )}
                 </div>
 
+                {errorMessage && (
+                    <ul className={'text-error'}>
+                        {errorMessage.map((error, i) => (
+                            <li key={i}>{error}</li>
+                        ))}
+                    </ul>
+                )}
+
                 <div className={"flex justify-end gap-2 mt-4"}>
                     <Button variant="secondary" onClick={close}>
                         Abbrechen
                     </Button>
                     <Button
                         onClick={handleUploadFile}
-                        disabled={ files.length === 0 || isUploading}
+                        disabled={files.length === 0 || isUploading}
                     >
                         Hochladen
                     </Button>
