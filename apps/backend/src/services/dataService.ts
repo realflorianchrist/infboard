@@ -68,7 +68,7 @@ export const getFolderContents = async (folderId: string): Promise<Folder | null
     const files = fileDocs.map(f => fileDocumentToFileMapper(f));
 
     return {
-        id: folderDoc.id.toString(),
+        id: folderDoc._id.toString(),
         name: folderDoc.name,
         children: subfolders,
         files: files,
