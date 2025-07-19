@@ -13,6 +13,7 @@ import {Input} from "@workspace/ui/components/input";
 import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import findFolderPathById from "@/src/utils/findFolderPathById";
 import Loader from "../loader/Loader";
+import {getErrorMessage} from "@/src/utils/getErrorMessage";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();
@@ -28,11 +29,13 @@ export default function NewFolderModal() {
 
         mutate({name, parentFolderId: newFolderModal?.parentFolderId}, {
             onSuccess: () => close(),
-            onError: (error) => {
-                if (error.validationErrors) {
-                    setErrorMessage(error.validationErrors);
-                }
-            }
+            onError: (e) => {
+                const messages: string[] = [];
+                e.validationErrors?.forEach((error) => {
+                    messages.push(getErrorMessage(error));
+                })
+                setErrorMessage(messages);
+            },
         });
     };
 
@@ -76,8 +79,8 @@ export default function NewFolderModal() {
                         onChange={(e) => setName(e.target.value)}
                     />
 
-                    {errorMessage && (
-                        <ul className={'text-error'}>
+                    {errorMessage.length > 0 && (
+                        <ul className={'text-error whitespace-normal break-all pt-2'}>
                             {errorMessage.map((error, i) => (
                                 <li key={i}>{error}</li>
                             ))}

@@ -21,6 +21,7 @@ import {useDownloadFile} from "@/src/hooks/downloadFile";
 import {formateDate, formatFileSize} from "@/src/utils/formatter";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {getFileSymbol} from "@/src/utils/getFileSymbol";
 
 type Row = {
     select?: boolean;
@@ -33,6 +34,7 @@ type Row = {
     comment?: string;
     downloads?: number;
     size?: string;
+    contentType?: string;
     // meta?: string[];
 }
 
@@ -83,6 +85,7 @@ export default function DataTable() {
             comment: file.comment,
             downloads: file.downloads,
             size: formatFileSize(file.size),
+            contentType: file.contentType,
         }));
 
         setData([...folderRows, ...fileRows]);
@@ -150,7 +153,7 @@ export default function DataTable() {
                         title={row.name}
                     >
                         <span className="shrink-0">
-                            {row.type === 'folder' ? <IoFolderOutline/> : <GoFile/>}
+                            {row.type === 'folder' ? <IoFolderOutline/> : getFileSymbol(row.contentType)}
                         </span>
                         <span className="truncate whitespace-nowrap">{row.name}</span>
                     </div>

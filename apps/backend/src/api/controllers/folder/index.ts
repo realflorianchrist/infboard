@@ -88,11 +88,11 @@ folderController.put(
     handleRequest<{ folder: Folder }, { folder: Folder }>(
         async (req) => {
 
-            const {folder} = req.body;
+            const validated = validateOrThrow(FolderSchema, req.body.folder);
 
             const updatedFolder = await FolderModel.findByIdAndUpdate(
-                folder.id,
-                {name: folder.name},
+                validated.id,
+                {name: validated.name},
                 {new: true}
             );
 

@@ -128,7 +128,7 @@ export default function UploadFileModal() {
                     )}
                 </div>
 
-                {errorMessage && (
+                {errorMessage.length > 0 && (
                     <ul className={'text-error whitespace-normal break-all'}>
                         {errorMessage.map((error, i) => (
                             <li key={i}>{error}</li>
