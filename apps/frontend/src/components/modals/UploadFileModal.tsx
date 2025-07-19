@@ -27,10 +27,26 @@ export default function UploadFileModal() {
         if (files.length === 0) return;
 
         const results = await uploadFiles(files, uploadFileModal.parentFolderId!);
+        const successful = results.filter(result => result.status === "success");
         const failed = results.filter(r => r.status === 'error');
+        const validationErrors = results.filter(r => r.validationErrors?.length);
+
+        if (successful.length > 0) {
+            setFiles((f) => f.filter((v) => successful.some(s => s.file.name === v.name)))
+        }
 
         if (failed.length > 0) {
-            setErrorMessage(['Beim upload ist ein Fehler aufgetreten!'])
+            if (validationErrors.length > 0) {
+                const messages: string[] = [];
+                validationErrors.forEach((e) => {
+                    e.validationErrors?.forEach((v) => {
+                        messages.push(`${e.file.name}: ${v}`)
+                    })
+                })
+                setErrorMessage(messages);
+            } else {
+                setErrorMessage(['Beim upload ist ein Fehler aufgetreten!'])
+            }
         } else {
             close();
         }
@@ -111,7 +127,7 @@ export default function UploadFileModal() {
                 </div>
 
                 {errorMessage && (
-                    <ul className={'text-error'}>
+                    <ul className={'text-error whitespace-normal break-all'}>
                         {errorMessage.map((error, i) => (
                             <li key={i}>{error}</li>
                         ))}

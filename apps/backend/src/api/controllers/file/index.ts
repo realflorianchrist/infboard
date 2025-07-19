@@ -4,7 +4,7 @@ import {FileMeta, NewFileInput} from "@workspace/types/data";
 import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
-import {FileModel} from "@src/models/File";
+import {FileModel, FileSchema} from "@src/models/File";
 import {
     generatePresignedDownloadUrl,
     generatePresignedUploadUrl
@@ -12,6 +12,10 @@ import {
 import logger from "jet-logger";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {validateOrThrow} from "@src/api/utils/validateOrThrow";
+import {FolderModel, FolderSchema} from "@src/models/Folder";
+import {FileValidationErrorType} from "@workspace/types/modelValidation";
+import * as console from "node:console";
 
 const fileController: Router = express.Router();
 
@@ -21,15 +25,25 @@ fileController.post(
     handleRequest<{ file: NewFileInput }, { file: FileMeta }>(
         async (req) => {
 
-            const {file} = req.body;
+            const validated = validateOrThrow(FileSchema, req.body.file);
+
+            const { name, parentFolderId } = validated;
+
+            const existing = await FileModel.findOne({ name, parentFolderId });
+
+            if (existing) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
+                    validationErrors: [FileValidationErrorType.ALREADY_EXISTS]
+                });
+            }
 
             try {
                 const newFile = await FileModel.create({
-                    name: file.name,
-                    contentType: file.contentType,
-                    size: file.size,
-                    comment: file.comment,
-                    parentFolderId: file.parentFolderId,
+                    name: validated.name,
+                    contentType: validated.contentType,
+                    size: validated.size,
+                    comment: validated.comment,
+                    parentFolderId: validated.parentFolderId,
                 });
 
                 const url = await generatePresignedUploadUrl(
@@ -45,7 +59,6 @@ fileController.post(
                     },
                 };
             } catch (error) {
-                logger.err(error);
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.API_ERROR);
             }
         }

@@ -8,7 +8,7 @@ import {getFolderContents, getFolderTree} from "@src/services/dataService";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
-import {FileValidationErrorType} from "@workspace/types/modelValidation";
+import {FileValidationErrorType, FolderValidationErrorType} from "@workspace/types/modelValidation";
 
 
 const folderController: Router = express.Router();
@@ -59,7 +59,7 @@ folderController.post(
 
             if (existing) {
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
-                    validationErrors: [FileValidationErrorType.ALREADY_EXISTS]
+                    validationErrors: [FolderValidationErrorType.ALREADY_EXISTS]
                 });
             }
 

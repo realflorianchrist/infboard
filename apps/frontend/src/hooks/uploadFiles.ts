@@ -4,11 +4,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ApiRoutes } from "@workspace/routes/apiRoutes";
 import { usePutFileToUrl } from "@/src/api/hooks/s3_hooks/fileHooks";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {ValidationErrorType} from "@workspace/types/modelValidation";
+import {ApiClientError} from "@/src/api/client/client";
 
 type UploadResult = {
     file: File;
     status: 'success' | 'error';
     error?: Error;
+    validationErrors?: ValidationErrorType[];
 };
 
 export const useUploadFiles = () => {
@@ -46,6 +49,7 @@ export const useUploadFiles = () => {
                     } catch (rollbackError) {
                         console.error(`Rollback failed for file: ${file.name}`, rollbackError);
                     }
+
                     results.push({
                         file,
                         status: "error",
@@ -53,10 +57,16 @@ export const useUploadFiles = () => {
                     });
                 }
             } catch (creationError) {
+
+                const validationErrors = creationError instanceof ApiClientError
+                    ? creationError.validationErrors
+                    : undefined;
+
                 results.push({
                     file,
                     status: "error",
                     error: creationError as Error,
+                    validationErrors: validationErrors,
                 });
             }
         }
