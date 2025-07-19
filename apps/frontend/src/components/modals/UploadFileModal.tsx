@@ -6,9 +6,10 @@ import {cn} from "@workspace/ui/lib/utils";
 import {Fragment, useRef, useState} from "react";
 import {FiUpload} from "react-icons/fi";
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
-import findPathInTree from "@/src/utils/findPathInTree";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@workspace/ui/components/breadcrumb";
 import {useUploadFiles} from "@/src/hooks/uploadFiles";
+import Loader from "../loader/Loader";
+import findFolderPathById from "@/src/utils/findFolderPathById";
 
 export default function UploadFileModal() {
     const {uploadFileModal, closeUploadFileModal} = useContextMenu();
@@ -18,7 +19,7 @@ export default function UploadFileModal() {
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const {data} = useGetAllFolders();
-    const path = findPathInTree(data?.folders ?? null, uploadFileModal?.parentFolderId);
+    const path = findFolderPathById(data?.folders, uploadFileModal?.parentFolderId);
 
     const {uploadFiles, isUploading} = useUploadFiles();
 
@@ -29,7 +30,7 @@ export default function UploadFileModal() {
         const failed = results.filter(r => r.status === 'error');
 
         if (failed.length > 0) {
-            console.error("Fehler beim Upload folgender Dateien:", failed.map(f => f.file.name));
+            console.error("Failed to upload following files:", failed.map(f => f.file.name));
         } else {
             close();
         }
@@ -88,32 +89,34 @@ export default function UploadFileModal() {
                     )}
                     onClick={openFilePicker}
                 >
-                    <FiUpload className={'text-4xl'}/>
-                    <p>Dateien hierher ziehen oder klicken zum Auswählen</p>
-                    <p className={'text-xs'}>
-                        {files.length > 0 ? `${files.length} Datei(en) ausgewählt` : "Keine Datei ausgewählt"}
-                    </p>
-                    <input
-                        ref={inputRef}
-                        type="file"
-                        multiple
-                        hidden
-                        onChange={handleFileChange}
-                    />
+                    {isUploading ? (
+                        <Loader/>
+                    ) : (
+                        <>
+                            <FiUpload className={'text-4xl'}/>
+                            <p>Dateien hierher ziehen oder klicken zum Auswählen</p>
+                            <p className={'text-xs'}>
+                                {files.length > 0 ? `${files.length} Datei(en) ausgewählt` : "Keine Datei ausgewählt"}
+                            </p>
+                            <input
+                                ref={inputRef}
+                                type="file"
+                                multiple
+                                hidden
+                                onChange={handleFileChange}
+                            />
+                        </>
+                    )}
                 </div>
 
-                {isUploading ? (
-                    <div>Loading...</div>
-                ) : (
-                    <div className={"flex justify-end gap-2 mt-4"}>
-                        <Button variant="secondary" onClick={close}>
-                            Abbrechen
-                        </Button>
-                        <Button onClick={handleUploadFile}>
-                            Hochladen
-                        </Button>
-                    </div>
-                )}
+                <div className={"flex justify-end gap-2 mt-4"}>
+                    <Button variant="secondary" onClick={close}>
+                        Abbrechen
+                    </Button>
+                    <Button onClick={handleUploadFile}>
+                        Hochladen
+                    </Button>
+                </div>
             </DialogContent>
         </Dialog>
     )

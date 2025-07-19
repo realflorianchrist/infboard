@@ -10,15 +10,15 @@ import {
 } from "@workspace/ui/components/breadcrumb";
 import {Fragment, useState} from "react";
 import {Input} from "@workspace/ui/components/input";
-import findPathInTree from "@/src/utils/findPathInTree";
 import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
+import findFolderPathById from "@/src/utils/findFolderPathById";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();
     const {mutate} = useCreateFolder();
 
     const {data} = useGetAllFolders();
-    const path = findPathInTree(data?.folders ?? null, newFolderModal?.parentFolderId);
+    const path = findFolderPathById(data?.folders ?? null, newFolderModal?.parentFolderId);
 
     const [name, setName] = useState('');
     const [errorMessage, setErrorMessage] = useState<string[]>([]);

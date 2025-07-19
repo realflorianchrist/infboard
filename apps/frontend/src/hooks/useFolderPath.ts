@@ -3,6 +3,7 @@ import {FolderPath} from '@workspace/types/folderPath';
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import Routes from "@/src/constants/routes";
 import {Folder} from "@workspace/types/data";
+import findFolderPathById from "@/src/utils/findFolderPathById";
 
 export const useFolderPath = () => {
     const pathname = usePathname();
@@ -22,21 +23,6 @@ export const useFolderPath = () => {
             },
         };
     }
-
-    const findFolderPathById = (
-        folders: Folder[],
-        id: string,
-        path: FolderPath = []
-    ): FolderPath | null => {
-        for (const folder of folders) {
-            const currentPath = [...path, {id: folder.id, name: folder.name}];
-            if (folder.id === id) return currentPath;
-
-            const result = findFolderPathById(folder.children ?? [], id, currentPath);
-            if (result) return result;
-        }
-        return null;
-    };
 
     const resolvePathSegments = (folders: Folder[], paths: string[]): FolderPath => {
         let currentLevel = folders;
