@@ -12,10 +12,11 @@ import {Fragment, useState} from "react";
 import {Input} from "@workspace/ui/components/input";
 import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import findFolderPathById from "@/src/utils/findFolderPathById";
+import Loader from "../loader/Loader";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();
-    const {mutate} = useCreateFolder();
+    const {mutate, isPending: savingFolder} = useCreateFolder();
 
     const {data} = useGetAllFolders();
     const path = findFolderPathById(data?.folders ?? null, newFolderModal?.parentFolderId);
@@ -62,6 +63,8 @@ export default function NewFolderModal() {
                         ))}
                     </BreadcrumbList>
                 </Breadcrumb>
+
+
                 <form onSubmit={(e) => {
                     e.preventDefault();
                     handleAddNewFolder();
@@ -81,14 +84,20 @@ export default function NewFolderModal() {
                         </ul>
                     )}
 
-                    <div className="flex justify-end gap-2 mt-4">
-                        <Button type="button" variant="secondary" onClick={close}>
-                            Abbrechen
-                        </Button>
-                        <Button type="submit" disabled={!name.trim()}>
-                            Speichern
-                        </Button>
-                    </div>
+                    {savingFolder ? (
+                        <Loader/>
+                    ) : (
+                        <div className="flex justify-end gap-2 mt-4">
+                            <Button type="button" variant="secondary" onClick={close}>
+                                Abbrechen
+                            </Button>
+                            <Button type="submit"
+                                    disabled={!name.trim() || savingFolder}
+                            >
+                                Speichern
+                            </Button>
+                        </div>
+                    )}
                 </form>
             </DialogContent>
         </Dialog>

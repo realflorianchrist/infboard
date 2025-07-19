@@ -113,7 +113,10 @@ export default function UploadFileModal() {
                     <Button variant="secondary" onClick={close}>
                         Abbrechen
                     </Button>
-                    <Button onClick={handleUploadFile}>
+                    <Button
+                        onClick={handleUploadFile}
+                        disabled={ files.length === 0 || isUploading}
+                    >
                         Hochladen
                     </Button>
                 </div>
