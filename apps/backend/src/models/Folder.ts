@@ -6,8 +6,8 @@ import {FolderValidationErrorType} from "@workspace/types/modelValidation";
 export const FolderSchema = z.object({
     id: z.string().optional(),
     name: z.string()
-        .min(1, {message: FolderValidationErrorType.NAME_EMPTY})
-        .max(20, {message: FolderValidationErrorType.NAME_TOO_LONG}),
+        .min(1, {message: FolderValidationErrorType.FOLDER_NAME_EMPTY})
+        .max(20, {message: FolderValidationErrorType.FOLDER_NAME_TOO_LONG}),
     created: z.date().optional(),
     parentFolderId: z.string().default(ROOT_FOLDER_ID),
 });

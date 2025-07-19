@@ -10,6 +10,8 @@ import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@
 import {useUploadFiles} from "@/src/hooks/uploadFiles";
 import Loader from "../loader/Loader";
 import findFolderPathById from "@/src/utils/findFolderPathById";
+import {getErrorMessage} from "@/src/utils/getErrorMessage";
+import {ErrorType} from "@workspace/types/apiResponses";
 
 export default function UploadFileModal() {
     const {uploadFileModal, closeUploadFileModal} = useContextMenu();
@@ -38,14 +40,14 @@ export default function UploadFileModal() {
         if (failed.length > 0) {
             if (validationErrors.length > 0) {
                 const messages: string[] = [];
-                validationErrors.forEach((e) => {
-                    e.validationErrors?.forEach((v) => {
-                        messages.push(`${e.file.name}: ${v}`)
+                validationErrors.forEach((r) => {
+                    r.validationErrors?.forEach((e) => {
+                        messages.push(`${r.file.name}: ${getErrorMessage(e)}`);
                     })
                 })
                 setErrorMessage(messages);
             } else {
-                setErrorMessage(['Beim upload ist ein Fehler aufgetreten!'])
+                setErrorMessage([getErrorMessage(ErrorType.UPLOAD_ERROR)]);
             }
         } else {
             close();

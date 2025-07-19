@@ -33,7 +33,7 @@ fileController.post(
 
             if (existing) {
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
-                    validationErrors: [FileValidationErrorType.ALREADY_EXISTS]
+                    validationErrors: [FileValidationErrorType.FILE_ALREADY_EXISTS]
                 });
             }
 

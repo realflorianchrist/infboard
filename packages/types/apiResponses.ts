@@ -18,6 +18,8 @@ export enum ErrorType {
     API_ERROR = "API_ERROR",
     NOT_FOUND = "NOT_FOUND",
     INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
+
+    UPLOAD_ERROR = "UPLOAD_ERROR",
 }
 
 export type ApiErrorResponse = {

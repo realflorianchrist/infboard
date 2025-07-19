@@ -59,7 +59,7 @@ folderController.post(
 
             if (existing) {
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
-                    validationErrors: [FolderValidationErrorType.ALREADY_EXISTS]
+                    validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS]
                 });
             }
 

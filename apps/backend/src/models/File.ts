@@ -9,22 +9,22 @@ export const FileSchema = z.object({
     created: z.date().optional(),
 
     name: z.string()
-        .min(1, { message: FileValidationErrorType.NAME_EMPTY })
-        .max(100, { message: FileValidationErrorType.NAME_TOO_LONG }),
+        .min(1, { message: FileValidationErrorType.FILE_NAME_EMPTY })
+        .max(100, { message: FileValidationErrorType.FILE_NAME_TOO_LONG }),
 
     version: z.number()
         .optional()
         .refine(val => val === undefined || val >= 0, {
-            message: FileValidationErrorType.VERSION_NEGATIVE,
+            message: FileValidationErrorType.FILE_VERSION_NEGATIVE,
         }),
 
     contentType: z.string()
-        .min(1, { message: FileValidationErrorType.CONTENT_TYPE_EMPTY }),
+        .min(1, { message: FileValidationErrorType.FILE_CONTENT_TYPE_EMPTY }),
 
     size: z.number()
         .optional()
         .refine(val => val === undefined || val >= 0, {
-            message: FileValidationErrorType.SIZE_NEGATIVE,
+            message: FileValidationErrorType.FILE_SIZE_NEGATIVE,
         }),
 
     updatedAt: z.date().optional(),
