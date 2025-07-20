@@ -10,12 +10,18 @@ import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {FileMeta} from "@workspace/types/data";
 import {useState} from "react";
+import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {useQueryClient} from "@tanstack/react-query";
 
 
 export const useDownloadFile = () => {
     const [isDownloading, setIsDownloading] = useState(false);
 
+    const queryClient = useQueryClient();
+
     const {path} = useFolderPath();
+    const parentFolderId = path[path.length - 1]?.id;
 
     const {data: folderData} = useGetAllFolders();
 
@@ -44,6 +50,12 @@ export const useDownloadFile = () => {
             document.body.removeChild(link);
 
             window.URL.revokeObjectURL(blobUrl);
+
+            await queryClient.invalidateQueries({
+                queryKey: [
+                    `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
+                ],
+            });
 
         } catch (error) {
             toast.error(getErrorMessage(ErrorType.DOWNLOAD_ERROR));
@@ -102,6 +114,12 @@ export const useDownloadFile = () => {
 
             const zipBlob = await zip.generateAsync({type: "blob"});
             saveAs(zipBlob, "download.zip");
+
+            await queryClient.invalidateQueries({
+                queryKey: [
+                    `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
+                ],
+            });
 
         } catch (error) {
             toast.error(getErrorMessage(ErrorType.DOWNLOAD_ERROR));
