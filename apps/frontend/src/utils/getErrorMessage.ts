@@ -35,6 +35,7 @@ const generalErrorMessages: Record<ErrorType, string> = {
     [ErrorType.API_ERROR]: "Es ist ein Fehler bei der Anfrage aufgetreten.",
     [ErrorType.INTERNAL_SERVER_ERROR]: "Ein interner Serverfehler ist aufgetreten.",
     [ErrorType.UPLOAD_ERROR]: "Beim upload ist ein Fehler aufgetreten.",
+    [ErrorType.DOWNLOAD_ERROR]: "Beim download ist ein Fehler aufgetreten.",
 };
 
 export const getErrorMessage = (error: ErrorType | ValidationErrorType): string => {

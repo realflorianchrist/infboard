@@ -2,9 +2,9 @@ import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
 import "@workspace/ui/globals.css"
 import Header from "../components/header/Header";
-import {ThemeProvider} from "../providers/ThemeProvider";
 import Providers from "@/src/providers/Providers";
 import ModalAnchor from "@/src/components/modals/ModalAnchor";
+import {Toaster} from "@workspace/ui/components/sonner";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -37,6 +37,7 @@ export default function RootLayout(
             <main>
                 {children}
             </main>
+            <Toaster position={'bottom-right'} richColors />
             <ModalAnchor/>
         </Providers>
         </body>

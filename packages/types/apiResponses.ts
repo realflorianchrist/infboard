@@ -20,6 +20,7 @@ export enum ErrorType {
     INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
 
     UPLOAD_ERROR = "UPLOAD_ERROR",
+    DOWNLOAD_ERROR = "DOWNLOAD_ERROR",
 }
 
 export type ApiErrorResponse = {
