@@ -13,12 +13,15 @@ import {useState} from "react";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {useQueryClient} from "@tanstack/react-query";
+import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 
 
 export const useDownloadFile = () => {
     const [isDownloading, setIsDownloading] = useState(false);
 
     const queryClient = useQueryClient();
+
+    const {setSelected} = useContextMenu();
 
     const {path} = useFolderPath();
     const parentFolderId = path[path.length - 1]?.id;
@@ -56,6 +59,8 @@ export const useDownloadFile = () => {
                     `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
                 ],
             });
+
+            setSelected([]);
 
         } catch (error) {
             toast.error(getErrorMessage(ErrorType.DOWNLOAD_ERROR));
@@ -120,6 +125,8 @@ export const useDownloadFile = () => {
                     `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
                 ],
             });
+
+            setSelected([]);
 
         } catch (error) {
             toast.error(getErrorMessage(ErrorType.DOWNLOAD_ERROR));
