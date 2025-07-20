@@ -26,6 +26,15 @@ export const useGetFileDownloadUrl = () =>
         HttpMethod.PUT,
     );
 
+export const useGetFileDownloadUrlsForFolder = () =>
+    useApiMutation<
+        { url: string, file: FileMeta }[],
+        { folderId: string }
+    >(
+        (variables) => [baseRoute, ApiRoutes.files.downloadUrlsByFolderId(variables.folderId)],
+        HttpMethod.PUT,
+    );
+
 export const useDeleteFile = () =>
     useApiMutation<
         { file: FileMeta },

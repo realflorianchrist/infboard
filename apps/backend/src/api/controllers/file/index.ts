@@ -27,9 +27,9 @@ fileController.post(
 
             const validated = validateOrThrow(FileSchema, req.body.file);
 
-            const { name, parentFolderId } = validated;
+            const {name, parentFolderId} = validated;
 
-            const existing = await FileModel.findOne({ name, parentFolderId });
+            const existing = await FileModel.findOne({name, parentFolderId});
 
             if (existing) {
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
@@ -90,6 +90,42 @@ fileController.put(
                     url: url,
                     file: fileDocumentToFileMapper(fileDoc)
                 },
+            };
+        }
+    )
+);
+
+fileController.put(
+    ApiRoutes.files.downloadUrlsByFolderId(':folderId'),
+    handleRequest<{}, { url: string, file: FileMeta }[], { folderId: string }>(
+        async (req) => {
+
+            const {folderId} = req.params;
+
+            const fileDocs = await FileModel.find({parentFolderId: folderId});
+
+            await Promise.all(
+                fileDocs.map((file) =>
+                    FileModel.findByIdAndUpdate(file._id, {$inc: {downloads: 1}}, {timestamps: false})
+                )
+            );
+
+            const results = await Promise.all(
+                fileDocs.map(async (file) => {
+                    const url = await generatePresignedDownloadUrl(file._id.toString());
+                    return {
+                        url,
+                        file,
+                    };
+                })
+            );
+
+            return {
+                status: StatusCodes.OK,
+                data: results.map(({url, file}) => ({
+                    url: url,
+                    file: fileDocumentToFileMapper(file),
+                })),
             };
         }
     )

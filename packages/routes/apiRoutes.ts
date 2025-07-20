@@ -15,6 +15,7 @@ export const ApiRoutes = {
         all: '/all',
         byId: (id: string) => `/${id}`,
         downloadUrlById: (id: string) => `/download/${id}`,
+        downloadUrlsByFolderId: (folderId: string) => `/download/folder/${folderId}`,
         add: '/add',
         update: '/update',
         delete: (id: string) => `/delete/${id}`,

@@ -7,7 +7,7 @@ import {ChangeEvent, DragEvent, Fragment, useRef, useState} from "react";
 import {FiUpload} from "react-icons/fi";
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@workspace/ui/components/breadcrumb";
-import {useUploadFiles} from "@/src/hooks/uploadFiles";
+import {useUploadFiles} from "@/src/hooks/useUploadFiles";
 import Loader from "../loader/Loader";
 import findFolderPathById from "@/src/utils/findFolderPathById";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";

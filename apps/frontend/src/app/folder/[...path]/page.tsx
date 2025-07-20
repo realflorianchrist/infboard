@@ -7,6 +7,9 @@ import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import Toolbox from "@/src/components/menus/Toolbox";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
+import {useDownloadFile} from "@/src/hooks/useDownloadFile";
+import Loader from "@/src/components/loader/Loader";
+import {useEffect} from "react";
 
 
 export default function FolderPage() {
