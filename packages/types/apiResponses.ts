@@ -1,9 +1,8 @@
 import {ValidationErrorType} from "./modelValidation";
 
 export enum ErrorType {
-    USER_ALREADY_EXISTS = "USER_ALREADY_EXISTS",
     USER_NOT_FOUND = "USER_NOT_FOUND",
-    INVALID_PASSWORD = "INVALID_PASSWORD",
+    BAD_CREDENTIALS = "BAD_CREDENTIALS",
     TOKEN_MISSING = "TOKEN_MISSING",
     TOKEN_INVALID = "TOKEN_INVALID",
 

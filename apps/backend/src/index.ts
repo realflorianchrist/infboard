@@ -10,6 +10,7 @@ import dispatcher from "@src/api/controllers/dispatcher";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {ENV} from "@src/constants/ENV";
 import {errorHandler} from "@src/middleware/errorHandler";
+import {authenticateToken} from "@src/middleware/authMiddleware";
 
 
 // **** Configuration **** //
@@ -43,6 +44,12 @@ if (ENV.NODE_ENV === NodeEnvs.Production) {
     }
 }
 
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api/open')) {
+        return next();
+    }
+    return authenticateToken(req, res, next);
+});
 app.use(ApiRoutes.base, dispatcher);
 app.use(errorHandler);
 

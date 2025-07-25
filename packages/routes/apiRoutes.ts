@@ -1,6 +1,13 @@
 export const ApiRoutes = {
     base: '/api',
 
+    auth: {
+        base: '/open/auth',
+        register: '/register',
+        login: '/login',
+        validateToken: '/validate-token',
+    },
+
     folders: {
         base: '/folders',
         all: '/all',

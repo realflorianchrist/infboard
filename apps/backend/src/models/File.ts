@@ -9,8 +9,8 @@ export const FileSchema = z.object({
     created: z.date().optional(),
 
     name: z.string()
-        .min(1, { message: FileValidationErrorType.FILE_NAME_EMPTY })
-        .max(100, { message: FileValidationErrorType.FILE_NAME_TOO_LONG }),
+        .min(1, {message: FileValidationErrorType.FILE_NAME_EMPTY})
+        .max(100, {message: FileValidationErrorType.FILE_NAME_TOO_LONG}),
 
     version: z.number()
         .optional()
@@ -19,7 +19,7 @@ export const FileSchema = z.object({
         }),
 
     contentType: z.string()
-        .min(1, { message: FileValidationErrorType.FILE_CONTENT_TYPE_EMPTY }),
+        .min(1, {message: FileValidationErrorType.FILE_CONTENT_TYPE_EMPTY}),
 
     size: z.number()
         .optional()
