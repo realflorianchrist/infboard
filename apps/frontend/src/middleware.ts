@@ -6,6 +6,8 @@ import {TOKEN_KEY} from "@workspace/constants/index";
 export async function middleware(req: NextRequest) {
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
 
+    console.log(req.cookies);
+
     const token = req.cookies.get(TOKEN_KEY)?.value;
 
     if (!token) {
