@@ -12,8 +12,6 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL(Routes.LOGIN, req.url));
     }
 
-    console.log(token);
-
     try {
         const response = await fetch(
             `${API_BASE_URL}${ApiRoutes.auth.base}${ApiRoutes.auth.validateToken}`,

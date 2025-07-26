@@ -6,7 +6,7 @@ import {StatusCodes} from "http-status-codes";
 import {UserModel, UserSchema} from "@src/models/User";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
-import {UserValidationErrorType} from "@workspace/types/modelValidation";
+import {UserValidationErrorType, ValidationErrorType} from "@workspace/types/modelValidation";
 import bcrypt from "bcryptjs";
 import {userDocumentToFileMapper} from "@src/api/mapper/userMapper";
 import {generateToken, verifyToken} from "@src/services/jwtTokenProvider";
@@ -54,13 +54,23 @@ authController.post(
 
             const {username, email, password} = validated;
 
-            const existing = await UserModel.findOne({
-                $or: [{username}, {email}],
+            const existingUser = await UserModel.findOne({
+                $or: [{ username }, { email }]
             });
 
-            if (existing) {
+            const validationErrors: ValidationErrorType[] = [];
+
+            if (existingUser?.username === username) {
+                validationErrors.push(UserValidationErrorType.USERNAME_ALREADY_EXISTS);
+            }
+
+            if (existingUser?.email === email) {
+                validationErrors.push(UserValidationErrorType.EMAIL_ALREADY_EXISTS);
+            }
+
+            if (validationErrors.length > 0) {
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
-                    validationErrors: [UserValidationErrorType.USER_ALREADY_EXISTS]
+                    validationErrors
                 });
             }
 

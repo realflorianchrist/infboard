@@ -5,7 +5,6 @@ import {Input} from "@workspace/ui/components/input";
 import {Label} from "@workspace/ui/components/label";
 import {Button} from "@workspace/ui/components/button";
 import {FormEvent, useState} from "react";
-import {z} from "zod";
 import {AuthUser} from "@workspace/types/user";
 import {useRegister} from "@/src/api/hooks/api_hooks/authHooks";
 import {toast} from "sonner";
