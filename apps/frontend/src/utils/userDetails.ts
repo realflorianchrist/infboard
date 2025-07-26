@@ -1,8 +1,8 @@
 import Cookies from 'js-cookie';
 import {User} from "@workspace/types/user";
+import {TOKEN_KEY} from "@workspace/constants/index";
 
 export const userDetails = () => {
-    const TOKEN_KEY = "jwt_token";
     const USER_INFOS_KEY = "userInfos";
 
     const secureOption = typeof window !== 'undefined'

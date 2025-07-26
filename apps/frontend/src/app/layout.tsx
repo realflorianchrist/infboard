@@ -3,7 +3,6 @@ import {Geist, Geist_Mono} from "next/font/google";
 import "@workspace/ui/globals.css"
 import Header from "../components/header/Header";
 import Providers from "@/src/providers/Providers";
-import ModalAnchor from "@/src/components/modals/ModalAnchor";
 import {Toaster} from "@workspace/ui/components/sonner";
 
 const geistSans = Geist({
@@ -37,8 +36,7 @@ export default function RootLayout(
             <main>
                 {children}
             </main>
-            <Toaster position={'bottom-right'} richColors />
-            <ModalAnchor/>
+            <Toaster position={'bottom-right'} richColors/>
         </Providers>
         </body>
         </html>

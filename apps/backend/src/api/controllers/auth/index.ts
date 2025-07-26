@@ -11,6 +11,8 @@ import bcrypt from "bcryptjs";
 import {userDocumentToFileMapper} from "@src/api/mapper/userMapper";
 import {generateToken, verifyToken} from "@src/services/jwtTokenProvider";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
+import {TOKEN_KEY} from "@workspace/constants/index";
+import logger from "jet-logger";
 
 const authController: Router = express.Router();
 
@@ -21,7 +23,9 @@ authController.get(
         { success: boolean}
     >(
         async (req) => {
-            const token = req.cookies.jwt_token;
+            const token = req.cookies[TOKEN_KEY];
+
+            logger.info(token);
 
             if (!token) throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorType.TOKEN_MISSING);
 

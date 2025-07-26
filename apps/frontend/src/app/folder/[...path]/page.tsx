@@ -10,6 +10,7 @@ import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {useDownloadFile} from "@/src/hooks/useDownloadFile";
 import Loader from "@/src/components/loader/Loader";
 import {useEffect} from "react";
+import ModalAnchor from "@/src/components/modals/ModalAnchor";
 
 
 export default function FolderPage() {
@@ -59,6 +60,7 @@ export default function FolderPage() {
                     </DataContextMenu>
                 </ResizablePanel>
             </ResizablePanelGroup>
+            <ModalAnchor/>
         </>
     );
 }
