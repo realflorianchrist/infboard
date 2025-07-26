@@ -41,6 +41,7 @@ export default function RegisterForm() {
 
         registerMutation.mutate({user}, {
             onSuccess: () => {
+                router.push(Routes.HOME);
                 toast.success("Registrierung erfolgreich");
             },
             onError: (e) => {

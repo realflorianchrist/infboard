@@ -33,6 +33,7 @@ export default function LoginForm() {
 
         loginMutation.mutate({user}, {
             onSuccess: () => {
+                router.push(Routes.HOME);
                 toast.success("Login erfolgreich");
             },
             onError: (e) => {

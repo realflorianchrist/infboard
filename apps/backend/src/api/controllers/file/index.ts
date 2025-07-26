@@ -38,6 +38,7 @@ fileController.post(
                     size: validated.size,
                     comment: validated.comment,
                     parentFolderId: validated.parentFolderId,
+                    userName: req.user?.username
                 });
 
                 const url = await generatePresignedUploadUrl(
