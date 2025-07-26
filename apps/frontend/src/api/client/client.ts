@@ -1,5 +1,6 @@
 import {ApiErrorResponse, ApiResponse, ErrorType} from "@workspace/types/apiResponses";
 import {ValidationErrorType} from "@workspace/types/modelValidation";
+import {userDetails} from "@/src/utils/userDetails";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
 
@@ -32,14 +33,14 @@ export const apiFetch = async <T>(
         );
     }
 
-    // const token = getAuthToken();
-    // const authHeaders: HeadersInit | undefined = token ? {Authorization: `Bearer ${token}`} : {};
+    const token = userDetails().getAuthToken();
+    const authHeaders: HeadersInit | undefined = token ? {Authorization: `Bearer ${token}`} : {};
 
     const response = await fetch(url.toString(), {
         ...options,
         headers: {
             "Content-Type": "application/json",
-            // ...authHeaders,
+            ...authHeaders,
             ...headers,
         },
     });

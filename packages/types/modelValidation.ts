@@ -13,6 +13,16 @@ export enum FileValidationErrorType {
     FILE_ALREADY_EXISTS = "FILE_ALREADY_EXISTS",
 }
 
+export enum UserValidationErrorType {
+    USERNAME_TOO_SHORT = "USERNAME_TOO_SHORT",
+    USERNAME_TOO_LONG = "USERNAME_TOO_LONG",
+    INVALID_EMAIL = "INVALID_EMAIL",
+    NOT_AN_FHNW_EMAIL = "NOT_AN_FHNW_EMAIL",
+    PASSWORD_TOO_SHORT = "PASSWORD_TOO_SHORT",
+    PASSWORD_TOO_LONG = "PASSWORD_TOO_LONG",
+}
+
 export type ValidationErrorType =
     FolderValidationErrorType
-    | FileValidationErrorType;
+    | FileValidationErrorType
+    | UserValidationErrorType;

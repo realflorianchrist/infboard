@@ -5,8 +5,12 @@ import Navigation from "./Navigation";
 import {Avatar, AvatarFallback} from "@workspace/ui/components/avatar";
 import {IoIosPerson} from "react-icons/io";
 import UserDropDownMenu from "@/src/components/menus/UserDropDownMenu";
+import {usePathname} from "next/navigation";
 
 export default function Header() {
+
+    const pathName = usePathname();
+
     return (
         <header className={'flex items-center justify-between w-full p-4'}>
             <Link
@@ -16,20 +20,24 @@ export default function Header() {
                 infboard.ch
             </Link>
 
-            <div className={'absolute left-1/2 -translate-x-1/2'}>
-                <Navigation/>
-            </div>
+            {!pathName.includes('/auth') && (
+                <>
+                    <div className={'absolute left-1/2 -translate-x-1/2'}>
+                        <Navigation/>
+                    </div>
 
-            <UserDropDownMenu>
-                <div className={'flex items-center justify-center gap-4 cursor-pointer'}>
-                    User
-                    <Avatar>
-                        <AvatarFallback>
-                            <IoIosPerson className={'w-10 h-10'}/>
-                        </AvatarFallback>
-                    </Avatar>
-                </div>
-            </UserDropDownMenu>
+                    <UserDropDownMenu>
+                        <div className={'flex items-center justify-center gap-4 cursor-pointer'}>
+                            User
+                            <Avatar>
+                                <AvatarFallback>
+                                    <IoIosPerson className={'w-10 h-10'}/>
+                                </AvatarFallback>
+                            </Avatar>
+                        </div>
+                    </UserDropDownMenu>
+                </>
+            )}
         </header>
     );
 }

@@ -5,17 +5,11 @@ import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
 import {FileModel, FileSchema} from "@src/models/File";
-import {
-    generatePresignedDownloadUrl,
-    generatePresignedUploadUrl
-} from "@src/services/s3Service";
-import logger from "jet-logger";
+import {generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
-import {FolderModel, FolderSchema} from "@src/models/Folder";
 import {FileValidationErrorType} from "@workspace/types/modelValidation";
-import * as console from "node:console";
 
 const fileController: Router = express.Router();
 
@@ -44,6 +38,7 @@ fileController.post(
                     size: validated.size,
                     comment: validated.comment,
                     parentFolderId: validated.parentFolderId,
+                    userName: req.user?.username
                 });
 
                 const url = await generatePresignedUploadUrl(
