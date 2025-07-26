@@ -11,31 +11,32 @@ import bcrypt from "bcryptjs";
 import {userDocumentToFileMapper} from "@src/api/mapper/userMapper";
 import {generateToken, verifyToken} from "@src/services/jwtTokenProvider";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
-import {TOKEN_KEY} from "@workspace/constants/index";
-import logger from "jet-logger";
 
 const authController: Router = express.Router();
 
 authController.get(
     ApiRoutes.auth.validateToken,
     handleRequest<
-        { },
-        { success: boolean}
+        {},
+        { success: boolean }
     >(
         async (req) => {
-            const token = req.cookies[TOKEN_KEY];
 
-            logger.info(token);
+            const authHeader = req.headers.authorization;
+            const token = authHeader?.split(" ")[1];
 
             if (!token) throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorType.TOKEN_MISSING);
 
-            verifyToken(token);
-
-            return {
-                status: StatusCodes.OK,
-                data: {
-                    success: true,
+            try {
+                verifyToken(token);
+                return {
+                    status: StatusCodes.OK,
+                    data: {
+                        success: true,
+                    }
                 }
+            } catch (error) {
+                throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorType.TOKEN_INVALID);
             }
         }
     )

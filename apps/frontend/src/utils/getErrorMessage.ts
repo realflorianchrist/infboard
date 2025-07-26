@@ -2,11 +2,21 @@ import {ErrorType} from "@workspace/types/apiResponses";
 import {
     FileValidationErrorType,
     FolderValidationErrorType,
+    UserValidationErrorType,
     ValidationErrorType
 } from "@workspace/types/modelValidation";
 
 
 const validationErrorMessages: Record<ValidationErrorType, string> = {
+
+    // User errors
+    [UserValidationErrorType.USERNAME_TOO_SHORT]: "Username ist zu kurz.",
+    [UserValidationErrorType.USERNAME_TOO_LONG]: "Username ist zu lang.",
+    [UserValidationErrorType.INVALID_EMAIL]: "Ungültige E-Mail",
+    [UserValidationErrorType.NOT_AN_FHNW_EMAIL]: "Verwende deine fhnw.students E-Mail.",
+    [UserValidationErrorType.PASSWORD_TOO_SHORT]: "Passwort ist zu kurz.",
+    [UserValidationErrorType.PASSWORD_TOO_LONG]: "Passwort ist zu lang.",
+
     // Folder errors
     [FolderValidationErrorType.FOLDER_NAME_EMPTY]: "Der Ordnername darf nicht leer sein.",
     [FolderValidationErrorType.FOLDER_NAME_TOO_LONG]: "Der Ordnername ist zu lang.",
@@ -23,9 +33,8 @@ const validationErrorMessages: Record<ValidationErrorType, string> = {
 
 const generalErrorMessages: Record<ErrorType, string> = {
     [ErrorType.NOT_FOUND]: "Die Ressource wurde nicht gefunden.",
-    [ErrorType.USER_ALREADY_EXISTS]: "Ein Benutzer mit dieser E-Mail existiert bereits.",
     [ErrorType.USER_NOT_FOUND]: "Benutzer wurde nicht gefunden.",
-    [ErrorType.INVALID_PASSWORD]: "Das Passwort ist ungültig.",
+    [ErrorType.BAD_CREDENTIALS]: "Username oder Passwort ungültig.",
     [ErrorType.TOKEN_MISSING]: "Authentifizierungstoken fehlt.",
     [ErrorType.TOKEN_INVALID]: "Authentifizierungstoken ist ungültig oder abgelaufen.",
     [ErrorType.FOLDER_NOT_FOUND]: "Der Ordner wurde nicht gefunden.",

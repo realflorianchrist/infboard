@@ -20,7 +20,6 @@ export enum UserValidationErrorType {
     NOT_AN_FHNW_EMAIL = "NOT_AN_FHNW_EMAIL",
     PASSWORD_TOO_SHORT = "PASSWORD_TOO_SHORT",
     PASSWORD_TOO_LONG = "PASSWORD_TOO_LONG",
-    USER_ALREADY_EXISTS = "USER_ALREADY_EXISTS",
 }
 
 export type ValidationErrorType =

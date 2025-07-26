@@ -16,6 +16,7 @@ import {useRouter} from "next/navigation";
 
 export default function RegisterForm() {
 
+    const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -32,7 +33,11 @@ export default function RegisterForm() {
 
         if (!checkPasswords()) return;
 
-        const user = getAuthUser();
+        const user: AuthUser = {
+            username,
+            email,
+            password,
+        }
 
         registerMutation.mutate({user}, {
             onSuccess: () => {
@@ -48,28 +53,12 @@ export default function RegisterForm() {
         });
     }
 
-    const isEmail = (s: string) => z.string().email().safeParse(s).success;
-
     const checkPasswords = () => {
         if (password !== confirmPassword) {
             setErrorMessage(["Die Passwörter stimmen nicht überein."]);
             return false;
         }
         return true;
-    }
-
-    const getAuthUser = () => {
-        const user: AuthUser = {
-            password
-        }
-
-        if (isEmail(username)) {
-            user.email = username;
-        } else {
-            user.username = username;
-        }
-
-        return user;
     }
 
     return (
@@ -83,7 +72,17 @@ export default function RegisterForm() {
                   onSubmit={handleRegister}
             >
                 <div className={'input-group'}>
-                    <Label htmlFor='username'>Username / E-Mail</Label>
+                    <Label htmlFor='email'>E-Mail</Label>
+                    <Input
+                        id='email'
+                        type='email'
+                        required={true}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+                <div className={'input-group'}>
+                    <Label htmlFor='username'>Username</Label>
                     <Input
                         id='username'
                         required={true}
@@ -102,14 +101,6 @@ export default function RegisterForm() {
                     />
                 </div>
 
-                {errorMessage.length > 0 && (
-                    <ul className={'text-error whitespace-normal break-all pt-2'}>
-                        {errorMessage.map((error, i) => (
-                            <li key={i}>{error}</li>
-                        ))}
-                    </ul>
-                )}
-
                 <div className={'input-group'}>
                     <Label htmlFor='repeat-password'>Passwort wiederholen</Label>
                     <Input
@@ -120,6 +111,14 @@ export default function RegisterForm() {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                 </div>
+
+                {errorMessage.length > 0 && (
+                    <ul className={'text-error whitespace-normal break-all pt-2'}>
+                        {errorMessage.map((error, i) => (
+                            <li key={i}>{error}</li>
+                        ))}
+                    </ul>
+                )}
 
                 <Button type={'submit'}>
                     Registrieren
