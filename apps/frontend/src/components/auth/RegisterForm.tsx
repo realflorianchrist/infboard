@@ -40,8 +40,10 @@ export default function RegisterForm() {
 
         registerMutation.mutate({user}, {
             onSuccess: () => {
-                router.push(Routes.HOME);
-                toast.success("Registrierung erfolgreich");
+                setTimeout(() => {
+                    toast.success("Registrierung erfolgreich");
+                    router.push(Routes.HOME);
+                }, 100);
             },
             onError: (e) => {
                 const messages: string[] = [];
