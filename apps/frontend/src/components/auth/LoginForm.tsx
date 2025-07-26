@@ -33,10 +33,9 @@ export default function LoginForm() {
 
         loginMutation.mutate({user}, {
             onSuccess: () => {
-                setTimeout(() => {
-                    toast.success("Login erfolgreich");
-                    router.replace(Routes.HOME);
-                }, 100);
+                toast.success("Login erfolgreich");
+                router.refresh();
+                router.push(Routes.HOME);
             },
             onError: (e) => {
                 const messages: string[] = [];
