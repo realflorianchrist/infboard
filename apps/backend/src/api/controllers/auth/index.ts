@@ -9,10 +9,33 @@ import {ErrorType} from "@workspace/types/apiResponses";
 import {UserValidationErrorType} from "@workspace/types/modelValidation";
 import bcrypt from "bcryptjs";
 import {userDocumentToFileMapper} from "@src/api/mapper/userMapper";
-import {generateToken} from "@src/services/jwtTokenProvider";
+import {generateToken, verifyToken} from "@src/services/jwtTokenProvider";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 
 const authController: Router = express.Router();
+
+authController.get(
+    ApiRoutes.auth.validateToken,
+    handleRequest<
+        { },
+        { success: boolean}
+    >(
+        async (req) => {
+            const token = req.cookies.jwt_token;
+
+            if (!token) throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorType.TOKEN_MISSING);
+
+            verifyToken(token);
+
+            return {
+                status: StatusCodes.OK,
+                data: {
+                    success: true,
+                }
+            }
+        }
+    )
+);
 
 authController.post(
     ApiRoutes.auth.register,
