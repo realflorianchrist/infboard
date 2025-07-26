@@ -35,7 +35,7 @@ export default function LoginForm() {
             onSuccess: () => {
                 setTimeout(() => {
                     toast.success("Login erfolgreich");
-                    router.push(Routes.HOME);
+                    router.replace(Routes.HOME);
                 }, 100);
             },
             onError: (e) => {
