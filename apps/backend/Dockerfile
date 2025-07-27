@@ -14,12 +14,6 @@ RUN corepack enable  \
 
 COPY . .
 
-#FROM base AS linter
-#
-#WORKDIR /app
-#
-#RUN pnpm run lint --filter backend
-
 FROM base AS builder
 
 WORKDIR /app
@@ -40,7 +34,9 @@ RUN corepack enable  \
     && corepack prepare pnpm@latest --activate  \
     && pnpm install --filter backend --prod
 
-COPY --from=builder /app/apps/backend/dist ./
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+
+WORKDIR /app/apps/backend
 
 EXPOSE 8080
 
