@@ -42,7 +42,6 @@ RUN corepack enable  \
 
 COPY --from=builder /app/apps/frontend/.next ./apps/frontend/.next
 COPY --from=builder /app/apps/frontend/public ./apps/frontend/public
-COPY --from=builder /app/apps/frontend/node_modules ./apps/frontend/node_modules
 
 WORKDIR /app/apps/frontend
 
