@@ -33,8 +33,8 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs  \
     && adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/apps/frontend/public ./public
 COPY --from=builder /app/apps/frontend/.next/standalone ./
+COPY --from=builder /app/apps/frontend/public ./apps/frontend/public
 COPY --from=builder /app/apps/frontend/.next/static ./apps/frontend/.next/static
 
 RUN chown -R nextjs:nodejs ./
