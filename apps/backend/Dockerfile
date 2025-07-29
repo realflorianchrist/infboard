@@ -10,7 +10,7 @@ COPY apps/backend/package.json ./apps/backend/
 
 RUN corepack enable  \
     && corepack prepare pnpm@latest --activate  \
-    && pnpm install --filter backend
+    && pnpm install --filter backend...
 
 COPY . .
 
@@ -18,8 +18,8 @@ FROM base AS builder
 
 WORKDIR /app
 
-RUN pnpm install --frozen-lockfile  \
-    && pnpm build --filter backend
+RUN pnpm install --filter backend... --frozen-lockfile  \
+    && pnpm build --filter backend...
 
 FROM node:${NODE_VERSION}-alpine AS production
 
@@ -32,7 +32,7 @@ COPY apps/backend/package.json ./apps/backend/
 
 RUN corepack enable  \
     && corepack prepare pnpm@latest --activate  \
-    && pnpm install --filter backend --prod
+    && pnpm install --filter backend... --prod
 
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 

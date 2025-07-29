@@ -10,7 +10,7 @@ COPY apps/frontend/package.json ./apps/frontend/
 
 RUN corepack enable \
   && corepack prepare pnpm@latest --activate \
-  && pnpm install --filter frontend
+  && pnpm install --filter frontend...
 
 FROM node:${NODE_VERSION}-alpine AS builder
 
@@ -21,7 +21,7 @@ COPY . .
 
 RUN corepack enable \
   && corepack prepare pnpm@latest --activate \
-  && pnpm build --filter frontend
+  && pnpm build --filter frontend...
 
 FROM node:${NODE_VERSION}-alpine AS runner
 
