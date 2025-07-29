@@ -6,8 +6,7 @@ import {
     UseQueryOptions,
     QueryKey
 } from "@tanstack/react-query";
-import {apiFetch, FetchOptions, HttpMethod} from "@/src/api/client/client";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ApiClientError, apiFetch, FetchOptions, HttpMethod} from "@/src/api/client/client";
 import {joinRoute} from "@/src/utils/joinRoute";
 
 /**
@@ -28,7 +27,7 @@ export const useApiQuery = <TApiResponse, TTransformed = TApiResponse>(
     path: string | string[],
     options?: {
         requestOptions?: Omit<FetchOptions, "method">;
-        queryOptions?: Omit<UseQueryOptions<TApiResponse, ErrorType, TTransformed>, "queryFn" | "queryKey">;
+        queryOptions?: Omit<UseQueryOptions<TApiResponse, ApiClientError, TTransformed>, "queryFn" | "queryKey">;
     },
 ) => {
     const {requestOptions, queryOptions} = options ?? {};
@@ -36,7 +35,7 @@ export const useApiQuery = <TApiResponse, TTransformed = TApiResponse>(
         ? joinRoute(path)
         : path;
 
-    return useQuery<TApiResponse, ErrorType, TTransformed, QueryKey>({
+    return useQuery<TApiResponse, ApiClientError, TTransformed, QueryKey>({
         queryKey: requestOptions?.params
             ? [joinedPath, requestOptions.params]
             : [joinedPath],
@@ -71,7 +70,7 @@ export const useApiMutation = <TApiResponse, TRequestBody>(
     method: HttpMethod,
     options?: {
         requestOptions?: Omit<FetchOptions, "method"> | ((variables: TRequestBody) => Omit<FetchOptions, "method">),
-        mutationOptions?: Omit<UseMutationOptions<TApiResponse, ErrorType, TRequestBody>, "mutationFn">,
+        mutationOptions?: Omit<UseMutationOptions<TApiResponse, ApiClientError, TRequestBody>, "mutationFn">,
         invalidatePaths?: string[] | ((data: TApiResponse, variables: TRequestBody) => string[])
     }
 ) => {
@@ -85,7 +84,7 @@ export const useApiMutation = <TApiResponse, TRequestBody>(
         return Array.isArray(dynamicPath) ? joinRoute(dynamicPath) : dynamicPath;
     };
 
-    return useMutation<TApiResponse, ErrorType, TRequestBody>({
+    return useMutation<TApiResponse, ApiClientError, TRequestBody>({
         mutationFn: async (requestBody?: TRequestBody): Promise<TApiResponse> => {
             const resolvedRequestOptions =
                 typeof requestOptions === "function"

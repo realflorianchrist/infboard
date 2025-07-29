@@ -26,3 +26,27 @@ export type FileMeta = BaseFileMeta & {
     downloads?: number;
 };
 
+export const isFolder = (obj: unknown): obj is Folder => {
+    return (
+        typeof obj === "object" &&
+        obj !== null &&
+        "id" in obj &&
+        typeof (obj as any).id === "string" &&
+        "name" in obj &&
+        typeof (obj as any).name === "string" &&
+        !("contentType" in obj)
+    );
+};
+
+export const isFileMeta = (obj: unknown): obj is FileMeta => {
+    return (
+        typeof obj === "object" &&
+        obj !== null &&
+        "id" in obj &&
+        typeof (obj as any).id === "string" &&
+        "name" in obj &&
+        typeof (obj as any).name === "string" &&
+        "contentType" in obj &&
+        typeof (obj as any).contentType === "string"
+    );
+};

@@ -1,6 +1,13 @@
 export const ApiRoutes = {
     base: '/api',
 
+    auth: {
+        base: '/open/auth',
+        register: '/register',
+        login: '/login',
+        validateToken: '/validate-token',
+    },
+
     folders: {
         base: '/folders',
         all: '/all',
@@ -15,8 +22,10 @@ export const ApiRoutes = {
         all: '/all',
         byId: (id: string) => `/${id}`,
         downloadUrlById: (id: string) => `/download/${id}`,
+        downloadUrlsByFolderId: (folderId: string) => `/download/folder/${folderId}`,
         add: '/add',
         update: '/update',
         delete: (id: string) => `/delete/${id}`,
+        rollback: (id: string) => `/rollback/${id}`,
     },
 };

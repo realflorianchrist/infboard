@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import {z} from 'zod';
 import {NodeEnvs} from "@src/constants/index";
 import dotenv from 'dotenv';
 
@@ -35,6 +35,12 @@ const envSchema = z.object({
     S3_BUCKET: z.string(),
     S3_UPLOAD_FOLDER: z.string(),
     S3_EXPIRE_URL_SECONDS: z.coerce.number(),
+
+    // JWT
+    JWT_SECRET: z.string(),
+    JWT_EXPIRE: z
+        .string()
+        .regex(/^\d+[smhd]$/, "JWT_EXPIRE must be like '60s', '10m', '1h', '7d'"),
 });
 
 export const ENV = envSchema.parse(process.env);

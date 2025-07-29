@@ -10,29 +10,39 @@ import {
 } from "@workspace/ui/components/breadcrumb";
 import {Fragment, useState} from "react";
 import {Input} from "@workspace/ui/components/input";
-import findPathInTree from "@/src/utils/findPathInTree";
 import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
+import findFolderPathById from "@/src/utils/findFolderPathById";
+import Loader from "../loader/Loader";
+import {getErrorMessage} from "@/src/utils/getErrorMessage";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();
-    const {mutate} = useCreateFolder();
+    const {mutate, isPending: savingFolder} = useCreateFolder();
 
     const {data} = useGetAllFolders();
-    const path = findPathInTree(data?.folders ?? null, newFolderModal?.parentFolderId);
+    const path = findFolderPathById(data?.folders ?? null, newFolderModal?.parentFolderId);
 
     const [name, setName] = useState('');
-
+    const [errorMessage, setErrorMessage] = useState<string[]>([]);
 
     const handleAddNewFolder = () => {
 
-        mutate({name, parentFolderId: newFolderModal.parentFolderId}, {
-            onSuccess: () => close()
+        mutate({name, parentFolderId: newFolderModal?.parentFolderId}, {
+            onSuccess: () => close(),
+            onError: (e) => {
+                const messages: string[] = [];
+                e.validationErrors?.forEach((error) => {
+                    messages.push(getErrorMessage(error));
+                })
+                setErrorMessage(messages);
+            },
         });
     };
 
     const close = () => {
         closeNewFolderModal();
         setName('');
+        setErrorMessage([]);
     }
 
     return (
@@ -56,6 +66,8 @@ export default function NewFolderModal() {
                         ))}
                     </BreadcrumbList>
                 </Breadcrumb>
+
+
                 <form onSubmit={(e) => {
                     e.preventDefault();
                     handleAddNewFolder();
@@ -67,14 +79,28 @@ export default function NewFolderModal() {
                         onChange={(e) => setName(e.target.value)}
                     />
 
-                    <div className="flex justify-end gap-2 mt-4">
-                        <Button type="button" variant="secondary" onClick={close}>
-                            Abbrechen
-                        </Button>
-                        <Button type="submit" disabled={!name.trim()}>
-                            Speichern
-                        </Button>
-                    </div>
+                    {errorMessage.length > 0 && (
+                        <ul className={'text-error whitespace-normal break-all pt-2'}>
+                            {errorMessage.map((error, i) => (
+                                <li key={i}>{error}</li>
+                            ))}
+                        </ul>
+                    )}
+
+                    {savingFolder ? (
+                        <Loader/>
+                    ) : (
+                        <div className="flex justify-end gap-2 mt-4">
+                            <Button type="button" variant="secondary" onClick={close}>
+                                Abbrechen
+                            </Button>
+                            <Button type="submit"
+                                    disabled={!name.trim() || savingFolder}
+                            >
+                                Speichern
+                            </Button>
+                        </div>
+                    )}
                 </form>
             </DialogContent>
         </Dialog>

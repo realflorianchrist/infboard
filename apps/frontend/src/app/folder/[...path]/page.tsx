@@ -5,8 +5,12 @@ import {FolderPathCrumbs} from "@/src/components/FolderPathCrumbs";
 import DataTable from "@/src/components/data_table/DataTable";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
-import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import Toolbox from "@/src/components/menus/Toolbox";
+import {useFolderPath} from "@/src/hooks/useFolderPath";
+import {useDownloadFile} from "@/src/hooks/useDownloadFile";
+import Loader from "@/src/components/loader/Loader";
+import {useEffect} from "react";
+import ModalAnchor from "@/src/components/modals/ModalAnchor";
 import {DndContext, DragEndEvent} from "@dnd-kit/core";
 
 
@@ -47,8 +51,8 @@ export default function FolderPage() {
                     className={'h-full'}
                 >
                     <DataContextMenu
-                        onNewFolder={() => openNewFolderModal(null)}
-                        onUploadFile={() => openUploadFileModal(null)}
+                        onNewFolder={() => openNewFolderModal()}
+                        onUploadFile={() => openUploadFileModal()}
                     >
                         <div className={'h-full overflow-auto'}>
                             <Treeview/>
@@ -61,8 +65,8 @@ export default function FolderPage() {
                     className={'h-full'}
                 >
                     <DataContextMenu
-                        onNewFolder={() => openNewFolderModal(path[path.length - 1]?.id ?? null)}
-                        onUploadFile={() => openUploadFileModal(path[path.length - 1]?.id ?? null)}
+                        onNewFolder={() => openNewFolderModal(path[path.length - 1]?.id)}
+                        onUploadFile={() => openUploadFileModal(path[path.length - 1]?.id)}
                     >
                         <div className={'flex h-full pl-4 overflow-auto'}>
                             <DataTable/>
@@ -70,6 +74,7 @@ export default function FolderPage() {
                     </DataContextMenu>
                 </ResizablePanel>
             </ResizablePanelGroup>
+            <ModalAnchor/>
         </DndContext>
     );
 }

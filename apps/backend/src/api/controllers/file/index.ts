@@ -4,14 +4,12 @@ import {FileMeta, NewFileInput} from "@workspace/types/data";
 import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
-import {FileModel} from "@src/models/File";
-import {
-    generatePresignedDownloadUrl,
-    generatePresignedUploadUrl
-} from "@src/services/s3Service";
-import logger from "jet-logger";
+import {FileModel, FileSchema} from "@src/models/File";
+import {generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {validateOrThrow} from "@src/api/utils/validateOrThrow";
+import {FileValidationErrorType} from "@workspace/types/modelValidation";
 
 const fileController: Router = express.Router();
 
@@ -21,15 +19,26 @@ fileController.post(
     handleRequest<{ file: NewFileInput }, { file: FileMeta }>(
         async (req) => {
 
-            const {file} = req.body;
+            const validated = validateOrThrow(FileSchema, req.body.file);
+
+            const {name, parentFolderId} = validated;
+
+            const existing = await FileModel.findOne({name, parentFolderId});
+
+            if (existing) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
+                    validationErrors: [FileValidationErrorType.FILE_ALREADY_EXISTS]
+                });
+            }
 
             try {
                 const newFile = await FileModel.create({
-                    name: file.name,
-                    contentType: file.contentType,
-                    size: file.size,
-                    comment: file.comment,
-                    parentFolderId: file.parentFolderId,
+                    name: validated.name,
+                    contentType: validated.contentType,
+                    size: validated.size,
+                    comment: validated.comment,
+                    parentFolderId: validated.parentFolderId,
+                    userName: req.user?.username
                 });
 
                 const url = await generatePresignedUploadUrl(
@@ -45,7 +54,6 @@ fileController.post(
                     },
                 };
             } catch (error) {
-                logger.err(error);
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.API_ERROR);
             }
         }
@@ -83,6 +91,42 @@ fileController.put(
 );
 
 fileController.put(
+    ApiRoutes.files.downloadUrlsByFolderId(':folderId'),
+    handleRequest<{}, { url: string, file: FileMeta }[], { folderId: string }>(
+        async (req) => {
+
+            const {folderId} = req.params;
+
+            const fileDocs = await FileModel.find({parentFolderId: folderId});
+
+            await Promise.all(
+                fileDocs.map((file) =>
+                    FileModel.findByIdAndUpdate(file._id, {$inc: {downloads: 1}}, {timestamps: false})
+                )
+            );
+
+            const results = await Promise.all(
+                fileDocs.map(async (file) => {
+                    const url = await generatePresignedDownloadUrl(file._id.toString());
+                    return {
+                        url,
+                        file,
+                    };
+                })
+            );
+
+            return {
+                status: StatusCodes.OK,
+                data: results.map(({url, file}) => ({
+                    url: url,
+                    file: fileDocumentToFileMapper(file),
+                })),
+            };
+        }
+    )
+);
+
+fileController.put(
     ApiRoutes.files.delete(':id'),
     handleRequest<{}, { file: FileMeta }, { id: string }>(
         async (req) => {
@@ -93,6 +137,31 @@ fileController.put(
                 id,
                 {$set: {deleted: true}},
                 {timestamps: false}
+            );
+
+            if (!fileDoc) {
+                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            }
+
+            return {
+                status: StatusCodes.OK,
+                data: {
+                    file: fileDocumentToFileMapper(fileDoc)
+                },
+            };
+        }
+    )
+);
+
+fileController.put(
+    ApiRoutes.files.rollback(':id'),
+    handleRequest<{}, { file: FileMeta }, { id: string }>(
+        async (req) => {
+
+            const {id} = req.params;
+
+            const fileDoc = await FileModel.findByIdAndDelete(
+                id,
             );
 
             if (!fileDoc) {

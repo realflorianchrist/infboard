@@ -1,6 +1,8 @@
 const Routes = {
     HOME: '/folder/root',
-    LOGIN: '/login',
+    LOGIN: '/auth/login',
+    REGISTER: '/auth/register',
+    RESET_PASSWORD: '/auth/reset-password',
     DASHBOARD: '/dashboard',
     SEARCH: '/search',
 }

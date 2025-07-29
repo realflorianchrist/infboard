@@ -1,5 +1,4 @@
 'use client'
-import {useFolderPath} from "@/src/providers/FolderPathProvider";
 import {Folder} from "@workspace/types/data";
 import {useEffect, useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
@@ -7,6 +6,7 @@ import {FolderPathSegment} from "@workspace/types/folderPath";
 import {IoFolderOutline} from "react-icons/io5";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
+import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {useDroppable} from "@dnd-kit/core";
 import {cn} from "@workspace/ui/lib/utils";
 
@@ -21,7 +21,7 @@ export default function TreeNode(
         parents?: FolderPathSegment[];
     }) {
 
-    const {path, setPath} = useFolderPath();
+    const {path, pushFolderById} = useFolderPath();
     const {
         openNewFolderModal,
         openRenameFolderModal,
@@ -76,7 +76,7 @@ export default function TreeNode(
                     <div
                         className="flex items-center gap-2 flex-1"
                         onClick={() => {
-                            setPath([...parents, {id: folder.id, name: folder.name}]);
+                            pushFolderById(folder.id);
                             setSelected([]);
                         }}
                     >

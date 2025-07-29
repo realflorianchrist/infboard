@@ -2,11 +2,14 @@ import express, {Router} from "express";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {StatusCodes} from "http-status-codes";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {FolderModel} from "@src/models/Folder";
+import {FolderModel, FolderSchema} from "@src/models/Folder";
 import {Folder} from "@workspace/types/data";
 import {getFolderContents, getFolderTree} from "@src/services/dataService";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
+import {validateOrThrow} from "@src/api/utils/validateOrThrow";
+import {FileValidationErrorType, FolderValidationErrorType} from "@workspace/types/modelValidation";
+
 
 const folderController: Router = express.Router();
 
@@ -45,13 +48,23 @@ folderController.get(
 
 folderController.post(
     ApiRoutes.folders.add,
-    handleRequest<{ name: string, parentFolderId: string | null }, { folder: Folder }>(
+    handleRequest<{ name: string, parentFolderId?: string }, { folder: Folder }>(
         async (req) => {
 
-            const {name, parentFolderId} = req.body;
+            const validated = validateOrThrow(FolderSchema, req.body);
+
+            const { name, parentFolderId } = validated;
+
+            const existing = await FolderModel.findOne({ name, parentFolderId });
+
+            if (existing) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
+                    validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS]
+                });
+            }
 
             try {
-                const newFolder = await FolderModel.create({name, parentFolderId});
+                const newFolder = await FolderModel.create(validated);
 
                 return {
                     status: StatusCodes.OK,
@@ -75,12 +88,12 @@ folderController.put(
     handleRequest<{ folder: Folder }, { folder: Folder }>(
         async (req) => {
 
-            const {folder} = req.body;
+            const validated = validateOrThrow(FolderSchema, req.body.folder);
 
             const updatedFolder = await FolderModel.findByIdAndUpdate(
-                folder.id,
-                { name: folder.name },
-                { new: true }
+                validated.id,
+                {name: validated.name},
+                {new: true}
             );
 
             if (!updatedFolder) {
