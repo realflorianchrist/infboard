@@ -10,7 +10,7 @@ COPY apps/frontend/package.json ./apps/frontend/
 
 RUN corepack enable \
   && corepack prepare pnpm@latest --activate \
-  && pnpm install --filter frontend...
+  && pnpm install --recursive --filter frontend...
 
 FROM node:${NODE_VERSION}-alpine AS builder
 
