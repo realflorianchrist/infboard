@@ -1,50 +1,52 @@
 ARG NODE_VERSION=22
-FROM node:${NODE_VERSION}-alpine AS base
+FROM node:${NODE_VERSION}-alpine AS deps
 
 WORKDIR /app
 
-ENV CI=true
-
-ARG NEXT_PUBLIC_API_BASE_URL
-ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+RUN apk add --no-cache libc6-compat
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/frontend/package.json ./apps/frontend/
 
-RUN corepack enable  \
-    && corepack prepare pnpm@latest --activate  \
-    && pnpm install --filter frontend
+RUN corepack enable \
+  && corepack prepare pnpm@latest --activate \
+  && pnpm install --filter frontend
 
+FROM node:${NODE_VERSION}-alpine AS builder
+
+WORKDIR /app
+
+COPY --from=deps /app ./
 COPY . .
 
-FROM base AS builder
+RUN corepack enable \
+  && corepack prepare pnpm@latest --activate \
+  && pnpm build --filter frontend
+
+FROM node:${NODE_VERSION}-alpine AS runner
 
 WORKDIR /app
 
-RUN pnpm install --frozen-lockfile  \
-    && pnpm build --filter frontend
+ENV NODE_ENV=production
 
-FROM node:${NODE_VERSION}-alpine AS production
+RUN addgroup --system --gid 1001 nodejs  \
+    && adduser --system --uid 1001 nextjs
 
-WORKDIR /app
+COPY --from=builder /app/apps/frontend/public ./public
+COPY --from=builder /app/apps/frontend/.next/standalone ./
+COPY --from=builder /app/apps/frontend/.next/static ./apps/frontend/.next/static
 
-ENV CI=true
+RUN chown -R nextjs:nodejs ./
 
-ARG NEXT_PUBLIC_API_BASE_URL
-ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
-
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/frontend/package.json ./apps/frontend/
-
-RUN corepack enable  \
-    && corepack prepare pnpm@latest --activate  \
-    && pnpm install --filter frontend --prod
-
-COPY --from=builder /app/apps/frontend/.next ./apps/frontend/.next
-COPY --from=builder /app/apps/frontend/public ./apps/frontend/public
-
-WORKDIR /app/apps/frontend
+USER nextjs
 
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+ARG NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+
+WORKDIR /app/apps/frontend
+
+CMD ["node", "server.js"]
