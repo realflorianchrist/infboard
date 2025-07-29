@@ -1,5 +1,5 @@
 ARG NODE_VERSION=22
-FROM node:${NODE_VERSION}-alpine AS deps
+FROM node:${NODE_VERSION}-alpine AS base
 
 WORKDIR /app
 
@@ -10,18 +10,16 @@ COPY apps/frontend/package.json ./apps/frontend/
 
 RUN corepack enable \
   && corepack prepare pnpm@latest --activate \
-  && pnpm install --recursive --filter frontend...
+  && pnpm install --filter frontend...
 
-FROM node:${NODE_VERSION}-alpine AS builder
+COPY . .
+
+FROM base AS builder
 
 WORKDIR /app
 
-COPY --from=deps /app ./
-COPY . .
-
-RUN corepack enable \
-  && corepack prepare pnpm@latest --activate \
-  && pnpm build --filter frontend...
+RUN pnpm install --filter frontend... --frozen-lockfile  \
+    && pnpm build --filter frontend...
 
 FROM node:${NODE_VERSION}-alpine AS runner
 
