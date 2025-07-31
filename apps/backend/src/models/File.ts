@@ -2,6 +2,7 @@ import {z} from 'zod';
 import {model, Schema, Types, Document, Query} from 'mongoose';
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {FileValidationErrorType} from "@workspace/types/modelValidation";
+import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
 
 
 export const FileSchema = z.object({
@@ -35,6 +36,8 @@ export const FileSchema = z.object({
     parentFolderId: z.string().default(ROOT_FOLDER_ID),
     deleted: z.boolean().optional(),
 });
+
+export const UpdateFileSchema = makeUpdateSchema(FileSchema);
 
 export type IFile = z.infer<typeof FileSchema>;
 

@@ -2,6 +2,7 @@ import {z} from 'zod';
 import {model, Schema, Types, Document} from 'mongoose';
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {FolderValidationErrorType} from "@workspace/types/modelValidation";
+import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
 
 export const FolderSchema = z.object({
     id: z.string().optional(),
@@ -11,6 +12,8 @@ export const FolderSchema = z.object({
     created: z.date().optional(),
     parentFolderId: z.string().default(ROOT_FOLDER_ID),
 });
+
+export const UpdateFolderSchema = makeUpdateSchema(FolderSchema);
 
 export type IFolder = z.infer<typeof FolderSchema>;
 

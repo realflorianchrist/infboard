@@ -2,13 +2,14 @@ import express, {Router} from "express";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {StatusCodes} from "http-status-codes";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {FolderModel, FolderSchema} from "@src/models/Folder";
-import {Folder} from "@workspace/types/data";
+import {FolderModel, FolderSchema, UpdateFolderSchema} from "@src/models/Folder";
+import {Folder, UpdateFolder} from "@workspace/types/data";
 import {getFolderContents, getFolderTree} from "@src/services/dataService";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import {FileValidationErrorType, FolderValidationErrorType} from "@workspace/types/modelValidation";
+import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 
 
 const folderController: Router = express.Router();
@@ -69,11 +70,7 @@ folderController.post(
                 return {
                     status: StatusCodes.OK,
                     data: {
-                        folder: {
-                            id: newFolder._id.toString(),
-                            name: newFolder.name,
-                            parentFolderId: newFolder.parentFolderId?.toString(),
-                        },
+                        folder: folderDocumentToFolderMapper(newFolder),
                     },
                 };
             } catch (error) {
@@ -85,14 +82,14 @@ folderController.post(
 
 folderController.put(
     ApiRoutes.folders.update,
-    handleRequest<{ folder: Folder }, { folder: Folder }>(
+    handleRequest<{ folder: UpdateFolder }, { folder: Folder }>(
         async (req) => {
 
-            const validated = validateOrThrow(FolderSchema, req.body.folder);
+            const validated = validateOrThrow(UpdateFolderSchema, req.body.folder);
 
             const updatedFolder = await FolderModel.findByIdAndUpdate(
                 validated.id,
-                {name: validated.name},
+                {...validated},
                 {new: true}
             );
 
@@ -103,11 +100,7 @@ folderController.put(
             return {
                 status: StatusCodes.OK,
                 data: {
-                    folder: {
-                        id: updatedFolder._id.toString(),
-                        name: updatedFolder.name,
-                        parentFolderId: updatedFolder.parentFolderId?.toString(),
-                    },
+                    folder: folderDocumentToFolderMapper(updatedFolder),
                 },
             };
         }
@@ -131,11 +124,7 @@ folderController.delete(
             return {
                 status: StatusCodes.OK,
                 data: {
-                    folder: {
-                        id: folder._id.toString(),
-                        name: folder.name,
-                        parentFolderId: folder.parentFolderId?.toString(),
-                    },
+                    folder: folderDocumentToFolderMapper(folder),
                 },
             };
         }

@@ -7,22 +7,33 @@ import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import Toolbox from "@/src/components/menus/Toolbox";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {useDownloadFile} from "@/src/hooks/useDownloadFile";
-import Loader from "@/src/components/loader/Loader";
-import {useEffect} from "react";
 import ModalAnchor from "@/src/components/modals/ModalAnchor";
-
+import {DndContext} from "@dnd-kit/core";
+import DataDragOverlay from "@/src/components/dnd/DataDragOverlay";
+import useDragAndDropSettings from "@/src/hooks/useDnDSettings";
 
 export default function FolderPage() {
+
+    const {path} = useFolderPath();
+
     const {
         openNewFolderModal,
         openUploadFileModal,
     } = useContextMenu();
 
-    const {path} = useFolderPath();
+    const {
+        activeRow,
+        sensors,
+        handleDragStart,
+        handleDragEnd,
+    } = useDragAndDropSettings();
 
     return (
-        <>
+        <DndContext
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+        >
             <div className={'mb-4 flex items-center w-full justify-between'}>
                 <FolderPathCrumbs withLinks={true}/>
                 <div className={'right-0 relative'}>
@@ -61,6 +72,9 @@ export default function FolderPage() {
                 </ResizablePanel>
             </ResizablePanelGroup>
             <ModalAnchor/>
-        </>
+
+            <DataDragOverlay rowData={activeRow}/>
+
+        </DndContext>
     );
 }

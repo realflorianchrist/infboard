@@ -10,7 +10,6 @@ import {
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@workspace/ui/components/table";
 import {useEffect, useState} from "react";
 import {IoFolderOutline} from "react-icons/io5";
-import {GoFile} from "react-icons/go";
 import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
@@ -23,8 +22,11 @@ import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {getFileSymbol} from "@/src/utils/getFileSymbol";
 import Loader from "@/src/components/loader/Loader";
+import DraggableDroppableTableRow from "@/src/components/dnd/DraggableDroppableTableRow";
+import {rowDataToDnDType} from "@/src/types/dragAndDrop";
+import {useDndMonitor, useDroppable} from "@dnd-kit/core";
 
-type Row = {
+export type RowData = {
     select?: boolean;
     id: string;
     name: string;
@@ -36,9 +38,8 @@ type Row = {
     downloads?: number;
     size?: string;
     contentType?: string;
-    // meta?: string[];
+    parentFolderId?: string;
 }
-
 
 export default function DataTable() {
     const {path, pushFolderById} = useFolderPath();
@@ -58,25 +59,36 @@ export default function DataTable() {
 
     const {downloadFile, isDownloading} = useDownloadFile();
 
-    const columnHelper = createColumnHelper<Row>();
+    const columnHelper = createColumnHelper<RowData>();
 
-    const [data, setData] = useState<Row[]>([]);
+    const [data, setData] = useState<RowData[]>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const folderId = path[path.length - 1]?.id;
     const {data: result} = useGetFolderDataById(folderId ?? ROOT_FOLDER_ID);
+    const {setNodeRef} = useDroppable({id: folderId ?? `${ROOT_FOLDER_ID}`});
+
+    useDndMonitor({
+        onDragOver: (event) => {
+            console.log('over.id', event.over?.id);
+        },
+        onDragEnd: (event) => {
+            console.log('dragEnd over.id', event.over?.id);
+        }
+    });
 
     useEffect(() => {
         const currentFolder = result?.folder;
         if (!currentFolder) return;
 
-        const folderRows: Row[] = (currentFolder.children ?? []).map(f => ({
+        const folderRows: RowData[] = (currentFolder.children ?? []).map(f => ({
             id: f.id,
             name: f.name,
-            type: 'folder'
+            type: 'folder',
+            parentFolderId: f.parentFolderId,
         }));
 
-        const fileRows: Row[] = (currentFolder.files ?? []).map(file => ({
+        const fileRows: RowData[] = (currentFolder.files ?? []).map(file => ({
             id: file.id,
             name: file.name,
             type: 'file',
@@ -87,6 +99,7 @@ export default function DataTable() {
             downloads: file.downloads,
             size: formatFileSize(file.size),
             contentType: file.contentType,
+            parentFolderId: file.parentFolderId,
         }));
 
         setData([...folderRows, ...fileRows]);
@@ -219,23 +232,26 @@ export default function DataTable() {
         <>
             {isDownloading && <Loader isFullScreen={true}/>}
 
-            <Table className={'table-fixed'}>
-                <TableHeader className={'sticky top-0 z-10 bg-background'}>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <TableHead
-                                    key={header.id}
-                                    style={{width: header.getSize()}}
-                                    className="relative group select-none"
-                                >
-                                    <div className="flex gap-2 items-center cursor-pointer"
-                                         onClick={header.column.getToggleSortingHandler()}
+            <div ref={setNodeRef}
+                 className={'h-full'}
+            >
+                <Table className={'table-fixed'}>
+                    <TableHeader className={'sticky top-0 z-10 bg-background'}>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead
+                                        key={header.id}
+                                        style={{width: header.getSize()}}
+                                        className="relative group select-none"
                                     >
-                                        {!header.isPlaceholder && (
-                                            <>
-                                                {flexRender(header.column.columnDef.header, header.getContext())}
-                                                <span className="w-4 flex justify-center">
+                                        <div className="flex gap-2 items-center cursor-pointer"
+                                             onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            {!header.isPlaceholder && (
+                                                <>
+                                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                                    <span className="w-4 flex justify-center">
                                                 {{
                                                     asc: <FaCaretUp/>,
                                                     desc: <FaCaretDown/>,
@@ -245,85 +261,90 @@ export default function DataTable() {
                                                     </span>
                                                 )}
                                             </span>
-                                            </>
-                                        )}
-                                    </div>
-
-                                    {header.column.getCanResize() && (
-                                        <div
-                                            onMouseDown={header.getResizeHandler()}
-                                            onTouchStart={header.getResizeHandler()}
-                                            className={cn(
-                                                "absolute right-0 top-0 h-full w-1 cursor-col-resize bg-border",
-                                                "transition-opacity opacity-0 group-hover:opacity-100"
+                                                </>
                                             )}
-                                        />
-                                    )}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows.map(row => {
-                        const item = row.original;
-                        const isFolder = item.type === "folder";
-                        const Cells = () =>
-                            row.getVisibleCells().map(cell => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
-                            ))
+                                        </div>
 
-                        const rowClassNames = cn('cursor-pointer select-none group', {
-                            'bg-accent/10 hover:bg-accent/20': isSelected(item.id)
-                        });
+                                        {header.column.getCanResize() && (
+                                            <div
+                                                onMouseDown={header.getResizeHandler()}
+                                                onTouchStart={header.getResizeHandler()}
+                                                className={cn(
+                                                    "absolute right-0 top-0 h-full w-1 cursor-col-resize bg-border",
+                                                    "transition-opacity opacity-0 group-hover:opacity-100"
+                                                )}
+                                            />
+                                        )}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows.map(row => {
+                            const item = row.original;
+                            const isFolder = item.type === "folder";
+                            const Cells = () =>
+                                row.getVisibleCells().map(cell => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))
 
-                        return (
-                            isFolder ? (
-                                <DataContextMenu
-                                    key={row.id}
-                                    onNewFolder={() => openNewFolderModal(item.id)}
-                                    onRename={() => openRenameFolderModal(item.id, item.name)}
-                                    onDelete={() => openDeleteFolderModal(item.id)}
-                                    onSelect={() => {
-                                        const folder = result?.folder.children?.find(f => f.id === item.id);
-                                        if (!isSelected(item.id) && folder) addSelected(folder);
-                                    }}
-                                    onUploadFile={() => openUploadFileModal(item.id)}
-                                >
-                                    <TableRow
-                                        className={rowClassNames}
-                                        onDoubleClick={() => {
-                                            pushFolderById(item.id);
-                                            setSelected([]);
+                            const rowClassNames = cn('cursor-pointer select-none group', {
+                                'bg-accent/10 hover:bg-accent/20': isSelected(item.id)
+                            });
+
+                            return (
+                                isFolder ? (
+                                    <DataContextMenu
+                                        key={row.id}
+                                        onNewFolder={() => openNewFolderModal(item.id)}
+                                        onRename={() => openRenameFolderModal(item.id, item.name)}
+                                        onDelete={() => openDeleteFolderModal(item.id)}
+                                        onSelect={() => {
+                                            const folder = result?.folder.children?.find(f => f.id === item.id);
+                                            if (!isSelected(item.id) && folder) addSelected(folder);
+                                        }}
+                                        onUploadFile={() => openUploadFileModal(item.id)}
+                                    >
+                                        <DraggableDroppableTableRow
+                                            id={item.id}
+                                            data={rowDataToDnDType(row.original)}
+                                            className={rowClassNames}
+                                            onDoubleClick={() => {
+                                                pushFolderById(item.id);
+                                                setSelected([]);
+                                            }}
+                                        >
+                                            {Cells()}
+                                        </DraggableDroppableTableRow>
+                                    </DataContextMenu>
+                                ) : (
+                                    <DataContextMenu
+                                        key={row.id}
+                                        onRename={() => openRenameFileModal(item.id, item.name)}
+                                        onDelete={() => openDeleteFileModal(item.id)}
+                                        onSelect={() => {
+                                            const file = result?.folder.files?.find(f => f.id === item.id);
+                                            if (!isSelected(item.id) && file) addSelected(file);
                                         }}
                                     >
-                                        {Cells()}
-                                    </TableRow>
-                                </DataContextMenu>
-                            ) : (
-                                <DataContextMenu
-                                    key={row.id}
-                                    onRename={() => openRenameFileModal(item.id, item.name)}
-                                    onDelete={() => openDeleteFileModal(item.id)}
-                                    onSelect={() => {
-                                        const file = result?.folder.files?.find(f => f.id === item.id);
-                                        if (!isSelected(item.id) && file) addSelected(file);
-                                    }}
-                                >
-                                    <TableRow
-                                        className={rowClassNames}
-                                        onDoubleClick={() => downloadFile(item.id)}
-                                    >
-                                        {Cells()}
-                                    </TableRow>
-                                </DataContextMenu>
-                            )
-                        );
-                    })}
-                </TableBody>
-            </Table>
+                                        <DraggableDroppableTableRow
+                                            id={item.id}
+                                            data={rowDataToDnDType(row.original)}
+                                            className={rowClassNames}
+                                            onDoubleClick={() => downloadFile(item.id)}
+                                        >
+                                            {Cells()}
+                                        </DraggableDroppableTableRow>
+                                    </DataContextMenu>
+                                )
+                            );
+                        })}
+                    </TableBody>
+                </Table>
+            </div>
         </>
     );
 }

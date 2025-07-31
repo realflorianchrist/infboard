@@ -7,6 +7,9 @@ import {IoFolderOutline} from "react-icons/io5";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
+import {useDraggable, useDroppable} from "@dnd-kit/core";
+import {cn} from "@workspace/ui/lib/utils";
+import {folderToDnDType} from "@/src/types/dragAndDrop";
 
 export default function TreeNode(
     {
@@ -28,6 +31,9 @@ export default function TreeNode(
         openUploadFileModal,
     } = useContextMenu();
 
+    const {attributes, listeners, setNodeRef: setDraggableRef} = useDraggable({id: `${folder.id}-treeNode`, data: folderToDnDType(folder)});
+    const {setNodeRef: setDroppableRef, isOver, node, active} = useDroppable({id: `${folder.id}-treeNode`});
+
     const [isOpen, setIsOpen] = useState(() => {
         if (typeof window !== 'undefined') {
             return sessionStorage.getItem(`open-${folder.id}`) === 'true';
@@ -40,7 +46,7 @@ export default function TreeNode(
     }, [isOpen]);
 
     return (
-        <div>
+        <div className={cn("p-1 rounded", )}>
             <DataContextMenu
                 onNewFolder={() => openNewFolderModal(folder.id)}
                 onRename={() => openRenameFolderModal(folder.id, folder.name)}
@@ -48,13 +54,20 @@ export default function TreeNode(
                 onUploadFile={() => openUploadFileModal(folder.id)}
             >
                 <div
+                    id={`${folder.id}-treeNode`}
+                    ref={(node) => {
+                        setDroppableRef(node);
+                        setDraggableRef(node);
+                    }}
                     className={`cursor-pointer select-none flex items-center gap-2 text-sm
                           px-2 py-1 rounded
                           hover:bg-accent/10
                           ${path[path.length - 1]?.id === folder.id ? 'bg-accent/20' : ''}
+                          ${isOver && node.current?.id.split('-')[0] !== (active?.id as string).split('-')[0] && "bg-accent/40"}
                         `}
                     style={{paddingLeft: `${depth * 1}rem`}}
-
+                    {...attributes}
+                    {...listeners}
                 >
                     {folder.children?.length ? (
                         <button

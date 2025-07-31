@@ -1,5 +1,5 @@
-import {useApiMutation, useApiQuery} from "@/src/api/client/reactQuery";
-import {FileMeta, NewFileInput} from "@workspace/types/data";
+import {useApiMutation} from "@/src/api/client/reactQuery";
+import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/data";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {HttpMethod} from "@/src/api/client/client";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
@@ -33,6 +33,19 @@ export const useGetFileDownloadUrlsForFolder = () =>
     >(
         (variables) => [baseRoute, ApiRoutes.files.downloadUrlsByFolderId(variables.folderId)],
         HttpMethod.PUT,
+    );
+
+export const useUpdateFile = () =>
+    useApiMutation<
+        { file: FileMeta },
+        { file: UpdateFileMeta }
+    >(
+        [baseRoute, ApiRoutes.files.update],
+        HttpMethod.PUT,
+        {
+            invalidatePaths: (_, variables) =>
+                [`${ApiRoutes.folders.base}${ApiRoutes.folders.byId(variables.file.parentFolderId ?? ROOT_FOLDER_ID)}`],
+        }
     );
 
 export const useDeleteFile = () =>
