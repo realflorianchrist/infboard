@@ -10,7 +10,7 @@ import {useFolderPath} from "@/src/hooks/useFolderPath";
 import ModalAnchor from "@/src/components/modals/ModalAnchor";
 import {DndContext} from "@dnd-kit/core";
 import DataDragOverlay from "@/src/components/dnd/DataDragOverlay";
-import useDragAndDropSettings from "@/src/utils/dragAndDropSettings";
+import useDragAndDropSettings from "@/src/hooks/useDnDSettings";
 
 export default function FolderPage() {
 

@@ -74,7 +74,15 @@ const useDragAndDropSettings = () => {
                     parentFolderId: targetFolderId
                 }
 
-                updateFile.mutate({file});
+                updateFile.mutate({file}, {
+                    onSuccess: async () => {
+                        await queryClient.invalidateQueries({
+                            queryKey: [
+                                `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(dragData.parentFolderId ?? ROOT_FOLDER_ID)}`
+                            ]
+                        })
+                    }
+                });
             }
         }
 

@@ -1,10 +1,10 @@
 import express, {Router} from "express";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {FileMeta, NewFileInput} from "@workspace/types/data";
+import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/data";
 import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
-import {FileModel, FileSchema} from "@src/models/File";
+import {FileModel, FileSchema, UpdateFileSchema} from "@src/models/File";
 import {generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
@@ -56,6 +56,34 @@ fileController.post(
             } catch (error) {
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.API_ERROR);
             }
+        }
+    )
+);
+
+
+fileController.put(
+    ApiRoutes.files.update,
+    handleRequest<{ file: UpdateFileMeta }, { file: FileMeta }>(
+        async (req) => {
+
+            const validated = validateOrThrow(UpdateFileSchema, req.body.file);
+
+            const updatedFile = await FileModel.findByIdAndUpdate(
+                validated.id,
+                {...validated},
+                {new: true}
+            );
+
+            if (!updatedFile) {
+                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+            }
+
+            return {
+                status: StatusCodes.OK,
+                data: {
+                    file: fileDocumentToFileMapper(updatedFile),
+                },
+            };
         }
     )
 );
