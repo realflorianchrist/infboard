@@ -30,7 +30,7 @@ export default function TreeNode(
         openUploadFileModal,
     } = useContextMenu();
 
-    const {setNodeRef, isOver} = useDroppable({id: folder.id});
+    const {setNodeRef, isOver, node, active} = useDroppable({id: `${folder.id}-treeNode`});
 
     const [isOpen, setIsOpen] = useState(() => {
         if (typeof window !== 'undefined') {
@@ -44,10 +44,7 @@ export default function TreeNode(
     }, [isOpen]);
 
     return (
-        <div
-            ref={setNodeRef}
-            className={cn("p-1 rounded", isOver && "bg-accent")}
-        >
+        <div className={cn("p-1 rounded", )}>
             <DataContextMenu
                 onNewFolder={() => openNewFolderModal(folder.id)}
                 onRename={() => openRenameFolderModal(folder.id, folder.name)}
@@ -55,10 +52,13 @@ export default function TreeNode(
                 onUploadFile={() => openUploadFileModal(folder.id)}
             >
                 <div
+                    id={`${folder.id}-treeNode`}
+                    ref={setNodeRef}
                     className={`cursor-pointer select-none flex items-center gap-2 text-sm
                           px-2 py-1 rounded
                           hover:bg-accent/10
                           ${path[path.length - 1]?.id === folder.id ? 'bg-accent/20' : ''}
+                          ${isOver && node.current?.id.split('-')[0] !== active?.id && "bg-accent/40"}
                         `}
                     style={{paddingLeft: `${depth * 1}rem`}}
 

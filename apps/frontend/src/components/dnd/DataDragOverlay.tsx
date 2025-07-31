@@ -10,13 +10,18 @@ type Props = {
 
 export default function DataDragOverlay({rowData}: Props) {
 
+    if (!rowData) return null;
+
     return (
-        <DragOverlay modifiers={[snapCenterToCursor]}>
+        <DragOverlay
+            modifiers={[snapCenterToCursor]}
+            dropAnimation={null}
+        >
             <div className="flex items-center gap-2 w-fit select-none text-sm">
                 <span className="shrink-0">
-                    {rowData?.type === 'folder' ? <IoFolderOutline/> : getFileSymbol(rowData?.contentType)}
+                    {rowData.type === 'folder' ? <IoFolderOutline/> : getFileSymbol(rowData.contentType)}
                 </span>
-                <span>{rowData?.name}</span>
+                <span>{rowData.name}</span>
             </div>
         </DragOverlay>
     );

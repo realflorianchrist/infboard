@@ -33,7 +33,11 @@ export default function FolderPage() {
 
     const handleDragEnd = (event: DragEndEvent) => {
         const {active, over} = event;
-        if (!active || !over) return;
+
+        if (!active || !over) {
+            setActiveRow(null);
+            return;
+        }
 
         const draggedId = active.id as string;
         const targetFolderId = over.id as string;
@@ -41,14 +45,12 @@ export default function FolderPage() {
         if (draggedId && targetFolderId
             && draggedId !== targetFolderId
             && isRowData(active.data.current)
-            && isRowData(over.data.current)
         ) {
             const dragData = active.data.current;
-            const targetData = over.data.current;
 
             setActiveRow(null);
 
-            console.log(`drop ${dragData.name} to: ${targetData.name}`);
+            console.log(`drop ${dragData.name} to: ${over.id}`);
         }
     }
 

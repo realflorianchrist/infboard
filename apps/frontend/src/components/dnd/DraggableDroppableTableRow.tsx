@@ -12,7 +12,7 @@ type DraggableDroppableTableRowProps = React.ComponentProps<"tr"> & {
 export default function DraggableDroppableTableRow({id, className, data, ...props}: DraggableDroppableTableRowProps) {
 
     const {attributes, listeners, setNodeRef: setDraggableRef, isDragging, active} = useDraggable({id, data});
-    const {isOver, setNodeRef: setDroppableRef, node: dropNode} = useDroppable({id, data});
+    const {isOver, setNodeRef: setDroppableRef, node: dropNode} = useDroppable({id});
 
     return (
         <TableRow
