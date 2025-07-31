@@ -1,4 +1,5 @@
-import { RowData } from "../components/data_table/DataTable";
+import {RowData} from "../components/data_table/DataTable";
+import {Folder} from "@workspace/types/data";
 
 export type DnDType = {
     id: string;
@@ -13,6 +14,15 @@ export const rowDataToDnDType = (rowData: RowData): DnDType => {
         name: rowData.name,
         parentFolderId: rowData.parentFolderId,
         type: rowData.type,
+    }
+}
+
+export const folderToDnDType = (folder: Folder): DnDType => {
+    return {
+        id: folder.id,
+        name: folder.name,
+        type: 'folder',
+        parentFolderId: folder.parentFolderId,
     }
 }
 

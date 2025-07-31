@@ -2,7 +2,7 @@ import React from "react";
 import {useDraggable, useDroppable,} from "@dnd-kit/core";
 import {TableRow} from "@workspace/ui/components/table";
 import {cn} from "@workspace/ui/lib/utils";
-import {DnDType} from "@/src/types/DragAndDrop";
+import {DnDType} from "@/src/types/dragAndDrop";
 
 type DraggableDroppableTableRowProps = React.ComponentProps<"tr"> & {
     id: string;
@@ -26,7 +26,7 @@ export default function DraggableDroppableTableRow({id, className, data, ...prop
             }}
             className={cn(className,
                 `${isDragging && "opacity-50"}`,
-                `${isOver && active?.id !== dropNode.current?.id 
+                `${isOver && (active?.id as string).split('-')[0] !== dropNode.current?.id.split('-')[0]
                 && "bg-accent/20 outline outline-accent outline-dashed"}`
             )}
             {...attributes}

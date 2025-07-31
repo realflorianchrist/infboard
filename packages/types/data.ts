@@ -1,3 +1,5 @@
+type Update<T extends { id: string }> = { id: string } & Partial<Omit<T, "id">>;
+
 export type Folder = {
     name: string;
     id: string;
@@ -50,3 +52,7 @@ export const isFileMeta = (obj: unknown): obj is FileMeta => {
         typeof (obj as any).contentType === "string"
     );
 };
+
+export type UpdateFolder = Update<Folder>;
+
+export type UpdateFileMeta = Update<FileMeta>;
