@@ -2,11 +2,11 @@ import React from "react";
 import {useDraggable, useDroppable,} from "@dnd-kit/core";
 import {TableRow} from "@workspace/ui/components/table";
 import {cn} from "@workspace/ui/lib/utils";
-import {RowData} from "@/src/components/data_table/DataTable";
+import {DnDType} from "@/src/types/DragAndDrop";
 
 type DraggableDroppableTableRowProps = React.ComponentProps<"tr"> & {
     id: string;
-    data: RowData;
+    data: DnDType;
 };
 
 export default function DraggableDroppableTableRow({id, className, data, ...props}: DraggableDroppableTableRowProps) {

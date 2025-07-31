@@ -1,6 +1,6 @@
 import {useApiMutation, useApiQuery} from "@/src/api/client/reactQuery";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
-import {Folder} from "@workspace/types/data";
+import {Folder, UpdateFolder} from "@workspace/types/data";
 import {HttpMethod} from "@/src/api/client/client";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 
@@ -40,7 +40,7 @@ export const useCreateFolder = () =>
 export const useUpdateFolder = () =>
     useApiMutation<
         { folder: Folder },
-        { folder: Folder }
+        { folder: UpdateFolder }
     >(
         [baseRoute, ApiRoutes.folders.update],
         HttpMethod.PUT,
@@ -48,7 +48,7 @@ export const useUpdateFolder = () =>
             invalidatePaths: (data) => {
                 return [
                     `${baseRoute}${ApiRoutes.folders.all}`,
-                    `${baseRoute}${ApiRoutes.folders.byId(data.folder.parentFolderId ?? 'root')}`
+                    `${baseRoute}${ApiRoutes.folders.byId(data.folder.parentFolderId ?? ROOT_FOLDER_ID)}`
                 ];
             }
         }
@@ -65,7 +65,7 @@ export const useDeleteFolder = () =>
             invalidatePaths: (data) => {
                 return [
                     `${baseRoute}${ApiRoutes.folders.all}`,
-                    `${baseRoute}${ApiRoutes.folders.byId(data.folder.parentFolderId ?? 'root')}`
+                    `${baseRoute}${ApiRoutes.folders.byId(data.folder.parentFolderId ?? ROOT_FOLDER_ID)}`
                 ];
             }
         }

@@ -23,6 +23,7 @@ import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {getFileSymbol} from "@/src/utils/getFileSymbol";
 import Loader from "@/src/components/loader/Loader";
 import DraggableDroppableTableRow from "@/src/components/dnd/DraggableDroppableTableRow";
+import {rowDataToDnDType} from "@/src/types/DragAndDrop";
 
 export type RowData = {
     select?: boolean;
@@ -36,19 +37,7 @@ export type RowData = {
     downloads?: number;
     size?: string;
     contentType?: string;
-    // meta?: string[];
-}
-
-export function isRowData(data: unknown): data is RowData {
-    if (typeof data !== 'object' || data === null) return false;
-
-    const d = data as Partial<RowData>;
-
-    return (
-        typeof d.id === 'string' &&
-        typeof d.name === 'string' &&
-        (d.type === 'folder' || d.type === 'file')
-    );
+    parentFolderId?: string;
 }
 
 export default function DataTable() {
@@ -84,7 +73,8 @@ export default function DataTable() {
         const folderRows: RowData[] = (currentFolder.children ?? []).map(f => ({
             id: f.id,
             name: f.name,
-            type: 'folder'
+            type: 'folder',
+            parentFolderId: f.parentFolderId,
         }));
 
         const fileRows: RowData[] = (currentFolder.files ?? []).map(file => ({
@@ -98,6 +88,7 @@ export default function DataTable() {
             downloads: file.downloads,
             size: formatFileSize(file.size),
             contentType: file.contentType,
+            parentFolderId: file.parentFolderId,
         }));
 
         setData([...folderRows, ...fileRows]);
@@ -305,7 +296,7 @@ export default function DataTable() {
                                 >
                                     <DraggableDroppableTableRow
                                         id={item.id}
-                                        data={row.original}
+                                        data={rowDataToDnDType(row.original)}
                                         className={rowClassNames}
                                         onDoubleClick={() => {
                                             pushFolderById(item.id);
@@ -327,7 +318,7 @@ export default function DataTable() {
                                 >
                                     <DraggableDroppableTableRow
                                         id={item.id}
-                                        data={row.original}
+                                        data={rowDataToDnDType(row.original)}
                                         className={rowClassNames}
                                         onDoubleClick={() => downloadFile(item.id)}
                                     >
