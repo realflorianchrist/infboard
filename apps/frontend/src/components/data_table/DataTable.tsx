@@ -39,6 +39,17 @@ export type RowData = {
     // meta?: string[];
 }
 
+export function isRowData(data: unknown): data is RowData {
+    if (typeof data !== 'object' || data === null) return false;
+
+    const d = data as Partial<RowData>;
+
+    return (
+        typeof d.id === 'string' &&
+        typeof d.name === 'string' &&
+        (d.type === 'folder' || d.type === 'file')
+    );
+}
 
 export default function DataTable() {
     const {path, pushFolderById} = useFolderPath();

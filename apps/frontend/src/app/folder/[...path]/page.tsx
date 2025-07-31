@@ -2,22 +2,34 @@
 import Treeview from "@/src/components/treeview/Treeview";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@workspace/ui/components/resizable";
 import {FolderPathCrumbs} from "@/src/components/FolderPathCrumbs";
-import DataTable, {RowData} from "@/src/components/data_table/DataTable";
+import DataTable, {isRowData, RowData} from "@/src/components/data_table/DataTable";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import Toolbox from "@/src/components/menus/Toolbox";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
 import ModalAnchor from "@/src/components/modals/ModalAnchor";
-import {DndContext, DragEndEvent, DragOverlay} from "@dnd-kit/core";
-import {restrictToWindowEdges, snapCenterToCursor} from '@dnd-kit/modifiers';
+import {DndContext, DragEndEvent, DragStartEvent} from "@dnd-kit/core";
+import DataDragOverlay from "@/src/components/dnd/DataDragOverlay";
+import {useState} from "react";
 
 export default function FolderPage() {
+    const [activeRow, setActiveRow] = useState<RowData | null>(null);
+
     const {
         openNewFolderModal,
         openUploadFileModal,
     } = useContextMenu();
 
     const {path} = useFolderPath();
+
+    const handleDragStart = (event: DragStartEvent) => {
+        const {active} = event;
+        if (!active) return;
+
+        if (isRowData(active.data.current)) {
+            setActiveRow(active.data.current);
+        }
+    }
 
     const handleDragEnd = (event: DragEndEvent) => {
         const {active, over} = event;
@@ -26,17 +38,22 @@ export default function FolderPage() {
         const draggedId = active.id as string;
         const targetFolderId = over.id as string;
 
-        if (draggedId && targetFolderId && draggedId !== targetFolderId) {
-            const dragData = active.data.current as RowData;
-            const targetData = over.data.current as RowData;
-            // todo: handle drop
+        if (draggedId && targetFolderId
+            && draggedId !== targetFolderId
+            && isRowData(active.data.current)
+            && isRowData(over.data.current)
+        ) {
+            const dragData = active.data.current;
+            const targetData = over.data.current;
+
+            setActiveRow(null);
 
             console.log(`drop ${dragData.name} to: ${targetData.name}`);
         }
     }
 
     return (
-        <DndContext onDragEnd={handleDragEnd}>
+        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <div className={'mb-4 flex items-center w-full justify-between'}>
                 <FolderPathCrumbs withLinks={true}/>
                 <div className={'right-0 relative'}>
@@ -76,9 +93,7 @@ export default function FolderPage() {
             </ResizablePanelGroup>
             <ModalAnchor/>
 
-            <DragOverlay modifiers={[snapCenterToCursor]}>
-                <div className={'position-mouse border border-red-500 w-fit select-none'} >Dragging</div>
-            </DragOverlay>
+            <DataDragOverlay rowData={activeRow}/>
 
         </DndContext>
     );

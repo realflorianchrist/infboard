@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {useDraggable, useDroppable,} from "@dnd-kit/core";
 import {TableRow} from "@workspace/ui/components/table";
 import {cn} from "@workspace/ui/lib/utils";
