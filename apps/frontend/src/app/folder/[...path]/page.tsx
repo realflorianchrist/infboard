@@ -2,17 +2,14 @@
 import Treeview from "@/src/components/treeview/Treeview";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@workspace/ui/components/resizable";
 import {FolderPathCrumbs} from "@/src/components/FolderPathCrumbs";
-import DataTable from "@/src/components/data_table/DataTable";
+import DataTable, {RowData} from "@/src/components/data_table/DataTable";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import Toolbox from "@/src/components/menus/Toolbox";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {useDownloadFile} from "@/src/hooks/useDownloadFile";
-import Loader from "@/src/components/loader/Loader";
-import {useEffect} from "react";
 import ModalAnchor from "@/src/components/modals/ModalAnchor";
-import {DndContext, DragEndEvent} from "@dnd-kit/core";
-
+import {DndContext, DragEndEvent, DragOverlay} from "@dnd-kit/core";
+import {restrictToWindowEdges, snapCenterToCursor} from '@dnd-kit/modifiers';
 
 export default function FolderPage() {
     const {
@@ -30,8 +27,11 @@ export default function FolderPage() {
         const targetFolderId = over.id as string;
 
         if (draggedId && targetFolderId && draggedId !== targetFolderId) {
+            const dragData = active.data.current as RowData;
+            const targetData = over.data.current as RowData;
             // todo: handle drop
-            console.log(`Move item ${draggedId} to folder ${targetFolderId}`);
+
+            console.log(`drop ${dragData.name} to: ${targetData.name}`);
         }
     }
 
@@ -75,6 +75,11 @@ export default function FolderPage() {
                 </ResizablePanel>
             </ResizablePanelGroup>
             <ModalAnchor/>
+
+            <DragOverlay modifiers={[snapCenterToCursor]}>
+                <div className={'position-mouse border border-red-500 w-fit select-none'} >Dragging</div>
+            </DragOverlay>
+
         </DndContext>
     );
 }

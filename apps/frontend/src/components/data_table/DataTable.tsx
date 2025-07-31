@@ -10,7 +10,6 @@ import {
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@workspace/ui/components/table";
 import {useEffect, useState} from "react";
 import {IoFolderOutline} from "react-icons/io5";
-import {GoFile} from "react-icons/go";
 import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
@@ -23,8 +22,9 @@ import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {getFileSymbol} from "@/src/utils/getFileSymbol";
 import Loader from "@/src/components/loader/Loader";
+import DraggableDroppableTableRow from "@/src/components/dnd/DraggableDroppableTableRow";
 
-type Row = {
+export type RowData = {
     select?: boolean;
     id: string;
     name: string;
@@ -58,9 +58,9 @@ export default function DataTable() {
 
     const {downloadFile, isDownloading} = useDownloadFile();
 
-    const columnHelper = createColumnHelper<Row>();
+    const columnHelper = createColumnHelper<RowData>();
 
-    const [data, setData] = useState<Row[]>([]);
+    const [data, setData] = useState<RowData[]>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const folderId = path[path.length - 1]?.id;
@@ -70,13 +70,13 @@ export default function DataTable() {
         const currentFolder = result?.folder;
         if (!currentFolder) return;
 
-        const folderRows: Row[] = (currentFolder.children ?? []).map(f => ({
+        const folderRows: RowData[] = (currentFolder.children ?? []).map(f => ({
             id: f.id,
             name: f.name,
             type: 'folder'
         }));
 
-        const fileRows: Row[] = (currentFolder.files ?? []).map(file => ({
+        const fileRows: RowData[] = (currentFolder.files ?? []).map(file => ({
             id: file.id,
             name: file.name,
             type: 'file',
@@ -292,7 +292,9 @@ export default function DataTable() {
                                     }}
                                     onUploadFile={() => openUploadFileModal(item.id)}
                                 >
-                                    <TableRow
+                                    <DraggableDroppableTableRow
+                                        id={item.id}
+                                        data={row.original}
                                         className={rowClassNames}
                                         onDoubleClick={() => {
                                             pushFolderById(item.id);
@@ -300,7 +302,7 @@ export default function DataTable() {
                                         }}
                                     >
                                         {Cells()}
-                                    </TableRow>
+                                    </DraggableDroppableTableRow>
                                 </DataContextMenu>
                             ) : (
                                 <DataContextMenu
@@ -312,12 +314,14 @@ export default function DataTable() {
                                         if (!isSelected(item.id) && file) addSelected(file);
                                     }}
                                 >
-                                    <TableRow
+                                    <DraggableDroppableTableRow
+                                        id={item.id}
+                                        data={row.original}
                                         className={rowClassNames}
                                         onDoubleClick={() => downloadFile(item.id)}
                                     >
                                         {Cells()}
-                                    </TableRow>
+                                    </DraggableDroppableTableRow>
                                 </DataContextMenu>
                             )
                         );
