@@ -3,46 +3,39 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
 import {cn} from "@workspace/ui/lib/utils";
-import {ChangeEvent, DragEvent, Fragment, useRef, useState} from "react";
+import {ChangeEvent, DragEvent, useRef, useState} from "react";
 import {FiUpload} from "react-icons/fi";
-import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
-import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@workspace/ui/components/breadcrumb";
 import {useUploadFiles} from "@/src/hooks/useUploadFiles";
 import Loader from "../loader/Loader";
-import findFolderPathById from "@/src/utils/findFolderPathById";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import {ErrorType} from "@workspace/types/apiResponses";
+import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
+import {Input} from "@workspace/ui/components/input";
 
 export default function UploadFileModal() {
     const {uploadFileModal, closeUploadFileModal} = useContextMenu();
 
     const {uploadFiles, isUploading} = useUploadFiles();
-    const {data} = useGetAllFolders();
-    const path = findFolderPathById(data?.folders, uploadFileModal?.parentFolderId);
 
     const inputRef = useRef<HTMLInputElement | null>(null);
 
-    const [files, setFiles] = useState<File[]>([]);
+    const [file, setFile] = useState<File | null>(null);
+    const [comment, setComment] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string[]>([]);
 
     const handleUploadFile = async () => {
-        if (files.length === 0) return;
+        if (file === null) return;
 
-        const results = await uploadFiles(files, uploadFileModal.parentFolderId!);
-        const successful = results.filter(result => result.status === "success");
+        const results = await uploadFiles([{file, comment}], uploadFileModal.parentFolderId!);
         const failed = results.filter(r => r.status === 'error');
         const validationErrors = results.filter(r => r.validationErrors?.length);
-
-        if (successful.length > 0) {
-            setFiles((f) => f.filter((v) => successful.some(s => s.file.name === v.name)))
-        }
 
         if (failed.length > 0) {
             if (validationErrors.length > 0) {
                 const messages: string[] = [];
                 validationErrors.forEach((r) => {
                     r.validationErrors?.forEach((e) => {
-                        messages.push(`${r.file.name}: ${getErrorMessage(e)}`);
+                        messages.push(getErrorMessage(e));
                     })
                 })
                 setErrorMessage(messages);
@@ -56,15 +49,20 @@ export default function UploadFileModal() {
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
-        setFiles(Array.from(e.target.files));
+
+        const files = Array.from(e.target.files);
+
+        setFile(files[0] ?? null);
     };
 
     const handleDrop = (e: DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        if (e.dataTransfer.files) {
-            setFiles(Array.from(e.dataTransfer.files));
-        }
+        if (!e.dataTransfer.files) return;
+
+        const files = Array.from(e.dataTransfer.files);
+
+        setFile(files[0] ?? null);
     };
 
     const openFilePicker = () => {
@@ -73,7 +71,8 @@ export default function UploadFileModal() {
 
     const close = () => {
         closeUploadFileModal();
-        setFiles([]);
+        setFile(null);
+        setComment('');
         setErrorMessage([]);
     }
 
@@ -84,20 +83,7 @@ export default function UploadFileModal() {
                     <DialogTitle>Datei hochladen</DialogTitle>
                 </DialogHeader>
 
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>Home</BreadcrumbItem>
-                        {(path?.length ?? 0) > 0 && <BreadcrumbSeparator/>}
-                        {path?.map((pathSegment, index) => (
-                            <Fragment key={pathSegment.id}>
-                                <BreadcrumbItem>
-                                    <span>{pathSegment.name}</span>
-                                </BreadcrumbItem>
-                                {index < path?.length - 1 && <BreadcrumbSeparator/>}
-                            </Fragment>
-                        ))}
-                    </BreadcrumbList>
-                </Breadcrumb>
+                <ModalBreadCrumbs parentFolderId={uploadFileModal.parentFolderId}/>
 
                 <div
                     onDrop={handleDrop}
@@ -113,20 +99,25 @@ export default function UploadFileModal() {
                     ) : (
                         <>
                             <FiUpload className={'text-4xl'}/>
-                            <p>Dateien hierher ziehen oder klicken zum Auswählen</p>
+                            <p>Datei hierher ziehen oder klicken zum Auswählen</p>
                             <p className={'text-xs'}>
-                                {files.length > 0 ? `${files.length} Datei(en) ausgewählt` : "Keine Datei ausgewählt"}
+                                {file ? `"${file.name}" ausgewählt` : "Keine Datei ausgewählt"}
                             </p>
                             <input
                                 ref={inputRef}
                                 type="file"
-                                multiple
                                 hidden
                                 onChange={handleFileChange}
                             />
                         </>
                     )}
                 </div>
+
+                <Input
+                    placeholder="Kommentar"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                />
 
                 {errorMessage.length > 0 && (
                     <ul className={'text-error whitespace-normal break-all'}>
@@ -142,7 +133,7 @@ export default function UploadFileModal() {
                     </Button>
                     <Button
                         onClick={handleUploadFile}
-                        disabled={files.length === 0 || isUploading}
+                        disabled={!file || isUploading}
                     >
                         Hochladen
                     </Button>

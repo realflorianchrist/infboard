@@ -54,7 +54,7 @@ export default function DataTable() {
         addSelected,
         removeSelected,
         openUploadFileModal,
-        openRenameFileModal,
+        openEditFileModal,
     } = useContextMenu();
 
     const {downloadFile, isDownloading} = useDownloadFile();
@@ -300,7 +300,7 @@ export default function DataTable() {
                                     <DataContextMenu
                                         key={row.id}
                                         onNewFolder={() => openNewFolderModal(item.id)}
-                                        onRename={() => openRenameFolderModal(item.id, item.name)}
+                                        onEdit={() => openRenameFolderModal(item.id, item.name, item.parentFolderId)}
                                         onDelete={() => openDeleteFolderModal(item.id)}
                                         onSelect={() => {
                                             const folder = result?.folder.children?.find(f => f.id === item.id);
@@ -323,7 +323,7 @@ export default function DataTable() {
                                 ) : (
                                     <DataContextMenu
                                         key={row.id}
-                                        onRename={() => openRenameFileModal(item.id, item.name)}
+                                        onEdit={() => openEditFileModal(item.id, item.name, item.parentFolderId)}
                                         onDelete={() => openDeleteFileModal(item.id)}
                                         onSelect={() => {
                                             const file = result?.folder.files?.find(f => f.id === item.id);

@@ -6,6 +6,7 @@ import {useContextMenu} from '@/src/providers/ContextMenuProvider';
 import {useEffect, useState} from 'react';
 import {useUpdateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
+import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
 
 export default function RenameFolderModal() {
     const {renameFolderModal, closeRenameFolderModal} = useContextMenu();
@@ -44,6 +45,9 @@ export default function RenameFolderModal() {
                 <DialogHeader>
                     <DialogTitle>Ordner umbenennen</DialogTitle>
                 </DialogHeader>
+
+                <ModalBreadCrumbs parentFolderId={renameFolderModal.parentFolderId}/>
+
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();

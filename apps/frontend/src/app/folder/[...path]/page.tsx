@@ -72,6 +72,7 @@ export default function FolderPage() {
                     </DataContextMenu>
                 </ResizablePanel>
             </ResizablePanelGroup>
+
             <ModalAnchor/>
 
             <DataDragOverlay rowData={activeRow}/>

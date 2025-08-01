@@ -49,7 +49,7 @@ export default function TreeNode(
         <div className={cn("p-1 rounded", )}>
             <DataContextMenu
                 onNewFolder={() => openNewFolderModal(folder.id)}
-                onRename={() => openRenameFolderModal(folder.id, folder.name)}
+                onEdit={() => openRenameFolderModal(folder.id, folder.name, folder.parentFolderId)}
                 onDelete={() => openDeleteFolderModal(folder.id)}
                 onUploadFile={() => openUploadFileModal(folder.id)}
             >

@@ -14,13 +14,11 @@ import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/api_hooks/folde
 import findFolderPathById from "@/src/utils/findFolderPathById";
 import Loader from "../loader/Loader";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
+import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();
     const {mutate, isPending: savingFolder} = useCreateFolder();
-
-    const {data} = useGetAllFolders();
-    const path = findFolderPathById(data?.folders ?? null, newFolderModal?.parentFolderId);
 
     const [name, setName] = useState('');
     const [errorMessage, setErrorMessage] = useState<string[]>([]);
@@ -52,21 +50,7 @@ export default function NewFolderModal() {
                     <DialogTitle>Neuer Ordner</DialogTitle>
                 </DialogHeader>
 
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>Home</BreadcrumbItem>
-                        {(path?.length ?? 0) > 0 && <BreadcrumbSeparator/>}
-                        {path?.map((pathSegment, index) => (
-                            <Fragment key={pathSegment.id}>
-                                <BreadcrumbItem>
-                                    <span>{pathSegment.name}</span>
-                                </BreadcrumbItem>
-                                {index < path?.length - 1 && <BreadcrumbSeparator/>}
-                            </Fragment>
-                        ))}
-                    </BreadcrumbList>
-                </Breadcrumb>
-
+                <ModalBreadCrumbs parentFolderId={newFolderModal.parentFolderId} />
 
                 <form onSubmit={(e) => {
                     e.preventDefault();

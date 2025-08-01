@@ -8,7 +8,7 @@ const className = 'flex gap-2 items-center justify-center';
 
 const menuOptions = {
     newFolder: <div className={className}><PiPlusBold />Neuer Ordner</div>,
-    rename: <div className={className}><MdOutlineEdit/>Umbenennen</div>,
+    edit: <div className={className}><MdOutlineEdit/>Bearbeiten</div>,
     delete: <div className={className}><MdOutlineDeleteOutline/>Löschen</div>,
     download: <div className={className}><IoDownloadOutline/>Download</div>,
     uploadFile: <div className={className}><FiUpload />Datei hochladen</div>,
