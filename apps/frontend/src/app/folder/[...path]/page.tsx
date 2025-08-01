@@ -8,7 +8,7 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import Toolbox from "@/src/components/menus/Toolbox";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
 import ModalAnchor from "@/src/components/modals/ModalAnchor";
-import {DndContext} from "@dnd-kit/core";
+import {DndContext, pointerWithin} from "@dnd-kit/core";
 import DataDragOverlay from "@/src/components/dnd/DataDragOverlay";
 import useDragAndDropSettings from "@/src/hooks/useDnDSettings";
 
@@ -30,6 +30,7 @@ export default function FolderPage() {
 
     return (
         <DndContext
+            collisionDetection={pointerWithin}
             sensors={sensors}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}

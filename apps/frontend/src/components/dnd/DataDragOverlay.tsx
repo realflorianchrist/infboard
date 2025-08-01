@@ -17,7 +17,7 @@ export default function DataDragOverlay({rowData}: Props) {
             modifiers={[snapCenterToCursor]}
             dropAnimation={null}
         >
-            <div className="flex items-center gap-2 w-fit select-none text-sm">
+            <div className="flex items-center gap-2 w-fit pointer-events-none select-none text-sm">
                 <span className="shrink-0">
                     {rowData.type === 'folder' ? <IoFolderOutline/> : getFileSymbol(rowData.contentType)}
                 </span>
