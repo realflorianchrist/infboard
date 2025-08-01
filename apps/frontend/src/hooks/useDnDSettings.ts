@@ -45,12 +45,13 @@ const useDragAndDropSettings = () => {
 
         const draggedId = (active.id as string).split('-')[0];
         const targetFolderId = (over.id as string).split('-')[0];
+        const dragData = active.data.current;
 
-        if (draggedId && targetFolderId
+        if (draggedId && targetFolderId && dragData
             && draggedId !== targetFolderId
-            && isDnDType(active.data.current)
+            && isDnDType(dragData)
+            && targetFolderId !== dragData.parentFolderId
         ) {
-            const dragData = active.data.current;
 
             if (dragData.type === "folder") {
                 const folder: UpdateFolder = {
