@@ -16,6 +16,8 @@ import Loader from "../loader/Loader";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import {useUpdateFile} from "@/src/api/hooks/api_hooks/fileHooks";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
+import {ErrorType} from "@workspace/types/apiResponses";
+import {toast} from "sonner";
 
 export default function EditFileModal() {
     const {editFileModal, closeEditFileModal} = useContextMenu();
@@ -30,9 +32,13 @@ export default function EditFileModal() {
             onSuccess: () => close(),
             onError: (e) => {
                 const messages: string[] = [];
-                e.validationErrors?.forEach((error) => {
-                    messages.push(getErrorMessage(error));
-                })
+                if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                    e.validationErrors?.forEach((error) => {
+                        messages.push(getErrorMessage(error));
+                    });
+                } else {
+                    messages.push(getErrorMessage(e.errorType));
+                }
                 setErrorMessage(messages);
             },
         });

@@ -101,6 +101,12 @@ fileController.put(
                 };
 
             } catch (error) {
+                if (error.code === 11000) {
+                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                        validationErrors: [FileValidationErrorType.FILE_ALREADY_EXISTS]
+                    });
+                }
+
                 throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, ErrorType.INTERNAL_SERVER_ERROR);
             }
         }

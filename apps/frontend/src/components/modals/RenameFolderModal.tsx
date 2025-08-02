@@ -7,6 +7,7 @@ import {useEffect, useState} from 'react';
 import {useUpdateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
+import {ErrorType} from "@workspace/types/apiResponses";
 
 export default function RenameFolderModal() {
     const {renameFolderModal, closeRenameFolderModal} = useContextMenu();
@@ -26,9 +27,13 @@ export default function RenameFolderModal() {
             onSuccess: () => close(),
             onError: (e) => {
                 const messages: string[] = [];
-                e.validationErrors?.forEach((error) => {
-                    messages.push(getErrorMessage(error));
-                })
+                if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                    e.validationErrors?.forEach((error) => {
+                        messages.push(getErrorMessage(error));
+                    });
+                } else {
+                    messages.push(getErrorMessage(e.errorType));
+                }
                 setErrorMessage(messages);
             },
         })

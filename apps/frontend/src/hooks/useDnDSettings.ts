@@ -8,6 +8,10 @@ import {isDnDType} from "@/src/types/dragAndDrop";
 import {UpdateFileMeta, UpdateFolder} from "@workspace/types/data";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {toast} from "sonner";
+import {getErrorMessage} from "@/src/utils/getErrorMessage";
+import {ErrorType} from "@workspace/types/apiResponses";
+import {SuccessMessage} from "@/src/utils/getSuccessMessage";
 
 const useDragAndDropSettings = () => {
     const [activeRow, setActiveRow] = useState<RowData | null>(null);
@@ -61,11 +65,21 @@ const useDragAndDropSettings = () => {
 
                 updateFolder.mutate({folder}, {
                     onSuccess: async () => {
+                        toast.success(SuccessMessage.FOLDER_MOVED);
                         await queryClient.invalidateQueries({
                             queryKey: [
                                 `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(dragData.parentFolderId ?? ROOT_FOLDER_ID)}`
                             ]
                         })
+                    },
+                    onError: (e) => {
+                        if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                            e.validationErrors?.forEach((error) => {
+                                toast.error(getErrorMessage(error));
+                            });
+                        } else {
+                            toast.error(getErrorMessage(e.errorType));
+                        }
                     }
                 });
 
@@ -77,11 +91,21 @@ const useDragAndDropSettings = () => {
 
                 updateFile.mutate({file}, {
                     onSuccess: async () => {
+                        toast.success(SuccessMessage.FILE_MOVED);
                         await queryClient.invalidateQueries({
                             queryKey: [
                                 `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(dragData.parentFolderId ?? ROOT_FOLDER_ID)}`
                             ]
                         })
+                    },
+                    onError: (e) => {
+                        if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                            e.validationErrors?.forEach((error) => {
+                                toast.error(getErrorMessage(error));
+                            });
+                        } else {
+                            toast.error(getErrorMessage(e.errorType));
+                        }
                     }
                 });
             }

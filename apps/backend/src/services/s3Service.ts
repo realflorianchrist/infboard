@@ -1,4 +1,4 @@
-import {DeleteObjectCommand, GetObjectCommand, PutObjectCommand} from "@aws-sdk/client-s3";
+import {GetObjectCommand, PutObjectCommand} from "@aws-sdk/client-s3";
 import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
 import {s3} from "@src/config/s3";
 import {ENV} from "@src/constants/ENV";
@@ -8,10 +8,10 @@ export const generateFileKey = (fileId: string, version?: number) => {
     return version ? `${ENV.S3_UPLOAD_FOLDER}/${fileId}-v${version}` : `${ENV.S3_UPLOAD_FOLDER}/${fileId}`;
 }
 
-export const generatePresignedUploadUrl = async (seKey: string, contentType: string) => {
+export const generatePresignedUploadUrl = async (s3Key: string, contentType: string) => {
     const command = new PutObjectCommand({
         Bucket: ENV.S3_BUCKET,
-        Key: seKey,
+        Key: s3Key,
         ContentType: contentType,
     });
 
