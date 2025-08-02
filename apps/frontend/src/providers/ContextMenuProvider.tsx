@@ -1,6 +1,6 @@
 'use client'
 import {createContext, useContext, useEffect, useState} from "react";
-import {Folder, FileMeta} from "@workspace/types/data";
+import {Folder, FileMeta, Data} from "@workspace/types/data";
 
 type ContextMenuContextType = {
     newFolderModal: { open: boolean; parentFolderId?: string; };
@@ -28,10 +28,10 @@ type ContextMenuContextType = {
     closeUploadFileModal: () => void;
 
     isSelectMode: boolean;
-    selected: (FileMeta | Folder)[];
+    selected: Data[];
     isSelected: (id: string) => boolean;
-    setSelected: (data: (FileMeta | Folder)[]) => void;
-    addSelected: (data: (FileMeta | Folder)) => void;
+    setSelected: (data: Data[]) => void;
+    addSelected: (data: Data) => void;
     removeSelected: (id: string) => void;
 };
 
@@ -78,7 +78,7 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
         open: false,
     });
 
-    const [selected, setSelected] = useState<(FileMeta | Folder)[]>([]);
+    const [selected, setSelected] = useState<Data[]>([]);
 
     const isSelectMode = selected.length > 0;
 

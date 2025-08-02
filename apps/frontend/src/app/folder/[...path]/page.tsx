@@ -22,7 +22,6 @@ export default function FolderPage() {
     } = useContextMenu();
 
     const {
-        activeRow,
         sensors,
         handleDragStart,
         handleDragEnd,
@@ -35,12 +34,16 @@ export default function FolderPage() {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
         >
+            <ModalAnchor/>
+            <DataDragOverlay/>
+
             <div className={'mb-4 flex items-center w-full justify-between'}>
                 <FolderPathCrumbs withLinks={true}/>
                 <div className={'right-0 relative'}>
                     <Toolbox/>
                 </div>
             </div>
+
             <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel
                     defaultSize={15}
@@ -72,11 +75,6 @@ export default function FolderPage() {
                     </DataContextMenu>
                 </ResizablePanel>
             </ResizablePanelGroup>
-
-            <ModalAnchor/>
-
-            <DataDragOverlay rowData={activeRow}/>
-
         </DndContext>
     );
 }

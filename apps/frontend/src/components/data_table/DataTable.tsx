@@ -17,29 +17,19 @@ import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {Checkbox} from "@workspace/ui/components/checkbox";
 import {cn} from "@workspace/ui/lib/utils";
 import {useDownloadFile} from "@/src/hooks/useDownloadFile";
-import {formateDate, formatFileSize} from "@/src/utils/formatter";
+import {formatDate, formatFileSize} from "@/src/utils/formatter";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {getFileSymbol} from "@/src/utils/getFileSymbol";
 import Loader from "@/src/components/loader/Loader";
-import DraggableDroppableTableRow from "@/src/components/dnd/DraggableDroppableTableRow";
-import {rowDataToDnDType} from "@/src/types/dragAndDrop";
+import DnDTableRow from "@/src/components/dnd/DnDTableRow";
 import {useDroppable} from "@dnd-kit/core";
+import {Data, isFolder} from "@workspace/types/data";
 
-export type RowData = {
+export type RowData = Data & {
     select?: boolean;
-    id: string;
-    name: string;
-    type: 'folder' | 'file';
-    updatedAt?: string;
-    userName?: string;
-    version?: number;
-    comment?: string;
-    downloads?: number;
-    size?: string;
-    contentType?: string;
-    parentFolderId?: string;
-}
+};
+
 
 export default function DataTable() {
     const {path, pushFolderById} = useFolderPath();
@@ -72,25 +62,12 @@ export default function DataTable() {
         const currentFolder = result?.folder;
         if (!currentFolder) return;
 
-        const folderRows: RowData[] = (currentFolder.children ?? []).map(f => ({
-            id: f.id,
-            name: f.name,
-            type: 'folder',
-            parentFolderId: f.parentFolderId,
-        }));
+        const folderRows: RowData[] = (currentFolder.children ?? []);
 
-        const fileRows: RowData[] = (currentFolder.files ?? []).map(file => ({
-            id: file.id,
-            name: file.name,
-            type: 'file',
-            updatedAt: formateDate(file.updatedAt),
-            userName: file.userName,
-            version: file.version,
-            comment: file.comment,
-            downloads: file.downloads,
+        const fileRows: RowData[] = (currentFolder.files ?? []).map((file) => ({
+            ...file,
+            updatedAt: formatDate(file.updatedAt),
             size: formatFileSize(file.size),
-            contentType: file.contentType,
-            parentFolderId: file.parentFolderId,
         }));
 
         setData([...folderRows, ...fileRows]);
@@ -158,7 +135,7 @@ export default function DataTable() {
                         title={row.name}
                     >
                         <span className="shrink-0">
-                            {row.type === 'folder' ? <IoFolderOutline/> : getFileSymbol(row.contentType)}
+                            {isFolder(row) ? <IoFolderOutline/> : getFileSymbol(row.contentType)}
                         </span>
                         <span className="truncate whitespace-nowrap">{row.name}</span>
                     </div>
@@ -274,7 +251,6 @@ export default function DataTable() {
                     <TableBody>
                         {table.getRowModel().rows.map(row => {
                             const item = row.original;
-                            const isFolder = item.type === "folder";
                             const Cells = () =>
                                 row.getVisibleCells().map(cell => (
                                     <TableCell key={cell.id}>
@@ -287,7 +263,7 @@ export default function DataTable() {
                             });
 
                             return (
-                                isFolder ? (
+                                isFolder(item) ? (
                                     <DataContextMenu
                                         key={row.id}
                                         onNewFolder={() => openNewFolderModal(item.id)}
@@ -299,9 +275,8 @@ export default function DataTable() {
                                         }}
                                         onUploadFile={() => openUploadFileModal(item.id)}
                                     >
-                                        <DraggableDroppableTableRow
-                                            id={item.id}
-                                            data={rowDataToDnDType(row.original)}
+                                        <DnDTableRow
+                                            data={item}
                                             className={rowClassNames}
                                             onDoubleClick={() => {
                                                 pushFolderById(item.id);
@@ -309,7 +284,7 @@ export default function DataTable() {
                                             }}
                                         >
                                             {Cells()}
-                                        </DraggableDroppableTableRow>
+                                        </DnDTableRow>
                                     </DataContextMenu>
                                 ) : (
                                     <DataContextMenu
@@ -321,14 +296,13 @@ export default function DataTable() {
                                             if (!isSelected(item.id) && file) addSelected(file);
                                         }}
                                     >
-                                        <DraggableDroppableTableRow
-                                            id={item.id}
-                                            data={rowDataToDnDType(row.original)}
+                                        <DnDTableRow
+                                            data={item}
                                             className={rowClassNames}
                                             onDoubleClick={() => downloadFile(item.id)}
                                         >
                                             {Cells()}
-                                        </DraggableDroppableTableRow>
+                                        </DnDTableRow>
                                     </DataContextMenu>
                                 )
                             );
