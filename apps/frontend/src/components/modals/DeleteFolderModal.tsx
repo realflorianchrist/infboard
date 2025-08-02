@@ -4,6 +4,9 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} fro
 import {Button} from "@workspace/ui/components/button";
 import {useDeleteFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useEffect, useState} from "react";
+import {toast} from "sonner";
+import {SuccessMessage} from "@/src/utils/getSuccessMessage";
+import {ErrorType} from "@workspace/types/apiResponses";
 
 export default function DeleteFolderModal() {
     const {deleteFolderModal, closeDeleteFolderModal} = useContextMenu();
@@ -14,7 +17,13 @@ export default function DeleteFolderModal() {
         if (!deleteFolderModal.folderId) return;
 
         mutate({id: deleteFolderModal.folderId}, {
-            onSuccess: () => closeDeleteFolderModal()
+            onSuccess: () => {
+                toast.success(SuccessMessage.FOLDER_DELETED);
+                closeDeleteFolderModal();
+            },
+            onError: () => {
+                toast.error(ErrorType.FOLDER_DELETION_FAILED);
+            }
         });
     };
 

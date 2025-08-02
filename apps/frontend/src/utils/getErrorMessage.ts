@@ -47,6 +47,8 @@ const generalErrorMessages: Record<ErrorType, string> = {
     [ErrorType.INTERNAL_SERVER_ERROR]: "Ein interner Serverfehler ist aufgetreten.",
     [ErrorType.UPLOAD_ERROR]: "Beim upload ist ein Fehler aufgetreten.",
     [ErrorType.DOWNLOAD_ERROR]: "Beim download ist ein Fehler aufgetreten.",
+    [ErrorType.FOLDER_DELETION_FAILED]: "Beim löschen des Ordners ist ein Fehler aufgetreten.",
+    [ErrorType.FILE_DELETION_FAILED]: "Beim löschen der Datei ist ein Fehler aufgetreten."
 };
 
 export const getErrorMessage = (error: ErrorType | ValidationErrorType): string => {

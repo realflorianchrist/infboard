@@ -11,6 +11,8 @@ import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import {ErrorType} from "@workspace/types/apiResponses";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
 import {Input} from "@workspace/ui/components/input";
+import {SuccessMessage} from "@/src/utils/getSuccessMessage";
+import {toast} from "sonner";
 
 export default function UploadFileModal() {
     const {uploadFileModal, closeUploadFileModal} = useContextMenu();
@@ -43,6 +45,7 @@ export default function UploadFileModal() {
                 setErrorMessage([getErrorMessage(ErrorType.UPLOAD_ERROR)]);
             }
         } else {
+            toast.success(SuccessMessage.FILE_UPLOADED);
             close();
         }
     };

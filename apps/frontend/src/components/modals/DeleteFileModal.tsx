@@ -3,6 +3,9 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
 import {useDeleteFile} from "@/src/api/hooks/api_hooks/fileHooks";
+import {toast} from "sonner";
+import {SuccessMessage} from "@/src/utils/getSuccessMessage";
+import {ErrorType} from "@workspace/types/apiResponses";
 
 export default function DeleteFileModal() {
     const {deleteFileModal, closeDeleteFileModal} = useContextMenu();
@@ -13,7 +16,13 @@ export default function DeleteFileModal() {
         if (!deleteFileModal.fileId) return;
 
         mutate({id: deleteFileModal.fileId}, {
-            onSuccess: () => closeDeleteFileModal()
+            onSuccess: () => {
+                toast.success(SuccessMessage.FILE_DELETED);
+                closeDeleteFileModal();
+            },
+            onError: () => {
+                toast.error(ErrorType.FILE_DELETION_FAILED);
+            }
         });
     };
 

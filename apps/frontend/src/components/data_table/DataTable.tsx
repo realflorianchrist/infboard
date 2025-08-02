@@ -68,15 +68,6 @@ export default function DataTable() {
     const {data: result} = useGetFolderDataById(folderId ?? ROOT_FOLDER_ID);
     const {setNodeRef} = useDroppable({id: folderId ?? `${ROOT_FOLDER_ID}`});
 
-    useDndMonitor({
-        onDragOver: (event) => {
-            console.log('over.id', event.over?.id);
-        },
-        onDragEnd: (event) => {
-            console.log('dragEnd over.id', event.over?.id);
-        }
-    });
-
     useEffect(() => {
         const currentFolder = result?.folder;
         if (!currentFolder) return;

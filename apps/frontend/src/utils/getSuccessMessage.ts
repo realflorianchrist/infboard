@@ -1,11 +1,14 @@
 enum FolderSuccessMessage {
     FOLDER_CREATED = "Ordner erfolgreich erstellt.",
     FOLDER_MOVED = "Ordner erfolgreich verschoben.",
+    FOLDER_DELETED = "Ordner erfolgreich gelöscht.",
+    FOLDER_RENAMED = "Ordner erfolgreich umbenannt.",
 }
 
 enum FileSuccessMessage {
     FILE_UPLOADED = "Datei erfolgreich hochgeladen.",
     FILE_MOVED = "Datei erfolgreich verschoben.",
+    FILE_DELETED = "Datei erfolgreich gelöscht.",
 }
 
 enum UserSuccessMessage {
