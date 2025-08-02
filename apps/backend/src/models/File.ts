@@ -15,6 +15,7 @@ export const FileVersionSchema = z.object({
     userName: z.string().optional(),
     parentFolderId: z.string(),
     comment: z.string().optional(),
+    s3Key: z.string().optional()
 });
 
 export const FileSchema = z.object({
@@ -46,6 +47,7 @@ export const FileSchema = z.object({
     downloads: z.number().optional(),
     parentFolderId: z.string().default(ROOT_FOLDER_ID),
     deleted: z.boolean().optional(),
+    s3Key: z.string().optional(),
     previousVersions: z.array(FileVersionSchema).optional(),
 });
 
@@ -63,7 +65,7 @@ export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
 const FileMongooseSchema = new Schema<FileDocument>(
     {
         name: {type: String, required: true},
-        version: {type: Number, default: 1},
+        version: {type: Number, required: true, default: 1},
         contentType: String,
         size: Number,
         updatedAt: Date,
@@ -72,6 +74,7 @@ const FileMongooseSchema = new Schema<FileDocument>(
         downloads: {type: Number, default: 0},
         parentFolderId: {type: String, required: true, default: ROOT_FOLDER_ID},
         deleted: {type: Boolean, default: false},
+        s3Key: String,
         previousVersions: [{
             version: Number,
             name: String,
@@ -82,6 +85,7 @@ const FileMongooseSchema = new Schema<FileDocument>(
             userName: String,
             parentFolderId: String,
             comment: String,
+            s3Key: String,
         }]
     },
     {
