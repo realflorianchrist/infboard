@@ -24,7 +24,6 @@ export type FileMeta = BaseFileMeta & {
     version?: number;
     updatedAt?: Date;
     userName?: string;
-    meta?: string[];
     downloads?: number;
 };
 

@@ -4,7 +4,7 @@ import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/data";
 import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
-import {FileModel, FileSchema, UpdateFileSchema} from "@src/models/File";
+import {FileModel, FileSchema, FileVersion, UpdateFileSchema} from "@src/models/File";
 import {generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
@@ -68,22 +68,39 @@ fileController.put(
 
             const validated = validateOrThrow(UpdateFileSchema, req.body.file);
 
-            const updatedFile = await FileModel.findByIdAndUpdate(
-                validated.id,
-                {...validated},
-                {new: true}
-            );
+            const file = await FileModel.findById(validated.id);
+            if (!file) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
 
-            if (!updatedFile) {
-                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+            try {
+                const versionBackup: FileVersion = {
+                    version: file.version ?? 1,
+                    name: file.name,
+                    contentType: file.contentType,
+                    size: file.size,
+                    updatedAt: file.updatedAt,
+                    userName: file.userName,
+                    parentFolderId: file.parentFolderId,
+                    comment: file.comment,
+                };
+
+                file.previousVersions = [...(file.previousVersions ?? []), versionBackup];
+
+                Object.assign(file, validated);
+
+                file.version = (file.version ?? 1) + 1;
+
+                await file.save();
+
+                return {
+                    status: StatusCodes.OK,
+                    data: {
+                        file: fileDocumentToFileMapper(file)
+                    }
+                };
+
+            } catch (error) {
+                throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, ErrorType.INTERNAL_SERVER_ERROR);
             }
-
-            return {
-                status: StatusCodes.OK,
-                data: {
-                    file: fileDocumentToFileMapper(updatedFile),
-                },
-            };
         }
     )
 );
