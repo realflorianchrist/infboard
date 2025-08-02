@@ -6,6 +6,7 @@ export type DnDType = {
     name: string;
     type: 'folder' | 'file';
     parentFolderId?: string;
+    contentType?: string;
 }
 
 export const rowDataToDnDType = (rowData: RowData): DnDType => {
@@ -14,6 +15,7 @@ export const rowDataToDnDType = (rowData: RowData): DnDType => {
         name: rowData.name,
         parentFolderId: rowData.parentFolderId,
         type: rowData.type,
+        contentType: rowData.contentType,
     }
 }
 
@@ -34,7 +36,6 @@ export function isDnDType(data: unknown): data is DnDType {
     return (
         typeof d.id === 'string' &&
         typeof d.name === 'string' &&
-        typeof d.parentFolderId === 'string' &&
         (d.type === 'folder' || d.type === 'file')
     );
 }
