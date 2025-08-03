@@ -1,6 +1,6 @@
 import {DragEndEvent, DragStartEvent, MouseSensor, useSensor, useSensors} from "@dnd-kit/core";
 import {useQueryClient} from "@tanstack/react-query";
-import {isData} from "@workspace/types/data";
+import {isData, isFileMeta, isFolder} from "@workspace/types/data";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
@@ -9,10 +9,12 @@ import {toast} from "sonner";
 import {successMessage} from "@/src/utils/getSuccessMessage";
 import {ErrorType} from "@workspace/types/apiResponses";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
+import {useHasSelectedAncestor} from "@/src/hooks/useHasSelectedAncestor";
 
 const useDragAndDropSettings = () => {
 
     const {isSelected, selected, setSelected} = useContextMenu();
+    const {hasSelectedAncestor} = useHasSelectedAncestor();
 
     const queryClient = useQueryClient();
 
@@ -47,7 +49,14 @@ const useDragAndDropSettings = () => {
 
         const targetFolderId = (over.id as string).split('-')[0];
 
-        if (targetFolderId && !selected.some(f => f.id === targetFolderId || f.parentFolderId === targetFolderId)) {
+        const canMove = targetFolderId
+            && !hasSelectedAncestor(targetFolderId)
+            && selected.every((i) => i.id !== targetFolderId
+                && i.parentFolderId !== targetFolderId
+                && !hasSelectedAncestor(i.id)
+            );
+
+        if (canMove) {
 
             moveData.mutate({data: selected, targetFolderId}, {
                 onSuccess: async () => {

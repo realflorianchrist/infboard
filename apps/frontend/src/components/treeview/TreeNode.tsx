@@ -1,5 +1,5 @@
 'use client'
-import {Folder} from "@workspace/types/data";
+import {Folder, isFolder} from "@workspace/types/data";
 import {useEffect, useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
 import {FolderPathSegment} from "@workspace/types/folderPath";
@@ -9,6 +9,7 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {useDraggable, useDroppable} from "@dnd-kit/core";
 import {cn} from "@workspace/ui/lib/utils";
+import {useHasSelectedAncestor} from "@/src/hooks/useHasSelectedAncestor";
 
 export default function TreeNode(
     {
@@ -30,12 +31,20 @@ export default function TreeNode(
         openUploadFileModal,
     } = useContextMenu();
 
-    const {attributes, listeners, setNodeRef: setDraggableRef} = useDraggable({id: `${folder.id}-treeNode`, data: folder});
-    const {setNodeRef: setDroppableRef, isOver, node, active} = useDroppable({id: `${folder.id}-treeNode`});
+    const {attributes, listeners, setNodeRef: setDraggableRef} = useDraggable({
+        id: `${folder.id}-treeNode`,
+        data: folder
+    });
+    const {setNodeRef: setDroppableRef, isOver, node: dropNode, active} = useDroppable({id: `${folder.id}-treeNode`});
+
+    const {isSelected, selected} = useContextMenu();
+
+    const {hasSelectedAncestor} = useHasSelectedAncestor();
 
     const [isOpen, setIsOpen] = useState(() => {
         if (typeof window !== 'undefined') {
-            return sessionStorage.getItem(`open-${folder.id}`) === 'true';
+            return sessionStorage.getItem(`open-${folder.id}`) === 'true'
+                || path.some((s) => s.id === folder.id);
         }
         return false;
     });
@@ -44,8 +53,15 @@ export default function TreeNode(
         sessionStorage.setItem(`open-${folder.id}`, isOpen.toString());
     }, [isOpen]);
 
+    const draggedItemId = (active?.id as string)?.split('-')[0];
+
+    const canDrop = isOver
+        && draggedItemId !== folder.id
+        && !hasSelectedAncestor(folder.id)
+        && !isSelected(folder.id);
+
     return (
-        <div className={cn("p-1 rounded", )}>
+        <div className={cn("p-1 rounded",)}>
             <DataContextMenu
                 onNewFolder={() => openNewFolderModal(folder.id)}
                 onEdit={() => openRenameFolderModal(folder.id, folder.name, folder.parentFolderId)}
@@ -62,7 +78,7 @@ export default function TreeNode(
                           px-2 py-1 rounded
                           hover:bg-accent/10
                           ${path[path.length - 1]?.id === folder.id ? 'bg-accent/20' : ''}
-                          ${isOver && node.current?.id.split('-')[0] !== (active?.id as string).split('-')[0] && "bg-accent/40"}
+                          ${canDrop && "bg-accent/40"}
                         `}
                     style={{paddingLeft: `${depth * 1}rem`}}
                     {...attributes}
