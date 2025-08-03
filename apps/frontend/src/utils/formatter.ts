@@ -1,4 +1,4 @@
-export const formateDate = (date?: Date | null) => {
+export const formatDate = (date?: Date | null) => {
     if (date) {
         return new Date(date).toLocaleDateString('de-CH', {year: 'numeric', month: '2-digit', day: '2-digit'});
     }

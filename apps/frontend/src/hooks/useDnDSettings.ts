@@ -1,20 +1,22 @@
 import {DragEndEvent, DragStartEvent, MouseSensor, useSensor, useSensors} from "@dnd-kit/core";
-import {RowData} from "@/src/components/data_table/DataTable";
-import {useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
-import {useUpdateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
-import {useUpdateFile} from "@/src/api/hooks/api_hooks/fileHooks";
-import {isDnDType} from "@/src/types/dragAndDrop";
-import {UpdateFileMeta, UpdateFolder} from "@workspace/types/data";
+import {isData} from "@workspace/types/data";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {useContextMenu} from "@/src/providers/ContextMenuProvider";
+import {useMoveData} from "@/src/api/hooks/api_hooks/dataHooks";
+import {toast} from "sonner";
+import {successMessage} from "@/src/utils/getSuccessMessage";
+import {ErrorType} from "@workspace/types/apiResponses";
+import {getErrorMessage} from "@/src/utils/getErrorMessage";
 
 const useDragAndDropSettings = () => {
-    const [activeRow, setActiveRow] = useState<RowData | null>(null);
+
+    const {isSelected, selected, setSelected} = useContextMenu();
 
     const queryClient = useQueryClient();
-    const updateFolder = useUpdateFolder();
-    const updateFile = useUpdateFile();
+
+    const moveData = useMoveData();
 
     const mouseSensor = useSensor(MouseSensor, {
         activationConstraint: {
@@ -30,8 +32,8 @@ const useDragAndDropSettings = () => {
         const {active} = event;
         if (!active) return;
 
-        if (isDnDType(active.data.current)) {
-            setActiveRow(active.data.current);
+        if (isData(active.data.current) && selected.length === 0) {
+            setSelected([active.data.current]);
         }
     }
 
@@ -39,59 +41,34 @@ const useDragAndDropSettings = () => {
         const {active, over} = event;
 
         if (!active || !over) {
-            setActiveRow(null);
+            setSelected([]);
             return;
         }
 
-        const draggedId = (active.id as string).split('-')[0];
         const targetFolderId = (over.id as string).split('-')[0];
-        const dragData = active.data.current;
 
-        if (draggedId && targetFolderId && dragData
-            && draggedId !== targetFolderId
-            && isDnDType(dragData)
-            && targetFolderId !== dragData.parentFolderId
-        ) {
+        if (targetFolderId && !selected.some(f => f.id === targetFolderId || f.parentFolderId === targetFolderId)) {
 
-            if (dragData.type === "folder") {
-                const folder: UpdateFolder = {
-                    id: draggedId,
-                    parentFolderId: targetFolderId
-                }
-
-                updateFolder.mutate({folder}, {
-                    onSuccess: async () => {
-                        await queryClient.invalidateQueries({
-                            queryKey: [
-                                `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(dragData.parentFolderId ?? ROOT_FOLDER_ID)}`
-                            ]
-                        })
+            moveData.mutate({data: selected, targetFolderId}, {
+                onSuccess: async () => {
+                    toast.success(successMessage.FILES_MOVED);
+                },
+                onError: (e) => {
+                    if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                        e.validationErrors?.forEach((error) => {
+                            toast.error(getErrorMessage(error));
+                        });
+                    } else {
+                        toast.error(getErrorMessage(e.errorType));
                     }
-                });
-
-            } else if (dragData.type === "file") {
-                const file: UpdateFileMeta = {
-                    id: draggedId,
-                    parentFolderId: targetFolderId
                 }
-
-                updateFile.mutate({file}, {
-                    onSuccess: async () => {
-                        await queryClient.invalidateQueries({
-                            queryKey: [
-                                `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(dragData.parentFolderId ?? ROOT_FOLDER_ID)}`
-                            ]
-                        })
-                    }
-                });
-            }
+            });
         }
 
-        setActiveRow(null);
+        setSelected([]);
     }
 
     return {
-        activeRow,
         sensors,
         handleDragStart,
         handleDragEnd,

@@ -12,11 +12,12 @@ const validationErrorMessages: Record<ValidationErrorType, string> = {
     [UserValidationErrorType.USERNAME_TOO_SHORT]: "Username ist zu kurz.",
     [UserValidationErrorType.USERNAME_TOO_LONG]: "Username ist zu lang.",
     [UserValidationErrorType.INVALID_EMAIL]: "Ungültige E-Mail",
-    [UserValidationErrorType.NOT_AN_FHNW_EMAIL]: "Verwende deine fhnw.students E-Mail.",
+    [UserValidationErrorType.NOT_AN_FHNW_EMAIL]: "Verwende deine @fhnw.students E-Mail.",
     [UserValidationErrorType.PASSWORD_TOO_SHORT]: "Passwort ist zu kurz.",
     [UserValidationErrorType.PASSWORD_TOO_LONG]: "Passwort ist zu lang.",
     [UserValidationErrorType.USERNAME_ALREADY_EXISTS]: "Username ist schon vergeben.",
     [UserValidationErrorType.EMAIL_ALREADY_EXISTS]: "E-Mail ist schon vergeben.",
+    [UserValidationErrorType.PASSWORDS_NOT_MATCHING]: "Passwörter stimmen nicht überein.",
 
     // Folder errors
     [FolderValidationErrorType.FOLDER_NAME_EMPTY]: "Der Ordnername darf nicht leer sein.",
@@ -46,6 +47,8 @@ const generalErrorMessages: Record<ErrorType, string> = {
     [ErrorType.INTERNAL_SERVER_ERROR]: "Ein interner Serverfehler ist aufgetreten.",
     [ErrorType.UPLOAD_ERROR]: "Beim upload ist ein Fehler aufgetreten.",
     [ErrorType.DOWNLOAD_ERROR]: "Beim download ist ein Fehler aufgetreten.",
+    [ErrorType.FOLDER_DELETION_FAILED]: "Beim löschen des Ordners ist ein Fehler aufgetreten.",
+    [ErrorType.FILE_DELETION_FAILED]: "Beim löschen der Datei ist ein Fehler aufgetreten."
 };
 
 export const getErrorMessage = (error: ErrorType | ValidationErrorType): string => {

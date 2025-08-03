@@ -11,6 +11,9 @@ import {toast} from "sonner";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import Routes from "@/src/constants/routes";
 import {useRouter} from "next/navigation";
+import {ErrorType} from "@workspace/types/apiResponses";
+import {successMessage} from "@/src/utils/getSuccessMessage";
+import {UserValidationErrorType} from "@workspace/types/modelValidation";
 
 
 export default function RegisterForm() {
@@ -20,15 +23,12 @@ export default function RegisterForm() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    const [errorMessage, setErrorMessage] = useState<string[]>([]);
-
     const router = useRouter();
     const registerMutation = useRegister();
 
 
     const handleRegister = async (e: FormEvent) => {
         e.preventDefault();
-        setErrorMessage([]);
 
         if (!checkPasswords()) return;
 
@@ -40,22 +40,24 @@ export default function RegisterForm() {
 
         registerMutation.mutate({user}, {
             onSuccess: () => {
-                toast.success("Registrierung erfolgreich");
+                toast.success(successMessage.REGISTER_SUCCESSFUL);
                 window.location.replace(Routes.HOME);
             },
             onError: (e) => {
-                const messages: string[] = [];
-                e.validationErrors?.forEach((error) => {
-                    messages.push(getErrorMessage(error));
-                })
-                setErrorMessage(messages);
+                if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                    e.validationErrors?.forEach((error) => {
+                        toast.error(getErrorMessage(error));
+                    });
+                } else {
+                    toast.error(getErrorMessage(e.errorType));
+                }
             },
         });
     }
 
     const checkPasswords = () => {
         if (password !== confirmPassword) {
-            setErrorMessage(["Die Passwörter stimmen nicht überein."]);
+            toast.error(getErrorMessage(UserValidationErrorType.PASSWORDS_NOT_MATCHING));
             return false;
         }
         return true;
@@ -111,14 +113,6 @@ export default function RegisterForm() {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                 </div>
-
-                {errorMessage.length > 0 && (
-                    <ul className={'text-error whitespace-normal break-all pt-2'}>
-                        {errorMessage.map((error, i) => (
-                            <li key={i}>{error}</li>
-                        ))}
-                    </ul>
-                )}
 
                 <Button type={'submit'}>
                     Registrieren

@@ -5,6 +5,19 @@ import {FileValidationErrorType} from "@workspace/types/modelValidation";
 import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
 
 
+export const FileVersionSchema = z.object({
+    version: z.number(),
+    name: z.string().optional(),
+    contentType: z.string().optional(),
+    size: z.number().optional(),
+    status: z.string().optional(),
+    updatedAt: z.date().optional(),
+    userName: z.string().optional(),
+    parentFolderId: z.string(),
+    comment: z.string().optional(),
+    s3Key: z.string().optional()
+});
+
 export const FileSchema = z.object({
     id: z.string().optional(),
     created: z.date().optional(),
@@ -30,16 +43,19 @@ export const FileSchema = z.object({
 
     updatedAt: z.date().optional(),
     userName: z.string().optional(),
-    meta: z.array(z.string()).optional(),
     comment: z.string().optional(),
     downloads: z.number().optional(),
     parentFolderId: z.string().default(ROOT_FOLDER_ID),
     deleted: z.boolean().optional(),
+    s3Key: z.string().optional(),
+    previousVersions: z.array(FileVersionSchema).optional(),
 });
+
 
 export const UpdateFileSchema = makeUpdateSchema(FileSchema);
 
 export type IFile = z.infer<typeof FileSchema>;
+export type FileVersion = z.infer<typeof FileVersionSchema>;
 
 export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
     _id: Types.ObjectId;
@@ -49,16 +65,28 @@ export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
 const FileMongooseSchema = new Schema<FileDocument>(
     {
         name: {type: String, required: true},
-        version: {type: Number, default: 1},
+        version: {type: Number, required: true, default: 1},
         contentType: String,
         size: Number,
         updatedAt: Date,
         userName: String,
-        meta: [String],
         comment: String,
         downloads: {type: Number, default: 0},
         parentFolderId: {type: String, required: true, default: ROOT_FOLDER_ID},
         deleted: {type: Boolean, default: false},
+        s3Key: String,
+        previousVersions: [{
+            version: Number,
+            name: String,
+            contentType: String,
+            size: Number,
+            status: String,
+            updatedAt: Date,
+            userName: String,
+            parentFolderId: String,
+            comment: String,
+            s3Key: String,
+        }]
     },
     {
         timestamps: {createdAt: 'created', updatedAt: 'updatedAt'},

@@ -24,9 +24,10 @@ export type FileMeta = BaseFileMeta & {
     version?: number;
     updatedAt?: Date;
     userName?: string;
-    meta?: string[];
     downloads?: number;
 };
+
+export type Data = Folder | FileMeta;
 
 export const isFolder = (obj: unknown): obj is Folder => {
     return (
@@ -52,6 +53,8 @@ export const isFileMeta = (obj: unknown): obj is FileMeta => {
         typeof (obj as any).contentType === "string"
     );
 };
+
+export const isData = (obj: unknown): obj is Data => isFolder(obj) || isFileMeta(obj);
 
 export type UpdateFolder = Update<Folder>;
 

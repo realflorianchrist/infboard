@@ -23,19 +23,20 @@ export const useUploadFiles = () => {
     const queryClient = useQueryClient();
 
     const uploadFiles = async (
-        files: File[],
+        files: {file: File; comment: string}[],
         parentFolderId?: string
     ): Promise<UploadResult[]> => {
         setIsUploading(true);
         const results: UploadResult[] = [];
 
-        for (const file of files) {
+        for (const {file, comment} of files) {
             try {
                 const response = await addFile({
                     file: {
                         name: file.name,
                         contentType: file.type,
                         size: file.size,
+                        comment,
                         parentFolderId,
                     },
                 });

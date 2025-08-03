@@ -5,3 +5,5 @@ temp/
 config.js
 config.d.ts
 config.d.ts.map
+
+mongo-keyfile

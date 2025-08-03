@@ -4,12 +4,13 @@ import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/data";
 import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
-import {FileModel, FileSchema, UpdateFileSchema} from "@src/models/File";
-import {generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
+import {FileModel, FileSchema, FileVersion, UpdateFileSchema} from "@src/models/File";
+import {generateFileKey, generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import {FileValidationErrorType} from "@workspace/types/modelValidation";
+import logger from "jet-logger";
 
 const fileController: Router = express.Router();
 
@@ -38,19 +39,20 @@ fileController.post(
                     size: validated.size,
                     comment: validated.comment,
                     parentFolderId: validated.parentFolderId,
-                    userName: req.user?.username
+                    userName: req.user?.username,
                 });
 
-                const url = await generatePresignedUploadUrl(
-                    newFile._id.toString(), newFile.contentType
-                );
+                newFile.s3Key = generateFileKey(newFile.id);
+                await newFile.save();
 
-                const fileDto = fileDocumentToFileMapper(newFile, url);
+                const url = await generatePresignedUploadUrl(
+                    newFile.s3Key, newFile.contentType
+                );
 
                 return {
                     status: StatusCodes.OK,
                     data: {
-                        file: fileDto,
+                        file: fileDocumentToFileMapper(newFile, url),
                     },
                 };
             } catch (error) {
@@ -68,22 +70,45 @@ fileController.put(
 
             const validated = validateOrThrow(UpdateFileSchema, req.body.file);
 
-            const updatedFile = await FileModel.findByIdAndUpdate(
-                validated.id,
-                {...validated},
-                {new: true}
-            );
+            const file = await FileModel.findById(validated.id);
+            if (!file) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
 
-            if (!updatedFile) {
-                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+            try {
+                const versionBackup: FileVersion = {
+                    version: file.version ?? 1,
+                    name: file.name,
+                    contentType: file.contentType,
+                    size: file.size,
+                    updatedAt: file.updatedAt,
+                    userName: file.userName,
+                    parentFolderId: file.parentFolderId,
+                    comment: file.comment,
+                };
+
+                file.previousVersions = [...(file.previousVersions ?? []), versionBackup];
+
+                Object.assign(file, validated);
+
+                file.version = (file.version ?? 1) + 1;
+
+                await file.save();
+
+                return {
+                    status: StatusCodes.OK,
+                    data: {
+                        file: fileDocumentToFileMapper(file)
+                    }
+                };
+
+            } catch (error) {
+                if (error.code === 11000) {
+                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                        validationErrors: [FileValidationErrorType.FILE_ALREADY_EXISTS]
+                    });
+                }
+
+                throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, ErrorType.INTERNAL_SERVER_ERROR);
             }
-
-            return {
-                status: StatusCodes.OK,
-                data: {
-                    file: fileDocumentToFileMapper(updatedFile),
-                },
-            };
         }
     )
 );
@@ -95,8 +120,6 @@ fileController.put(
 
             const {id} = req.params;
 
-            const url = await generatePresignedDownloadUrl(id);
-
             const fileDoc = await FileModel.findByIdAndUpdate(
                 id,
                 {$inc: {downloads: 1}},
@@ -106,6 +129,13 @@ fileController.put(
             if (!fileDoc) {
                 throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
             }
+
+            if (!fileDoc.s3Key) {
+                logger.warn(`S3Key missing for file: ${fileDoc.id}`);
+                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            }
+
+            const url = await generatePresignedDownloadUrl(fileDoc.s3Key);
 
             return {
                 status: StatusCodes.OK,
@@ -135,7 +165,13 @@ fileController.put(
 
             const results = await Promise.all(
                 fileDocs.map(async (file) => {
-                    const url = await generatePresignedDownloadUrl(file._id.toString());
+
+                    if (!file.s3Key) {
+                        logger.warn(`S3Key missing for file: ${file.id}`);
+                        throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+                    }
+
+                    const url = await generatePresignedDownloadUrl(file.s3Key);
                     return {
                         url,
                         file,

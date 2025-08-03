@@ -14,13 +14,14 @@ import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/api_hooks/folde
 import findFolderPathById from "@/src/utils/findFolderPathById";
 import Loader from "../loader/Loader";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
+import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
+import {ErrorType} from "@workspace/types/apiResponses";
+import {toast} from "sonner";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();
     const {mutate, isPending: savingFolder} = useCreateFolder();
-
-    const {data} = useGetAllFolders();
-    const path = findFolderPathById(data?.folders ?? null, newFolderModal?.parentFolderId);
 
     const [name, setName] = useState('');
     const [errorMessage, setErrorMessage] = useState<string[]>([]);
@@ -28,12 +29,19 @@ export default function NewFolderModal() {
     const handleAddNewFolder = () => {
 
         mutate({name, parentFolderId: newFolderModal?.parentFolderId}, {
-            onSuccess: () => close(),
+            onSuccess: () => {
+                toast.success(successMessage.FOLDER_CREATED);
+                close();
+            },
             onError: (e) => {
                 const messages: string[] = [];
-                e.validationErrors?.forEach((error) => {
-                    messages.push(getErrorMessage(error));
-                })
+                if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                    e.validationErrors?.forEach((error) => {
+                        messages.push(getErrorMessage(error));
+                    });
+                } else {
+                    messages.push(getErrorMessage(e.errorType));
+                }
                 setErrorMessage(messages);
             },
         });
@@ -52,21 +60,7 @@ export default function NewFolderModal() {
                     <DialogTitle>Neuer Ordner</DialogTitle>
                 </DialogHeader>
 
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>Home</BreadcrumbItem>
-                        {(path?.length ?? 0) > 0 && <BreadcrumbSeparator/>}
-                        {path?.map((pathSegment, index) => (
-                            <Fragment key={pathSegment.id}>
-                                <BreadcrumbItem>
-                                    <span>{pathSegment.name}</span>
-                                </BreadcrumbItem>
-                                {index < path?.length - 1 && <BreadcrumbSeparator/>}
-                            </Fragment>
-                        ))}
-                    </BreadcrumbList>
-                </Breadcrumb>
-
+                <ModalBreadCrumbs parentFolderId={newFolderModal.parentFolderId} />
 
                 <form onSubmit={(e) => {
                     e.preventDefault();

@@ -38,6 +38,7 @@ services:
       - "27017:27017"
     env_file:
       - backend/db/.env
+    command: [ "--replSet", "rs0", "--keyFile", "/etc/mongo-keyfile", "--bind_ip_all" ]
     volumes:
       - mongo_data:/data/db
       - mongo_config:/data/configdb

@@ -1,19 +1,19 @@
 'use client'
 import {createContext, useContext, useEffect, useState} from "react";
-import {Folder, FileMeta} from "@workspace/types/data";
+import {Folder, FileMeta, Data} from "@workspace/types/data";
 
 type ContextMenuContextType = {
     newFolderModal: { open: boolean; parentFolderId?: string; };
     openNewFolderModal: (parentFolderId?: string) => void;
     closeNewFolderModal: () => void;
 
-    renameFolderModal: { open: boolean; folderId: string | null; folderName: string | null };
-    openRenameFolderModal: (folderId: string, folderName: string) => void;
+    renameFolderModal: { open: boolean; folderId: string | null; folderName: string | null; parentFolderId?: string; };
+    openRenameFolderModal: (folderId: string, folderName: string, parentFolderId?: string) => void;
     closeRenameFolderModal: () => void;
 
-    renameFileModal: { open: boolean; fileId: string | null; fileName: string | null };
-    openRenameFileModal: (fileId: string, fileName: string) => void;
-    closeRenameFileModal: () => void;
+    editFileModal: { open: boolean; fileId: string | null; fileName: string | null; parentFolderId?: string; };
+    openEditFileModal: (fileId: string, fileName: string, parentFolderId?: string) => void;
+    closeEditFileModal: () => void;
 
     deleteFolderModal: { open: boolean; folderId: string | null };
     openDeleteFolderModal: (folderId: string) => void;
@@ -28,10 +28,10 @@ type ContextMenuContextType = {
     closeUploadFileModal: () => void;
 
     isSelectMode: boolean;
-    selected: (FileMeta | Folder)[];
+    selected: Data[];
     isSelected: (id: string) => boolean;
-    setSelected: (data: (FileMeta | Folder)[]) => void;
-    addSelected: (data: (FileMeta | Folder)) => void;
+    setSelected: (data: Data[]) => void;
+    addSelected: (data: Data) => void;
     removeSelected: (id: string) => void;
 };
 
@@ -45,17 +45,19 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
     const [renameFolderModal, setRenameFolderModal] = useState<{
         open: boolean;
         folderId: string | null;
-        folderName: string | null
+        folderName: string | null;
+        parentFolderId?: string;
     }>({
         open: false,
         folderId: null,
         folderName: null,
     });
 
-    const [renameFileModal, setRenameFileModal] = useState<{
+    const [editFileModal, setEditFileModal] = useState<{
         open: boolean;
         fileId: string | null;
-        fileName: string | null
+        fileName: string | null;
+        parentFolderId?: string;
     }>({
         open: false,
         fileId: null,
@@ -76,7 +78,7 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
         open: false,
     });
 
-    const [selected, setSelected] = useState<(FileMeta | Folder)[]>([]);
+    const [selected, setSelected] = useState<Data[]>([]);
 
     const isSelectMode = selected.length > 0;
 
@@ -88,12 +90,12 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
                 closeNewFolderModal: () => setNewFolderModal({open: false, parentFolderId: undefined}),
 
                 renameFolderModal,
-                openRenameFolderModal: (id, folderName) => setRenameFolderModal({open: true, folderId: id, folderName}),
+                openRenameFolderModal: (id, folderName, parentFolderId) => setRenameFolderModal({open: true, folderId: id, folderName, parentFolderId}),
                 closeRenameFolderModal: () => setRenameFolderModal({open: false, folderId: null, folderName: null}),
 
-                renameFileModal,
-                openRenameFileModal: (id, fileName) => setRenameFileModal({open: true, fileId: id, fileName}),
-                closeRenameFileModal: () => setRenameFileModal({open: false, fileId: null, fileName: null}),
+                editFileModal,
+                openEditFileModal: (id, fileName, parentFolderId) => setEditFileModal({open: true, fileId: id, fileName, parentFolderId}),
+                closeEditFileModal: () => setEditFileModal({open: false, fileId: null, fileName: null}),
 
                 deleteFolderModal,
                 openDeleteFolderModal: (id) => setDeleteFolderModal({open: true, folderId: id}),

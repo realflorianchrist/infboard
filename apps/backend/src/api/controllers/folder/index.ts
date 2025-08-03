@@ -8,7 +8,7 @@ import {getFolderContents, getFolderTree} from "@src/services/dataService";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
-import {FileValidationErrorType, FolderValidationErrorType} from "@workspace/types/modelValidation";
+import {FolderValidationErrorType} from "@workspace/types/modelValidation";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 
 
@@ -54,9 +54,9 @@ folderController.post(
 
             const validated = validateOrThrow(FolderSchema, req.body);
 
-            const { name, parentFolderId } = validated;
+            const {name, parentFolderId} = validated;
 
-            const existing = await FolderModel.findOne({ name, parentFolderId });
+            const existing = await FolderModel.findOne({name, parentFolderId});
 
             if (existing) {
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
@@ -87,22 +87,35 @@ folderController.put(
 
             const validated = validateOrThrow(UpdateFolderSchema, req.body.folder);
 
-            const updatedFolder = await FolderModel.findByIdAndUpdate(
-                validated.id,
-                {...validated},
-                {new: true}
-            );
+            try {
+                const updatedFolder = await FolderModel.findByIdAndUpdate(
+                    validated.id,
+                    {...validated},
+                    {
+                        new: true,
+                        runValidators: true,
+                    }
+                );
 
-            if (!updatedFolder) {
-                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+                if (!updatedFolder) {
+                    throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+                }
+
+                return {
+                    status: StatusCodes.OK,
+                    data: {
+                        folder: folderDocumentToFolderMapper(updatedFolder),
+                    },
+                };
+            } catch (error) {
+                if (error.code === 11000) {
+                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                        validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS],
+                    });
+                }
+
+                throw error;
             }
-
-            return {
-                status: StatusCodes.OK,
-                data: {
-                    folder: folderDocumentToFolderMapper(updatedFolder),
-                },
-            };
         }
     )
 );

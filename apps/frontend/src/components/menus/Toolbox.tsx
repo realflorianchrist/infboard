@@ -30,21 +30,27 @@ export default function Toolbox() {
                 {isSelectMode && (
                     <Button
                         variant={'secondary'}
-                        onClick={() => {
+                        onClick={async () => {
                             if (selected.length === 1 && selected[0] && isFileMeta(selected[0])) {
-                                downloadFile(selected[0].id);
+                                await downloadFile(selected[0].id);
                             } else if (selected.length >= 1) {
 
                                 const fileIds = selected.filter(isFileMeta).map(file => file.id);
                                 const folderIds = selected.filter(isFolder).map(folder => folder.id);
 
-                                downloadFiles({fileIds, folderIds});
+                                await downloadFiles({fileIds, folderIds});
                             }
                         }}
                     >
                         {menuOptions.download}
                     </Button>
                 )}
+                <Button
+                    variant={'secondary'}
+                    onClick={() => {}}
+                >
+                    {menuOptions.showDeletedFile}
+                </Button>
                 <Button
                     variant={'secondary'}
                     onClick={() => openNewFolderModal(folderId)}

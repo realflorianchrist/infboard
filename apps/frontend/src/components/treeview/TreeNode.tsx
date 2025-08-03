@@ -9,7 +9,6 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {useDraggable, useDroppable} from "@dnd-kit/core";
 import {cn} from "@workspace/ui/lib/utils";
-import {folderToDnDType} from "@/src/types/dragAndDrop";
 
 export default function TreeNode(
     {
@@ -31,7 +30,7 @@ export default function TreeNode(
         openUploadFileModal,
     } = useContextMenu();
 
-    const {attributes, listeners, setNodeRef: setDraggableRef} = useDraggable({id: `${folder.id}-treeNode`, data: folderToDnDType(folder)});
+    const {attributes, listeners, setNodeRef: setDraggableRef} = useDraggable({id: `${folder.id}-treeNode`, data: folder});
     const {setNodeRef: setDroppableRef, isOver, node, active} = useDroppable({id: `${folder.id}-treeNode`});
 
     const [isOpen, setIsOpen] = useState(() => {
@@ -49,7 +48,7 @@ export default function TreeNode(
         <div className={cn("p-1 rounded", )}>
             <DataContextMenu
                 onNewFolder={() => openNewFolderModal(folder.id)}
-                onRename={() => openRenameFolderModal(folder.id, folder.name)}
+                onEdit={() => openRenameFolderModal(folder.id, folder.name, folder.parentFolderId)}
                 onDelete={() => openDeleteFolderModal(folder.id)}
                 onUploadFile={() => openUploadFileModal(folder.id)}
             >

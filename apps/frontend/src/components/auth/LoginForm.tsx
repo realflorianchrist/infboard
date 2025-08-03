@@ -12,6 +12,8 @@ import {toast} from "sonner";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import Routes from "@/src/constants/routes";
 import {useRouter} from "next/navigation";
+import {ErrorType} from "@workspace/types/apiResponses";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 
 
 export default function LoginForm() {
@@ -19,29 +21,28 @@ export default function LoginForm() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const [errorMessage, setErrorMessage] = useState<string[]>([]);
-
     const router = useRouter();
     const loginMutation = useLogin();
 
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
-        setErrorMessage([]);
 
         const user = getAuthUser();
 
         loginMutation.mutate({user}, {
             onSuccess: () => {
-                toast.success("Login erfolgreich");
+                toast.success(successMessage.LOGIN_SUCCESSFUL);
                 window.location.replace(Routes.HOME);
             },
             onError: (e) => {
-                const messages: string[] = [];
-                e.validationErrors?.forEach((error) => {
-                    messages.push(getErrorMessage(error));
-                })
-                setErrorMessage(messages);
+                if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                    e.validationErrors?.forEach((error) => {
+                        toast.error(getErrorMessage(error));
+                    });
+                } else {
+                    toast.error(getErrorMessage(e.errorType));
+                }
             },
         });
     }
@@ -91,14 +92,6 @@ export default function LoginForm() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-
-                {errorMessage.length > 0 && (
-                    <ul className={'text-error whitespace-normal break-all pt-2'}>
-                        {errorMessage.map((error, i) => (
-                            <li key={i}>{error}</li>
-                        ))}
-                    </ul>
-                )}
 
                 <div className={'flex flex-col items-start'}>
                     <Button

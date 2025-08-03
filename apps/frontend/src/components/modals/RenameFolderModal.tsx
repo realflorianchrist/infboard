@@ -6,6 +6,10 @@ import {useContextMenu} from '@/src/providers/ContextMenuProvider';
 import {useEffect, useState} from 'react';
 import {useUpdateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
+import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
+import {ErrorType} from "@workspace/types/apiResponses";
+import {toast} from "sonner";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 
 export default function RenameFolderModal() {
     const {renameFolderModal, closeRenameFolderModal} = useContextMenu();
@@ -22,12 +26,19 @@ export default function RenameFolderModal() {
         if (!renameFolderModal.folderId || !newName) return;
 
         mutate({folder: {id: renameFolderModal.folderId, name: newName}}, {
-            onSuccess: () => close(),
+            onSuccess: () => {
+                toast.success(successMessage.FOLDER_RENAMED);
+                close();
+            },
             onError: (e) => {
                 const messages: string[] = [];
-                e.validationErrors?.forEach((error) => {
-                    messages.push(getErrorMessage(error));
-                })
+                if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                    e.validationErrors?.forEach((error) => {
+                        messages.push(getErrorMessage(error));
+                    });
+                } else {
+                    messages.push(getErrorMessage(e.errorType));
+                }
                 setErrorMessage(messages);
             },
         })
@@ -44,6 +55,9 @@ export default function RenameFolderModal() {
                 <DialogHeader>
                     <DialogTitle>Ordner umbenennen</DialogTitle>
                 </DialogHeader>
+
+                <ModalBreadCrumbs parentFolderId={renameFolderModal.parentFolderId}/>
+
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
