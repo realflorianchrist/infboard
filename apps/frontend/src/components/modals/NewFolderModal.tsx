@@ -17,7 +17,7 @@ import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
 import {ErrorType} from "@workspace/types/apiResponses";
 import {toast} from "sonner";
-import {SuccessMessage} from "@/src/utils/getSuccessMessage";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();
@@ -30,7 +30,7 @@ export default function NewFolderModal() {
 
         mutate({name, parentFolderId: newFolderModal?.parentFolderId}, {
             onSuccess: () => {
-                toast.success(SuccessMessage.FOLDER_CREATED);
+                toast.success(successMessage.FOLDER_CREATED);
                 close();
             },
             onError: (e) => {

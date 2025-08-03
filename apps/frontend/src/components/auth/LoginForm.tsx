@@ -13,7 +13,7 @@ import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import Routes from "@/src/constants/routes";
 import {useRouter} from "next/navigation";
 import {ErrorType} from "@workspace/types/apiResponses";
-import {SuccessMessage} from "@/src/utils/getSuccessMessage";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 
 
 export default function LoginForm() {
@@ -32,7 +32,7 @@ export default function LoginForm() {
 
         loginMutation.mutate({user}, {
             onSuccess: () => {
-                toast.success(SuccessMessage.LOGIN_SUCCESSFUL);
+                toast.success(successMessage.LOGIN_SUCCESSFUL);
                 window.location.replace(Routes.HOME);
             },
             onError: (e) => {

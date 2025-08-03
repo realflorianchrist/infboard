@@ -5,7 +5,7 @@ import {Button} from "@workspace/ui/components/button";
 import {useDeleteFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useEffect, useState} from "react";
 import {toast} from "sonner";
-import {SuccessMessage} from "@/src/utils/getSuccessMessage";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 import {ErrorType} from "@workspace/types/apiResponses";
 
 export default function DeleteFolderModal() {
@@ -18,7 +18,7 @@ export default function DeleteFolderModal() {
 
         mutate({id: deleteFolderModal.folderId}, {
             onSuccess: () => {
-                toast.success(SuccessMessage.FOLDER_DELETED);
+                toast.success(successMessage.FOLDER_DELETED);
                 closeDeleteFolderModal();
             },
             onError: () => {

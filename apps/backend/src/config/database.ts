@@ -8,7 +8,7 @@ const database = ENV.MONGO_DATABASE;
 const authSource = ENV.MONGO_DATABASE;
 const mongoHost = ENV.MONGO_HOST;
 
-const uri = `mongodb://${username}:${password}@${mongoHost}/${database}?authSource=${authSource}`;
+const uri = `mongodb://${username}:${password}@${mongoHost}/${database}?authSource=${authSource}&replicaSet=rs0`;
 
 export const connectDB = async () => {
     try {

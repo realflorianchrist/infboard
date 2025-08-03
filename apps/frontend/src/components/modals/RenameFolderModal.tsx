@@ -9,7 +9,7 @@ import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
 import {ErrorType} from "@workspace/types/apiResponses";
 import {toast} from "sonner";
-import {SuccessMessage} from "@/src/utils/getSuccessMessage";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 
 export default function RenameFolderModal() {
     const {renameFolderModal, closeRenameFolderModal} = useContextMenu();
@@ -27,7 +27,7 @@ export default function RenameFolderModal() {
 
         mutate({folder: {id: renameFolderModal.folderId, name: newName}}, {
             onSuccess: () => {
-                toast.success(SuccessMessage.FOLDER_RENAMED);
+                toast.success(successMessage.FOLDER_RENAMED);
                 close();
             },
             onError: (e) => {

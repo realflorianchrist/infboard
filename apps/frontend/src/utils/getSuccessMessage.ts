@@ -8,15 +8,17 @@ enum FolderSuccessMessage {
 enum FileSuccessMessage {
     FILE_UPLOADED = "Datei erfolgreich hochgeladen.",
     FILE_MOVED = "Datei erfolgreich verschoben.",
+    FILES_MOVED = "Dateien erfolgreich verschoben.",
     FILE_DELETED = "Datei erfolgreich gelöscht.",
 }
+
 
 enum UserSuccessMessage {
     LOGIN_SUCCESSFUL = "Login erfolgreich",
     REGISTER_SUCCESSFUL = "Registrierung erfolgreich",
 }
 
-export const SuccessMessage = {
+export const successMessage = {
     ...FolderSuccessMessage,
     ...FileSuccessMessage,
     ...UserSuccessMessage,

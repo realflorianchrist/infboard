@@ -12,7 +12,7 @@ import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import Routes from "@/src/constants/routes";
 import {useRouter} from "next/navigation";
 import {ErrorType} from "@workspace/types/apiResponses";
-import {SuccessMessage} from "@/src/utils/getSuccessMessage";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 import {UserValidationErrorType} from "@workspace/types/modelValidation";
 
 
@@ -40,7 +40,7 @@ export default function RegisterForm() {
 
         registerMutation.mutate({user}, {
             onSuccess: () => {
-                toast.success(SuccessMessage.REGISTER_SUCCESSFUL);
+                toast.success(successMessage.REGISTER_SUCCESSFUL);
                 window.location.replace(Routes.HOME);
             },
             onError: (e) => {

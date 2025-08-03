@@ -4,7 +4,7 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} fro
 import {Button} from "@workspace/ui/components/button";
 import {useDeleteFile} from "@/src/api/hooks/api_hooks/fileHooks";
 import {toast} from "sonner";
-import {SuccessMessage} from "@/src/utils/getSuccessMessage";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 import {ErrorType} from "@workspace/types/apiResponses";
 
 export default function DeleteFileModal() {
@@ -17,7 +17,7 @@ export default function DeleteFileModal() {
 
         mutate({id: deleteFileModal.fileId}, {
             onSuccess: () => {
-                toast.success(SuccessMessage.FILE_DELETED);
+                toast.success(successMessage.FILE_DELETED);
                 closeDeleteFileModal();
             },
             onError: () => {
