@@ -14,6 +14,7 @@ services:
   mongodb:
     image: mongo
     container_name: mongodb_lokal
+    hostname: mongodb
     ports:
       - "27017:27017"
     environment:

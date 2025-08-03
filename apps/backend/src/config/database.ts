@@ -10,6 +10,8 @@ const mongoHost = ENV.MONGO_HOST;
 
 const uri = `mongodb://${username}:${password}@${mongoHost}/${database}?authSource=${authSource}&replicaSet=rs0`;
 
+logger.info(uri);
+
 export const connectDB = async () => {
     try {
         await mongoose.connect(uri);
