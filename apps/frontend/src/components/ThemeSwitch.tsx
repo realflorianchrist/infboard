@@ -23,6 +23,7 @@ export default function ThemeSwitch(props: Props) {
             checked={isDark}
             onCheckedChange={(checked: boolean) => {
                 setTheme(checked ? 'dark' : 'light');
+                props.onCheckedChange?.(checked);
             }}
         />
     );
