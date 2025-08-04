@@ -10,6 +10,7 @@ import {ErrorType} from "@workspace/types/apiResponses";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import {FolderValidationErrorType} from "@workspace/types/modelValidation";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
+import {isDescendant} from "@src/api/controllers/utils/moveDataValidation";
 
 
 const folderController: Router = express.Router();
@@ -86,6 +87,21 @@ folderController.put(
         async (req) => {
 
             const validated = validateOrThrow(UpdateFolderSchema, req.body.folder);
+
+            if (validated.id === validated.parentFolderId) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                    validationErrors: [FolderValidationErrorType.CANNOT_MOVE_INTO_SELF_OR_DESCENDANT],
+                });
+            }
+
+            if (!validated.parentFolderId) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+
+            const isInvalid = await isDescendant(validated.id, validated.parentFolderId);
+            if (isInvalid) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                    validationErrors: [FolderValidationErrorType.CANNOT_MOVE_INTO_SELF_OR_DESCENDANT],
+                });
+            }
 
             try {
                 const updatedFolder = await FolderModel.findByIdAndUpdate(
