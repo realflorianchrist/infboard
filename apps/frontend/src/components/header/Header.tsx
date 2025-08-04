@@ -1,11 +1,12 @@
 'use client'
 import Link from "next/link";
-import Routes from "@/src/constants/routes";
+import routes from "@/src/constants/routes";
 import Navigation from "./Navigation";
 import {Avatar, AvatarFallback} from "@workspace/ui/components/avatar";
 import {IoIosPerson} from "react-icons/io";
 import UserDropDownMenu from "@/src/components/menus/UserDropDownMenu";
 import {usePathname} from "next/navigation";
+import {userDetails} from "@/src/utils/userDetails";
 
 export default function Header() {
 
@@ -14,7 +15,7 @@ export default function Header() {
     return (
         <header className={'flex items-center justify-between w-full p-4'}>
             <Link
-                href={Routes.HOME}
+                href={routes.HOME}
                 className="text-2xl font-bold text-accent"
             >
                 infboard.ch
@@ -28,7 +29,7 @@ export default function Header() {
 
                     <UserDropDownMenu>
                         <div className={'flex items-center justify-center gap-4 cursor-pointer'}>
-                            User
+                            {userDetails().getUserInfos()?.username}
                             <Avatar>
                                 <AvatarFallback>
                                     <IoIosPerson className={'w-10 h-10'}/>

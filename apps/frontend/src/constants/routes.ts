@@ -1,4 +1,4 @@
-const Routes = {
+const routes = {
     HOME: '/folder/root',
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
@@ -7,4 +7,4 @@ const Routes = {
     SEARCH: '/search',
 }
 
-export default Routes;
+export default routes;

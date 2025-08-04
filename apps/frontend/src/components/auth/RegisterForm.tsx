@@ -9,7 +9,7 @@ import {AuthUser} from "@workspace/types/user";
 import {useRegister} from "@/src/api/hooks/api_hooks/authHooks";
 import {toast} from "sonner";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
-import Routes from "@/src/constants/routes";
+import routes from "@/src/constants/routes";
 import {useRouter} from "next/navigation";
 import {ErrorType} from "@workspace/types/apiResponses";
 import {successMessage} from "@/src/utils/getSuccessMessage";
@@ -41,7 +41,7 @@ export default function RegisterForm() {
         registerMutation.mutate({user}, {
             onSuccess: () => {
                 toast.success(successMessage.REGISTER_SUCCESSFUL);
-                window.location.replace(Routes.HOME);
+                window.location.replace(routes.HOME);
             },
             onError: (e) => {
                 if (e.errorType === ErrorType.VALIDATION_ERROR) {
@@ -122,7 +122,7 @@ export default function RegisterForm() {
                     <Button
                         variant={'link'}
                         type={'button'}
-                        onClick={() => router.push(Routes.LOGIN)}
+                        onClick={() => router.push(routes.LOGIN)}
                         className={'p-0'}
                     >
                         Login

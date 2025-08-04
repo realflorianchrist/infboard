@@ -10,7 +10,7 @@ import {AuthUser} from "@workspace/types/user";
 import {useLogin} from "@/src/api/hooks/api_hooks/authHooks";
 import {toast} from "sonner";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
-import Routes from "@/src/constants/routes";
+import routes from "@/src/constants/routes";
 import {useRouter} from "next/navigation";
 import {ErrorType} from "@workspace/types/apiResponses";
 import {successMessage} from "@/src/utils/getSuccessMessage";
@@ -33,7 +33,7 @@ export default function LoginForm() {
         loginMutation.mutate({user}, {
             onSuccess: () => {
                 toast.success(successMessage.LOGIN_SUCCESSFUL);
-                window.location.replace(Routes.HOME);
+                window.location.replace(routes.HOME);
             },
             onError: (e) => {
                 if (e.errorType === ErrorType.VALIDATION_ERROR) {
@@ -97,7 +97,7 @@ export default function LoginForm() {
                     <Button
                         variant={'link'}
                         type={'button'}
-                        onClick={() => router.push(Routes.RESET_PASSWORD)}
+                        onClick={() => router.push(routes.RESET_PASSWORD)}
                         className={'p-0'}
                     >
                         Passwort vergessen?
@@ -111,7 +111,7 @@ export default function LoginForm() {
                     <Button
                         variant={'link'}
                         type={'button'}
-                        onClick={() => router.push(Routes.REGISTER)}
+                        onClick={() => router.push(routes.REGISTER)}
                         className={'p-0'}
                     >
                         Registrieren

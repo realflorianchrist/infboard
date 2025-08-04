@@ -1,7 +1,7 @@
 import {usePathname, useRouter} from 'next/navigation';
 import {FolderPath} from '@workspace/types/folderPath';
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
-import Routes from "@/src/constants/routes";
+import routes from "@/src/constants/routes";
 import {Folder} from "@workspace/types/data";
 import findFolderPathById from "@/src/utils/findFolderPathById";
 
@@ -66,7 +66,7 @@ export const useFolderPath = () => {
     };
 
     const resetPath = () => {
-        router.push(Routes.HOME);
+        router.push(routes.HOME);
     };
 
     return {

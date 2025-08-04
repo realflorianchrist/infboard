@@ -3,6 +3,8 @@ import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {HttpMethod} from "@/src/api/client/client";
 import {AuthUser, User} from "@workspace/types/user";
 import {userDetails} from "@/src/utils/userDetails";
+import {useRouter} from "next/navigation";
+import routes from "@/src/constants/routes";
 
 const baseRoute = ApiRoutes.auth.base;
 
@@ -39,3 +41,12 @@ export const useLogin = () =>
             }
         }
     );
+
+export const useLogout = () => {
+    const router = useRouter();
+
+    return () => {
+        userDetails().removeAuthToken();
+        router.push(routes.LOGIN);
+    }
+}

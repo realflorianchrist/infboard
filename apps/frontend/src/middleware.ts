@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
-import Routes from "@/src/constants/routes";
+import routes from "@/src/constants/routes";
 import {TOKEN_KEY} from "@workspace/constants/index";
 
 export async function middleware(req: NextRequest) {
@@ -9,7 +9,7 @@ export async function middleware(req: NextRequest) {
     const token = req.cookies.get(TOKEN_KEY)?.value;
 
     if (!token) {
-        return NextResponse.redirect(new URL(Routes.LOGIN, req.url));
+        return NextResponse.redirect(new URL(routes.LOGIN, req.url));
     }
 
     try {
@@ -23,12 +23,12 @@ export async function middleware(req: NextRequest) {
             });
 
         if (!response.ok) {
-            return NextResponse.redirect(new URL(Routes.LOGIN, req.url));
+            return NextResponse.redirect(new URL(routes.LOGIN, req.url));
         }
 
         return NextResponse.next();
     } catch (error) {
-        return NextResponse.redirect(new URL(Routes.LOGIN, req.url));
+        return NextResponse.redirect(new URL(routes.LOGIN, req.url));
     }
 }
 

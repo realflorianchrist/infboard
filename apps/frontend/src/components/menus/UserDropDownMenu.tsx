@@ -7,19 +7,20 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import {ReactNode} from "react";
 import ThemeSwitch from "@/src/components/ThemeSwitch";
+import {useLogout} from "@/src/api/hooks/api_hooks/authHooks";
 
 export default function UserDropDownMenu({children}: { children: ReactNode }) {
+    const logout = useLogout();
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
             <DropdownMenuContent align={'end'}>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>Mein Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Billing</DropdownMenuItem>
-                <DropdownMenuItem>Team</DropdownMenuItem>
-                <DropdownMenuItem>Subscription</DropdownMenuItem>
-                <DropdownMenuItem>Theme <ThemeSwitch/></DropdownMenuItem>
+                <DropdownMenuItem>Meine Uploads</DropdownMenuItem>
+                <DropdownMenuItem>Dark mode <ThemeSwitch/></DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>Abmelden</DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )
