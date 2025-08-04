@@ -54,9 +54,9 @@ export default function DataTable() {
     const [data, setData] = useState<RowData[]>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const folderId = path[path.length - 1]?.id;
-    const {data: result} = useGetFolderDataById(folderId ?? ROOT_FOLDER_ID);
-    const {setNodeRef} = useDroppable({id: folderId ?? `${ROOT_FOLDER_ID}`});
+    const folderId = path[path.length - 1]?.id ?? ROOT_FOLDER_ID;
+    const {data: result} = useGetFolderDataById(folderId);
+    const {setNodeRef} = useDroppable({id: folderId});
 
     useEffect(() => {
         const currentFolder = result?.folder;
@@ -201,7 +201,7 @@ export default function DataTable() {
             {isDownloading && <Loader isFullScreen={true}/>}
 
             <div ref={setNodeRef}
-                 className={'h-full'}
+                 className={'flex min-h-full min-w-full'}
             >
                 <Table className={'table-fixed'}>
                     <TableHeader className={'sticky top-0 z-10 bg-background'}>
@@ -211,7 +211,7 @@ export default function DataTable() {
                                     <TableHead
                                         key={header.id}
                                         style={{width: header.getSize()}}
-                                        className="relative group select-none"
+                                        className="group select-none"
                                     >
                                         <div className="flex gap-2 items-center cursor-pointer"
                                              onClick={header.column.getToggleSortingHandler()}

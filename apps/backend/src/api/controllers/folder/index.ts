@@ -60,7 +60,7 @@ folderController.post(
             const existing = await FolderModel.findOne({name, parentFolderId});
 
             if (existing) {
-                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
                     validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS]
                 });
             }

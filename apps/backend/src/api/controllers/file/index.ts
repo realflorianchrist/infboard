@@ -27,7 +27,7 @@ fileController.post(
             const existing = await FileModel.findOne({name, parentFolderId});
 
             if (existing) {
-                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.ALREADY_EXISTS, {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
                     validationErrors: [FileValidationErrorType.FILE_ALREADY_EXISTS]
                 });
             }
