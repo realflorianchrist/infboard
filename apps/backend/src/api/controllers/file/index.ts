@@ -6,7 +6,7 @@ import {ApiError} from "@src/api/utils/apiError";
 import {FileModel, FileSchema, FileVersion, UpdateFileSchema} from "@src/models/File";
 import {generateFileKey, generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
-import {ApiRoutes} from "@workspace/routes";
+import {Index} from "@workspace/routes";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import logger from "jet-logger";
 
@@ -14,7 +14,7 @@ const fileController: Router = express.Router();
 
 
 fileController.post(
-    ApiRoutes.files.add,
+    Index.files.add,
     handleRequest<{ file: NewFileInput }, { file: FileMeta }>(
         async (req) => {
 
@@ -62,7 +62,7 @@ fileController.post(
 
 
 fileController.put(
-    ApiRoutes.files.update,
+    Index.files.update,
     handleRequest<{ file: UpdateFileMeta }, { file: FileMeta }>(
         async (req) => {
 
@@ -112,7 +112,7 @@ fileController.put(
 );
 
 fileController.put(
-    ApiRoutes.files.downloadUrlById(':id'),
+    Index.files.downloadUrlById(':id'),
     handleRequest<{}, { url: string, file: FileMeta }, { id: string }>(
         async (req) => {
 
@@ -147,7 +147,7 @@ fileController.put(
 );
 
 fileController.put(
-    ApiRoutes.files.downloadUrlsByFolderId(':folderId'),
+    Index.files.downloadUrlsByFolderId(':folderId'),
     handleRequest<{}, { url: string, file: FileMeta }[], { folderId: string }>(
         async (req) => {
 
@@ -189,7 +189,7 @@ fileController.put(
 );
 
 fileController.put(
-    ApiRoutes.files.delete(':id'),
+    Index.files.delete(':id'),
     handleRequest<{}, { file: FileMeta }, { id: string }>(
         async (req) => {
 
@@ -216,7 +216,7 @@ fileController.put(
 );
 
 fileController.put(
-    ApiRoutes.files.rollback(':id'),
+    Index.files.rollback(':id'),
     handleRequest<{}, { file: FileMeta }, { id: string }>(
         async (req) => {
 

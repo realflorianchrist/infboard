@@ -362,11 +362,7 @@ importers:
 
   packages/routes: {}
 
-  packages/types:
-    dependencies:
-      '@aws-sdk/client-s3':
-        specifier: ^3.844.0
-        version: 3.844.0
+  packages/types: {}
 
   packages/typescript-config: {}
 

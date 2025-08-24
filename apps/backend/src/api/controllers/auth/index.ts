@@ -1,5 +1,5 @@
 import express, {Router} from "express";
-import {ApiRoutes} from "@workspace/routes";
+import {Index} from "@workspace/routes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {AuthUser, ErrorType, User, UserValidationErrorType, ValidationErrorType} from "@workspace/types";
 import {StatusCodes} from "http-status-codes";
@@ -13,7 +13,7 @@ import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 const authController: Router = express.Router();
 
 authController.get(
-    ApiRoutes.auth.validateToken,
+    Index.auth.validateToken,
     handleRequest<
         {},
         { success: boolean }
@@ -41,7 +41,7 @@ authController.get(
 );
 
 authController.post(
-    ApiRoutes.auth.register,
+    Index.auth.register,
     handleRequest<
         { user: AuthUser },
         { user: User, token: string }
@@ -98,7 +98,7 @@ authController.post(
 );
 
 authController.post(
-    ApiRoutes.auth.login,
+    Index.auth.login,
     handleRequest<
         { user: AuthUser },
         { user: User, token: string }

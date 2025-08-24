@@ -1,9 +1,9 @@
 import { useState } from "react";
 import {useAddFile, useRollbackFile} from "@/src/api/hooks/api_hooks/fileHooks";
 import { useQueryClient } from "@tanstack/react-query";
-import { ApiRoutes } from "@workspace/routes";
+import { Index } from "@workspace/routes";
 import { usePutFileToUrl } from "@/src/api/hooks/s3_hooks/fileHooks";
-import {ROOT_FOLDER_ID} from "../../../../packages/constants";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {ValidationErrorType} from "@workspace/types";
 import {ApiClientError} from "@/src/api/client/client";
 
@@ -74,7 +74,7 @@ export const useUploadFiles = () => {
 
         await queryClient.invalidateQueries({
             queryKey: [
-                `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
+                `${Index.folders.base}${Index.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
             ],
         });
 

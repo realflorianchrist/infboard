@@ -9,8 +9,8 @@ import findFolderPathById from "@/src/utils/findFolderPathById";
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {useState} from "react";
-import {ApiRoutes} from "@workspace/routes";
-import {ROOT_FOLDER_ID} from "../../../../packages/constants";
+import {Index} from "@workspace/routes";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {useQueryClient} from "@tanstack/react-query";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 
@@ -55,7 +55,7 @@ export const useDownloadFile = () => {
 
             await queryClient.invalidateQueries({
                 queryKey: [
-                    `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
+                    `${Index.folders.base}${Index.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
                 ],
             });
 
@@ -121,7 +121,7 @@ export const useDownloadFile = () => {
 
             await queryClient.invalidateQueries({
                 queryKey: [
-                    `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
+                    `${Index.folders.base}${Index.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
                 ],
             });
 

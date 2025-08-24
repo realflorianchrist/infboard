@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import {User} from "@workspace/types";
-import {TOKEN_KEY} from "../../../../packages/constants";
+import {TOKEN_KEY} from "@workspace/constants";
 
 export const userDetails = () => {
     const USER_INFOS_KEY = "userInfos";

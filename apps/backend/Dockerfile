@@ -29,6 +29,7 @@ ENV CI=true
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/backend/package.json ./apps/backend/
+COPY packages ./packages
 
 RUN corepack enable  \
     && corepack prepare pnpm@latest --activate  \
