@@ -1,36 +1,12 @@
+
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "lib": ["ES2022"],
-    "baseUrl": "./",
-    "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "useUnknownInCatchVariables": false,
     "paths": {
       "@src/*": ["src/*"],
       "@workspace/types": ["../../packages/types/src/index.ts"],
       "@workspace/routes": ["../../packages/routes/apiRoutes.ts"],
-      "@workspace/constants": ["../../packages/constants/index.ts"]
-    },
-    "types": ["vitest/globals"]
-  },
-  "ts-node": {
-    "swc": true,
-    "require": ["tsconfig-paths/register"]
-  },
-  "include": [
-    "src/**/*.ts",
-    "tests/**/*.ts",
-    "scripts",
-    "eslint.config.js",
-    "vitest.config.mts",
-  ],
-  "exclude": [
-    "src/public/*"
-  ]
+      "@workspace/constants": ["../../packages/constants/src/index.ts"]
+    }
+  }
 }

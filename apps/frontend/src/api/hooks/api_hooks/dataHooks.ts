@@ -2,7 +2,7 @@ import {useApiMutation} from "@/src/api/client/reactQuery";
 import {Data} from "@workspace/types";
 import {ApiRoutes} from "@workspace/routes";
 import {HttpMethod} from "@/src/api/client/client";
-import {ROOT_FOLDER_ID} from "@workspace/constants";
+import {ROOT_FOLDER_ID} from "../../../../../../packages/constants";
 
 const baseRoute = ApiRoutes.data.base;
 

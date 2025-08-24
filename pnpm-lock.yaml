@@ -45,6 +45,9 @@ importers:
       '@workspace/routes':
         specifier: workspace:*
         version: link:../../packages/routes
+      '@workspace/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.2
@@ -148,9 +151,6 @@ importers:
       '@workspace/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
-      '@workspace/types':
-        specifier: workspace:*
-        version: link:../../packages/types
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
@@ -217,6 +217,9 @@ importers:
       '@workspace/routes':
         specifier: workspace:*
         version: link:../../packages/routes
+      '@workspace/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -293,9 +296,6 @@ importers:
       '@workspace/eslint-config':
         specifier: workspace:^
         version: link:../../packages/eslint-config
-      '@workspace/types':
-        specifier: workspace:*
-        version: link:../../packages/types
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
@@ -362,7 +362,11 @@ importers:
 
   packages/routes: {}
 
-  packages/types: {}
+  packages/types:
+    dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.844.0
+        version: 3.844.0
 
   packages/typescript-config: {}
 

@@ -1,14 +1,17 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "removeComments": true,
     "sourceMap": false,
-    "esModuleInterop": true,
-    "isolatedModules": false
+    "removeComments": true,
+    "paths": {
+      "@src/*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
-    "src/**/*.ts",
+    "src/**/*.ts"
   ],
   "exclude": [
     "tests",

@@ -3,7 +3,7 @@ import {useAddFile, useRollbackFile} from "@/src/api/hooks/api_hooks/fileHooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { ApiRoutes } from "@workspace/routes";
 import { usePutFileToUrl } from "@/src/api/hooks/s3_hooks/fileHooks";
-import {ROOT_FOLDER_ID} from "@workspace/constants";
+import {ROOT_FOLDER_ID} from "../../../../packages/constants";
 import {ValidationErrorType} from "@workspace/types";
 import {ApiClientError} from "@/src/api/client/client";
 
