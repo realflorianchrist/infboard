@@ -1,8 +1,8 @@
 import {useApiMutation, useApiQuery} from "@/src/api/client/reactQuery";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
-import {Data, Folder, UpdateFolder} from "@workspace/types/src/data";
+import {ApiRoutes} from "@workspace/routes";
+import {Data, Folder, UpdateFolder} from "@workspace/types";
 import {HttpMethod} from "@/src/api/client/client";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 
 const baseRoute = ApiRoutes.folders.base;
 

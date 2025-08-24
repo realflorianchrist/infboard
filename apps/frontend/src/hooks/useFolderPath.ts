@@ -1,8 +1,7 @@
 import {usePathname, useRouter} from 'next/navigation';
-import {FolderPath} from '@workspace/types/src/folderPath';
+import {Folder, FolderPath} from '@workspace/types';
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import routes from "@/src/constants/routes";
-import {Folder} from "@workspace/types/src/data";
 import findFolderPathById from "@/src/utils/findFolderPathById";
 
 export const useFolderPath = () => {

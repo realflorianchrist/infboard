@@ -4,14 +4,13 @@ import JSZip from "jszip";
 import {saveAs} from "file-saver";
 import {toast} from "sonner";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
-import {ErrorType} from "@workspace/types/src/apiResponses";
+import {ErrorType, FileMeta} from "@workspace/types";
 import findFolderPathById from "@/src/utils/findFolderPathById";
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {FileMeta} from "@workspace/types/src/data";
 import {useState} from "react";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {ApiRoutes} from "@workspace/routes";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {useQueryClient} from "@tanstack/react-query";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 

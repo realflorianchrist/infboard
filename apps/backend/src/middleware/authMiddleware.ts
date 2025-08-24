@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from 'express';
-import {ErrorType} from "@workspace/types/src/apiResponses";
+import {ErrorType} from "@workspace/types";
 import {ApiError} from "@src/api/utils/apiError";
 import {StatusCodes} from "http-status-codes";
 import {verifyToken} from "@src/services/jwtTokenProvider";

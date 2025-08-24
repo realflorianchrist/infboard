@@ -1,12 +1,10 @@
 import express, {Router} from "express";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {ApiRoutes} from "@workspace/routes";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {AuthUser, User} from "@workspace/types/src/user";
+import {AuthUser, ErrorType, User, UserValidationErrorType, ValidationErrorType} from "@workspace/types";
 import {StatusCodes} from "http-status-codes";
 import {UserModel, UserSchema} from "@src/models/User";
 import {ApiError} from "@src/api/utils/apiError";
-import {ErrorType} from "@workspace/types/src/apiResponses";
-import {UserValidationErrorType, ValidationErrorType} from "@workspace/types/src/modelValidation";
 import bcrypt from "bcryptjs";
 import {userDocumentToFileMapper} from "@src/api/mapper/userMapper";
 import {generateToken, verifyToken} from "@src/services/jwtTokenProvider";
@@ -55,7 +53,7 @@ authController.post(
             const {username, email, password} = validated;
 
             const existingUser = await UserModel.findOne({
-                $or: [{ username }, { email }]
+                $or: [{username}, {email}]
             });
 
             const validationErrors: ValidationErrorType[] = [];

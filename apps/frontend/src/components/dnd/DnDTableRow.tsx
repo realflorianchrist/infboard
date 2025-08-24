@@ -4,7 +4,7 @@ import {TableRow} from "@workspace/ui/components/table";
 import {cn} from "@workspace/ui/lib/utils";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {useIsDraggingGlobally} from "@/src/hooks/useIsDraggingGlobally";
-import {Data, isFolder} from "@workspace/types/src/data";
+import {Data, isFolder} from "@workspace/types";
 
 type DraggableDroppableTableRowProps = React.ComponentProps<"tr"> & {
     data: Data;

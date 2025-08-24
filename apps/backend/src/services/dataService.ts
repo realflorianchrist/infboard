@@ -1,6 +1,6 @@
 import {FolderModel} from "@src/models/Folder";
-import {FileMeta, Folder, UpdateFileMeta, UpdateFolder} from "@workspace/types/src/data";
-import {FileModel, FileVersion, UpdateFileSchema} from "@src/models/File";
+import {Folder} from "@workspace/types";
+import {FileModel} from "@src/models/File";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ROOT_FOLDER_ID} from "@workspace/constants";

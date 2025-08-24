@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from 'express';
-import {ApiErrorResponse, ErrorType} from "@workspace/types/src/apiResponses";
+import {ApiErrorResponse, ErrorType} from "@workspace/types";
 import {ApiError} from "@src/api/utils/apiError";
 import {StatusCodes} from "http-status-codes";
 import logger from "jet-logger";

@@ -3,10 +3,9 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
 import {useDeleteFolder} from "@/src/api/hooks/api_hooks/folderHooks";
-import {useEffect, useState} from "react";
 import {toast} from "sonner";
 import {successMessage} from "@/src/utils/getSuccessMessage";
-import {ErrorType} from "@workspace/types/src/apiResponses";
+import {ErrorType} from "@workspace/types";
 
 export default function DeleteFolderModal() {
     const {deleteFolderModal, closeDeleteFolderModal} = useContextMenu();

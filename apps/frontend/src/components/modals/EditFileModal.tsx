@@ -1,23 +1,11 @@
 'use client'
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
-import {Button} from "@workspace/ui/components/button";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbList,
-    BreadcrumbSeparator
-} from "@workspace/ui/components/breadcrumb";
-import {Fragment, useState} from "react";
-import {Input} from "@workspace/ui/components/input";
-import {useCreateFolder, useGetAllFolders, useUpdateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
-import findFolderPathById from "@/src/utils/findFolderPathById";
-import Loader from "../loader/Loader";
+import {useState} from "react";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import {useUpdateFile} from "@/src/api/hooks/api_hooks/fileHooks";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
-import {ErrorType} from "@workspace/types/src/apiResponses";
-import {toast} from "sonner";
+import {ErrorType} from "@workspace/types";
 
 export default function EditFileModal() {
     const {editFileModal, closeEditFileModal} = useContextMenu();

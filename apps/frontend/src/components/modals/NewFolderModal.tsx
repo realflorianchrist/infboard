@@ -2,20 +2,13 @@
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbList,
-    BreadcrumbSeparator
-} from "@workspace/ui/components/breadcrumb";
-import {Fragment, useState} from "react";
+import {useState} from "react";
 import {Input} from "@workspace/ui/components/input";
-import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
-import findFolderPathById from "@/src/utils/findFolderPathById";
+import {useCreateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import Loader from "../loader/Loader";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
-import {ErrorType} from "@workspace/types/src/apiResponses";
+import {ErrorType} from "@workspace/types";
 import {toast} from "sonner";
 import {successMessage} from "@/src/utils/getSuccessMessage";
 

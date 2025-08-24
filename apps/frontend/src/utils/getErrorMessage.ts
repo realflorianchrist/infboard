@@ -1,10 +1,10 @@
-import {ErrorType} from "@workspace/types/src/apiResponses";
 import {
+    ErrorType,
     FileValidationErrorType,
     FolderValidationErrorType,
     UserValidationErrorType,
     ValidationErrorType
-} from "@workspace/types/src/modelValidation";
+} from "@workspace/types";
 
 
 const validationErrorMessages: Record<ValidationErrorType, string> = {

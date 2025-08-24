@@ -40,4 +40,4 @@ WORKDIR /app/apps/backend
 
 EXPOSE 8080
 
-CMD ["node", "-r", "dotenv/config", "dist/apps/backend/src/index.js"]
+CMD ["pnpm", "start"]

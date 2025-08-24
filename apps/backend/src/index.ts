@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import {connectDB} from "@src/config/database";
 import {ensureBucketExists} from "@src/config/s3";
 import dispatcher from "@src/api/controllers/dispatcher";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {ApiRoutes} from "@workspace/routes";
 import {ENV} from "@src/constants/ENV";
 import {errorHandler} from "@src/middleware/errorHandler";
 import {authenticateToken} from "@src/middleware/authMiddleware";

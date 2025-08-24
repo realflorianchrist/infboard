@@ -1,6 +1,6 @@
 import express, {Router} from 'express';
 import folderController from "@src/api/controllers/folder";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {ApiRoutes} from "@workspace/routes";
 import fileController from "@src/api/controllers/file";
 import authController from "@src/api/controllers/auth";
 import dataController from "@src/api/controllers/data";

@@ -19,12 +19,12 @@ import {cn} from "@workspace/ui/lib/utils";
 import {useDownloadFile} from "@/src/hooks/useDownloadFile";
 import {formatDate, formatFileSize} from "@/src/utils/formatter";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {getFileSymbol} from "@/src/utils/getFileSymbol";
 import Loader from "@/src/components/loader/Loader";
 import DnDTableRow from "@/src/components/dnd/DnDTableRow";
 import {useDroppable} from "@dnd-kit/core";
-import {Data, isFolder} from "@workspace/types/src/data";
+import {Data, isFolder} from "@workspace/types";
 
 export type RowData = Data & {
     select?: boolean;
