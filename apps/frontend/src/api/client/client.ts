@@ -1,5 +1,5 @@
-import {ApiErrorResponse, ApiResponse, ErrorType} from "@workspace/types/apiResponses";
-import {ValidationErrorType} from "@workspace/types/modelValidation";
+import {ApiErrorResponse, ApiResponse, ErrorType} from "@workspace/types/src/apiResponses";
+import {ValidationErrorType} from "@workspace/types/src/modelValidation";
 import {userDetails} from "@/src/utils/userDetails";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";

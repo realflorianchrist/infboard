@@ -3,7 +3,7 @@ import {DragOverlay} from "@dnd-kit/core";
 import {IoFolderOutline} from "react-icons/io5";
 import {getFileSymbol} from "@/src/utils/getFileSymbol";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
-import {isFolder} from "@workspace/types/data";
+import {isFolder} from "@workspace/types/src/data";
 
 type Props = {
 };

@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import {User} from "@workspace/types/user";
+import {User} from "@workspace/types/src/user";
 import {TOKEN_KEY} from "@workspace/constants/index";
 
 export const userDetails = () => {

@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {ApiResponse} from "@workspace/types/apiResponses";
+import {ApiResponse} from "@workspace/types";
 
 type HandlerResult<T> = {
     status: number;

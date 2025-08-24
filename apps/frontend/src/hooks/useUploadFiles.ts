@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ApiRoutes } from "@workspace/routes/apiRoutes";
 import { usePutFileToUrl } from "@/src/api/hooks/s3_hooks/fileHooks";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
-import {ValidationErrorType} from "@workspace/types/modelValidation";
+import {ValidationErrorType} from "@workspace/types/src/modelValidation";
 import {ApiClientError} from "@/src/api/client/client";
 
 type UploadResult = {

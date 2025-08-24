@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
-    "lib": ["ES2020"],
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022"],
     "baseUrl": "./",
-    "moduleResolution": "node",
-    "outDir": "dist",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
@@ -14,9 +13,9 @@
     "useUnknownInCatchVariables": false,
     "paths": {
       "@src/*": ["src/*"],
-      "@workspace/types/*": ["../../packages/types/*"],
-      "@workspace/routes/*": ["../../packages/routes/*"],
-      "@workspace/constants/*": ["../../packages/constants/*"]
+      "@workspace/types": ["../../packages/types/src/index.ts"],
+      "@workspace/routes": ["../../packages/routes/apiRoutes.ts"],
+      "@workspace/constants": ["../../packages/constants/index.ts"]
     },
     "types": ["vitest/globals"]
   },

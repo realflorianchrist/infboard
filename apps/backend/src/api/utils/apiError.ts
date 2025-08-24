@@ -1,6 +1,6 @@
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types/src/apiResponses";
 import {StatusCodes} from "http-status-codes";
-import {ValidationErrorType} from "@workspace/types/modelValidation";
+import {ValidationErrorType} from "@workspace/types/src/modelValidation";
 
 type HttpStatusCode = typeof StatusCodes[keyof typeof StatusCodes];
 

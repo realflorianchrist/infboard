@@ -1,7 +1,7 @@
 import {useApiMutation} from "@/src/api/client/reactQuery";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {HttpMethod} from "@/src/api/client/client";
-import {AuthUser, User} from "@workspace/types/user";
+import {AuthUser, User} from "@workspace/types/src/user";
 import {userDetails} from "@/src/utils/userDetails";
 import {useRouter} from "next/navigation";
 import routes from "@/src/constants/routes";

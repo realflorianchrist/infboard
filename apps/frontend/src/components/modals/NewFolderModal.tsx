@@ -15,7 +15,7 @@ import findFolderPathById from "@/src/utils/findFolderPathById";
 import Loader from "../loader/Loader";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types/src/apiResponses";
 import {toast} from "sonner";
 import {successMessage} from "@/src/utils/getSuccessMessage";
 

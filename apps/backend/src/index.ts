@@ -1,7 +1,6 @@
-import logger from 'jet-logger';
 import cors from "cors";
 import express from 'express';
-import {NodeEnvs} from '@src/constants';
+import {NodeEnvs} from '@src/constants/NodeEnvs';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import {connectDB} from "@src/config/database";
@@ -11,6 +10,7 @@ import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {ENV} from "@src/constants/ENV";
 import {errorHandler} from "@src/middleware/errorHandler";
 import {authenticateToken} from "@src/middleware/authMiddleware";
+import logger from "@src/utils/logger";
 
 
 // **** Configuration **** //

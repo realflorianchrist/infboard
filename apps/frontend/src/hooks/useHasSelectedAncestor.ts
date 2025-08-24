@@ -1,6 +1,6 @@
 import {useMemo} from "react";
-import {Folder} from "@workspace/types/data";
-import {FolderPath} from "@workspace/types/folderPath";
+import {Folder} from "@workspace/types/src/data";
+import {FolderPath} from "@workspace/types/src/folderPath";
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 

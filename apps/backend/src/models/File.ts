@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {model, Schema, Types, Document, Query} from 'mongoose';
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
-import {FileValidationErrorType} from "@workspace/types/modelValidation";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
+import {FileValidationErrorType} from "@workspace/types";
 import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
 
 

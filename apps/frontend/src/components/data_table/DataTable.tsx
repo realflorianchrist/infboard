@@ -24,7 +24,7 @@ import {getFileSymbol} from "@/src/utils/getFileSymbol";
 import Loader from "@/src/components/loader/Loader";
 import DnDTableRow from "@/src/components/dnd/DnDTableRow";
 import {useDroppable} from "@dnd-kit/core";
-import {Data, isFolder} from "@workspace/types/data";
+import {Data, isFolder} from "@workspace/types/src/data";
 
 export type RowData = Data & {
     select?: boolean;

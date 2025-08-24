@@ -3,12 +3,12 @@ import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {StatusCodes} from "http-status-codes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {FolderModel, FolderSchema, UpdateFolderSchema} from "@src/models/Folder";
-import {Folder, UpdateFolder} from "@workspace/types/data";
+import {Folder, UpdateFolder} from "@workspace/types/src/data";
 import {getFolderContents, getFolderTree} from "@src/services/dataService";
 import {ApiError} from "@src/api/utils/apiError";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types/src/apiResponses";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
-import {FolderValidationErrorType} from "@workspace/types/modelValidation";
+import {FolderValidationErrorType} from "@workspace/types/src/modelValidation";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 import {isDescendant} from "@src/api/controllers/utils/moveDataValidation";
 

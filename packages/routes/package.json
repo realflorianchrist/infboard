@@ -1,6 +1,7 @@
 {
   "name": "@workspace/routes",
   "version": "1.0.0",
+  "type": "module",
   "main": "apiRoutes.ts",
   "license": "MIT"
 }

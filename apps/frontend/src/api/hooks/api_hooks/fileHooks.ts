@@ -1,5 +1,5 @@
 import {useApiMutation} from "@/src/api/client/reactQuery";
-import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/data";
+import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/src/data";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {HttpMethod} from "@/src/api/client/client";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";

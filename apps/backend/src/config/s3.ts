@@ -1,6 +1,6 @@
 import {CreateBucketCommand, HeadBucketCommand, S3Client} from "@aws-sdk/client-s3";
-import logger from "jet-logger";
 import {ENV} from "@src/constants/ENV";
+import logger from "@src/utils/logger";
 
 export const s3 = new S3Client({
     region: ENV.S3_REGION,
@@ -16,7 +16,7 @@ export const ensureBucketExists = async () => {
     try {
         await s3.send(new HeadBucketCommand({Bucket: ENV.S3_BUCKET}));
         logger.info(`Bucket "${ENV.S3_BUCKET}" already exists`);
-    } catch (err: any) {
+    } catch (err) {
         if (err.$metadata?.httpStatusCode === 404) {
             await s3.send(new CreateBucketCommand({Bucket: ENV.S3_BUCKET}));
             logger.info(`Bucket "${ENV.S3_BUCKET}" created`);

@@ -1,6 +1,6 @@
 import {z} from 'zod';
-import {NodeEnvs} from "@src/constants/index";
 import dotenv from 'dotenv';
+import {NodeEnvs} from "@src/constants/NodeEnvs";
 
 dotenv.config();
 

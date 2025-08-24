@@ -6,7 +6,7 @@ import {useDeleteFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useEffect, useState} from "react";
 import {toast} from "sonner";
 import {successMessage} from "@/src/utils/getSuccessMessage";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types/src/apiResponses";
 
 export default function DeleteFolderModal() {
     const {deleteFolderModal, closeDeleteFolderModal} = useContextMenu();

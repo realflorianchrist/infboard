@@ -1,5 +1,5 @@
-import {User} from "@workspace/types/user";
 import {UserDocument} from "@src/models/User";
+import {User} from "@workspace/types";
 
 export const userDocumentToFileMapper = (userDocument: UserDocument): User => {
     return {

@@ -1,11 +1,11 @@
-import {Data, isFolder} from "@workspace/types/data";
+import {Data, isFolder} from "@workspace/types/src/data";
 import {FolderModel} from "@src/models/Folder";
 import {FileModel} from "@src/models/File";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {ApiError} from "@src/api/utils/apiError";
 import {StatusCodes} from "http-status-codes";
-import {FolderValidationErrorType} from "@workspace/types/modelValidation";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {FolderValidationErrorType} from "@workspace/types/src/modelValidation";
+import {ErrorType} from "@workspace/types/src/apiResponses";
 
 export const isDescendant = async (parentId: string, childId: string): Promise<boolean> => {
     if (childId === ROOT_FOLDER_ID) return false;

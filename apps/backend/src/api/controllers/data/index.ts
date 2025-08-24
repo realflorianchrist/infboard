@@ -1,15 +1,15 @@
 import express, {Router} from "express";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {Data, isFileMeta, isFolder} from "@workspace/types/data";
+import {Data, isFileMeta, isFolder} from "@workspace/types/src/data";
 import {StatusCodes} from "http-status-codes";
 import {FolderModel} from "@src/models/Folder";
 import {ApiError} from "@src/api/utils/apiError";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types/src/apiResponses";
 import {FileModel, FileVersion} from "@src/models/File";
 import mongoose from "mongoose";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
-import {FileValidationErrorType, FolderValidationErrorType} from "@workspace/types/modelValidation";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
+import {FileValidationErrorType, FolderValidationErrorType} from "@workspace/types/src/modelValidation";
 import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
 
 

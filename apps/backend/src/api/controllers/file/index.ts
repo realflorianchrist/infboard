@@ -1,15 +1,15 @@
 import express, {Router} from "express";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/data";
+import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/src/data";
 import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types/src/apiResponses";
 import {FileModel, FileSchema, FileVersion, UpdateFileSchema} from "@src/models/File";
 import {generateFileKey, generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
-import {FileValidationErrorType} from "@workspace/types/modelValidation";
+import {FileValidationErrorType} from "@workspace/types/src/modelValidation";
 import logger from "jet-logger";
 
 const fileController: Router = express.Router();

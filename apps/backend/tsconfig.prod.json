@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "CommonJS",
     "outDir": "dist",
     "removeComments": true,
     "sourceMap": false,
@@ -16,6 +15,6 @@
     "src/public/",
     "scripts",
     "eslint.config.js",
-    "vitest.config.js"
+    "vitest.config.mjs"
   ]
 }

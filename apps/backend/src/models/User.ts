@@ -1,7 +1,6 @@
 import {z} from "zod";
-import {UserValidationErrorType} from "@workspace/types/modelValidation";
+import {UserValidationErrorType} from "@workspace/types";
 import {Document, model, Schema, Types} from "mongoose";
-import {FileDocument} from "@src/models/File";
 
 export const UserSchema = z.object({
     id: z.string().optional(),

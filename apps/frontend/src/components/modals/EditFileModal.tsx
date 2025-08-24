@@ -16,7 +16,7 @@ import Loader from "../loader/Loader";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import {useUpdateFile} from "@/src/api/hooks/api_hooks/fileHooks";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types/src/apiResponses";
 import {toast} from "sonner";
 
 export default function EditFileModal() {

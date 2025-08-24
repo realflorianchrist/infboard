@@ -1,13 +1,13 @@
 import {DragEndEvent, DragStartEvent, MouseSensor, useSensor, useSensors} from "@dnd-kit/core";
 import {useQueryClient} from "@tanstack/react-query";
-import {isData, isFileMeta, isFolder} from "@workspace/types/data";
+import {isData, isFileMeta, isFolder} from "@workspace/types/src/data";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {useMoveData} from "@/src/api/hooks/api_hooks/dataHooks";
 import {toast} from "sonner";
 import {successMessage} from "@/src/utils/getSuccessMessage";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types/src/apiResponses";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import {useHasSelectedAncestor} from "@/src/hooks/useHasSelectedAncestor";
 

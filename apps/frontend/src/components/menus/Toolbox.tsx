@@ -4,7 +4,7 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import menuOptions from "@/src/constants/menuOptions";
 import {useDownloadFile} from "@/src/hooks/useDownloadFile";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {isFileMeta, isFolder} from "@workspace/types/data";
+import {isFileMeta, isFolder} from "@workspace/types/src/data";
 import Loader from "@/src/components/loader/Loader";
 
 export default function Toolbox() {

@@ -1,5 +1,5 @@
-import {Folder} from "@workspace/types/data";
-import {FolderPath} from "@workspace/types/folderPath";
+import {Folder} from "@workspace/types/src/data";
+import {FolderPath} from "@workspace/types/src/folderPath";
 
 const findFolderPathById = (
     folders?: Folder[] | null,

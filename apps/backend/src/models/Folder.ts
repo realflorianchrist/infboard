@@ -1,8 +1,8 @@
 import {z} from 'zod';
 import {model, Schema, Types, Document} from 'mongoose';
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
-import {FolderValidationErrorType} from "@workspace/types/modelValidation";
+import {FolderValidationErrorType} from "@workspace/types";
 import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 
 export const FolderSchema = z.object({
     id: z.string().optional(),

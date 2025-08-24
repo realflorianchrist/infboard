@@ -1,6 +1,6 @@
 import {useApiMutation, useApiQuery} from "@/src/api/client/reactQuery";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
-import {Data, Folder, UpdateFolder} from "@workspace/types/data";
+import {Data, Folder, UpdateFolder} from "@workspace/types/src/data";
 import {HttpMethod} from "@/src/api/client/client";
 import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 

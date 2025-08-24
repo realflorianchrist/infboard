@@ -6,13 +6,13 @@ import {Label} from "@workspace/ui/components/label";
 import {Button} from "@workspace/ui/components/button";
 import {FormEvent, useState} from "react";
 import {z} from "zod";
-import {AuthUser} from "@workspace/types/user";
+import {AuthUser} from "@workspace/types/src/user";
 import {useLogin} from "@/src/api/hooks/api_hooks/authHooks";
 import {toast} from "sonner";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import routes from "@/src/constants/routes";
 import {useRouter} from "next/navigation";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types/src/apiResponses";
 import {successMessage} from "@/src/utils/getSuccessMessage";
 
 

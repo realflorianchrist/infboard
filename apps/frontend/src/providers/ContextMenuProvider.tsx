@@ -1,6 +1,6 @@
 'use client'
 import {createContext, useContext, useEffect, useState} from "react";
-import {Folder, FileMeta, Data} from "@workspace/types/data";
+import {Folder, FileMeta, Data} from "@workspace/types/src/data";
 
 type ContextMenuContextType = {
     newFolderModal: { open: boolean; parentFolderId?: string; };
