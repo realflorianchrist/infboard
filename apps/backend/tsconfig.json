@@ -4,7 +4,7 @@
     "paths": {
       "@src/*": ["src/*"],
       "@workspace/types": ["../../packages/types/src/index.ts"],
-      "@workspace/routes": ["../../packages/routes/apiRoutes.ts"],
+      "@workspace/routes": ["../../packages/routes/src/index.ts"],
       "@workspace/constants": ["../../packages/constants/src/index.ts"],
       "@workspace/mailer": ["../../packages/mailer/src/index.ts"]
     }

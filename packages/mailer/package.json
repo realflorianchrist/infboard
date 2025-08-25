@@ -5,7 +5,6 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
     "build": "tsc && pnpm run copy:templates",
     "copy:templates": "cp -R src/templates dist/templates"
   },

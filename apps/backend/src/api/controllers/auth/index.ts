@@ -1,5 +1,5 @@
 import express, {Router} from "express";
-import {Index} from "@workspace/routes";
+import {apiRoutes} from "@workspace/routes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {AuthUser, ErrorType, User, UserValidationErrorType, ValidationErrorType} from "@workspace/types";
 import {StatusCodes} from "http-status-codes";
@@ -14,7 +14,7 @@ import mailService from "@src/config/mail";
 const authController: Router = express.Router();
 
 authController.get(
-    Index.auth.validateToken,
+    apiRoutes.auth.validateToken,
     handleRequest<
         {},
         { success: boolean }
@@ -42,7 +42,7 @@ authController.get(
 );
 
 authController.post(
-    Index.auth.register,
+    apiRoutes.auth.register,
     handleRequest<
         { user: AuthUser },
         { user: User, token: string }
@@ -93,7 +93,7 @@ authController.post(
                         token: generateToken(user.id!, user.username)
                     }
                 };
-            } catch (error) {
+            } catch {
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.API_ERROR);
             }
         }
@@ -101,7 +101,7 @@ authController.post(
 );
 
 authController.post(
-    Index.auth.login,
+    apiRoutes.auth.login,
     handleRequest<
         { user: AuthUser },
         { user: User, token: string }

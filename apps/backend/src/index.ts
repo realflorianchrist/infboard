@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import {connectDB} from "@src/config/database";
 import {ensureBucketExists} from "@src/config/s3";
 import dispatcher from "@src/api/controllers/dispatcher";
-import {Index} from "@workspace/routes";
+import {apiRoutes} from "@workspace/routes";
 import {ENV} from "@src/constants/ENV";
 import {errorHandler} from "@src/middleware/errorHandler";
 import {authenticateToken} from "@src/middleware/authMiddleware";
@@ -50,7 +50,7 @@ app.use((req, res, next) => {
     }
     return authenticateToken(req, res, next);
 });
-app.use(Index.base, dispatcher);
+app.use(apiRoutes.base, dispatcher);
 app.use(errorHandler);
 
 

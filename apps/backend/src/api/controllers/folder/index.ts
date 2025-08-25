@@ -1,5 +1,5 @@
 import express, {Router} from "express";
-import {Index} from "@workspace/routes";
+import {apiRoutes} from "@workspace/routes";
 import {StatusCodes} from "http-status-codes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {FolderModel, FolderSchema, UpdateFolderSchema} from "@src/models/Folder";
@@ -14,7 +14,7 @@ import {isDescendant} from "@src/api/controllers/utils/moveDataValidation";
 const folderController: Router = express.Router();
 
 folderController.get(
-    Index.folders.all,
+    apiRoutes.folders.all,
     handleRequest<{}, { folders: Folder[] }>(
         async () => {
 
@@ -29,7 +29,7 @@ folderController.get(
 );
 
 folderController.get(
-    Index.folders.byId(':id'),
+    apiRoutes.folders.byId(':id'),
     handleRequest<{}, { folder: Folder }, { id: string }>(
         async (req) => {
             const {id} = req.params;
@@ -47,7 +47,7 @@ folderController.get(
 );
 
 folderController.post(
-    Index.folders.add,
+    apiRoutes.folders.add,
     handleRequest<{ name: string, parentFolderId?: string }, { folder: Folder }>(
         async (req) => {
 
@@ -80,7 +80,7 @@ folderController.post(
 );
 
 folderController.put(
-    Index.folders.update,
+    apiRoutes.folders.update,
     handleRequest<{ folder: UpdateFolder }, { folder: Folder }>(
         async (req) => {
 
@@ -135,7 +135,7 @@ folderController.put(
 );
 
 folderController.delete(
-    Index.folders.delete(':id'),
+    apiRoutes.folders.delete(':id'),
     handleRequest<{ id: string }, { folder: Folder }>(
         async (req) => {
 

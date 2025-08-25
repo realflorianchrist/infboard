@@ -4,7 +4,7 @@ import {fileURLToPath} from "url";
 import Handlebars from "handlebars";
 import mjml2html from "mjml";
 import {htmlToText} from "html-to-text";
-import logger from "jet-logger";
+import logger from "./utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

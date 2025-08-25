@@ -1,7 +1,13 @@
 <mj-section>
     <mj-column>
         <mj-text>
-            Hello {{user.username}}
+            Hello {{username}}
+        </mj-text>
+        <mj-text>
+            Bitte Bestätige deine email indem du auf folgenden link klickst.
+        </mj-text>
+        <mj-text>
+            link
         </mj-text>
     </mj-column>
 </mj-section>

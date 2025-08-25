@@ -1,5 +1,5 @@
 import express, {Router} from "express";
-import {Index} from "@workspace/routes";
+import {apiRoutes} from "@workspace/routes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {
     Data,
@@ -55,7 +55,7 @@ const moveItem = async (item: Data, targetFolderId: string, session: mongoose.Cl
 const dataController: Router = express.Router();
 
 dataController.put(
-    Index.data.move,
+    apiRoutes.data.move,
     handleRequest<{ data: Data[]; targetFolderId: string }, {}>(
         async (req) => {
             const {data, targetFolderId} = req.body;

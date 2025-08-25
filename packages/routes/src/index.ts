@@ -1,4 +1,4 @@
-export const Index = {
+export const apiRoutes = {
     base: '/api',
 
     auth: {

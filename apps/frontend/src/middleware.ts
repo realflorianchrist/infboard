@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {Index} from "@workspace/routes";
+import {apiRoutes} from "@workspace/routes";
 import routes from "@/src/constants/routes";
 import {TOKEN_KEY} from "@workspace/constants";
 
@@ -14,7 +14,7 @@ export async function middleware(req: NextRequest) {
 
     try {
         const response = await fetch(
-            `${API_BASE_URL}${Index.auth.base}${Index.auth.validateToken}`,
+            `${API_BASE_URL}${apiRoutes.auth.base}${apiRoutes.auth.validateToken}`,
             {
                 method: 'GET',
                 headers: {

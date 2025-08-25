@@ -1,19 +1,19 @@
 import {useApiMutation} from "@/src/api/client/reactQuery";
-import {Index} from "@workspace/routes";
+import {apiRoutes} from "@workspace/routes";
 import {HttpMethod} from "@/src/api/client/client";
 import {AuthUser, User} from "@workspace/types";
 import {userDetails} from "@/src/utils/userDetails";
 import {useRouter} from "next/navigation";
 import routes from "@/src/constants/routes";
 
-const baseRoute = Index.auth.base;
+const baseRoute = apiRoutes.auth.base;
 
 export const useRegister = () =>
     useApiMutation<
         { user: User, token: string },
         { user: AuthUser }
     >(
-        [baseRoute, Index.auth.register],
+        [baseRoute, apiRoutes.auth.register],
         HttpMethod.POST,
         {
             mutationOptions: {
@@ -30,7 +30,7 @@ export const useLogin = () =>
         { user: User, token: string },
         { user: AuthUser }
     >(
-        [baseRoute, Index.auth.login],
+        [baseRoute, apiRoutes.auth.login],
         HttpMethod.POST,
         {
             mutationOptions: {

@@ -16,6 +16,17 @@
         <mj-section>
             <mj-column>
                 <mj-text>
+                    Freundliche Grüsse
+                </mj-text>
+                <mj-text>
+                    Dein Infboard-Team
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        <mj-section>
+            <mj-column>
+                <mj-text>
                     &copy; Infboard {{year}}
                 </mj-text>
             </mj-column>
