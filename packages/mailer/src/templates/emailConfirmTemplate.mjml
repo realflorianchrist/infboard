@@ -1,7 +1,7 @@
 <mj-section>
     <mj-column>
         <mj-text>
-            Hello
+            Hello {{user.username}}
         </mj-text>
     </mj-column>
 </mj-section>

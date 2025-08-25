@@ -9,6 +9,7 @@ import bcrypt from "bcryptjs";
 import {userDocumentToFileMapper} from "@src/api/mapper/userMapper";
 import {generateToken, verifyToken} from "@src/services/jwtTokenProvider";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
+import mailService from "@src/config/mail";
 
 const authController: Router = express.Router();
 
@@ -82,6 +83,8 @@ authController.post(
                 });
 
                 const user = userDocumentToFileMapper(userDoc);
+
+                await mailService.sendEmailConfirmEMail(user);
 
                 return {
                     status: StatusCodes.OK,

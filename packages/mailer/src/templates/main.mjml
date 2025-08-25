@@ -3,10 +3,10 @@
         <mj-include path="./styles/styles.css" type="css"/>
     </mj-head>
     <mj-body css-class="body">
-        <mj-section>
+        <mj-section css-class="header">
             <mj-column>
                 <mj-text>
-                    header
+                    infboard.ch
                 </mj-text>
             </mj-column>
         </mj-section>

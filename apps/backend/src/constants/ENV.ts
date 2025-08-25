@@ -41,6 +41,13 @@ const envSchema = z.object({
     JWT_EXPIRE: z
         .string()
         .regex(/^\d+[smhd]$/, "JWT_EXPIRE must be like '60s', '10m', '1h', '7d'"),
+
+    // Mail
+    FROM_EMAIL: z.string(),
+    SMTP_HOST: z.string(),
+    SMTP_PORT: z.coerce.number(),
+    SMTP_USER: z.string(),
+    SMTP_PASS: z.string(),
 });
 
 export const ENV = envSchema.parse(process.env);
