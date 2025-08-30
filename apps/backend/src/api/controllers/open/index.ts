@@ -4,6 +4,7 @@ import {ErrorType} from "@workspace/types";
 import {StatusCodes} from "http-status-codes";
 import mailService from "@src/config/mail";
 import {ApiError} from "@src/api/utils/apiError";
+import {createConfirmLink} from "@src/services/userService";
 
 const openController: Router = express.Router();
 
@@ -18,7 +19,7 @@ openController.get(
             };
 
             try {
-                await mailService.sendEmailConfirmEMail(user);
+                await mailService.sendEmailConfirmEMail(user, createConfirmLink(user));
 
                 return {
                     status: StatusCodes.OK,

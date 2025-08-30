@@ -4,9 +4,9 @@ import {NodemailerLike} from "./transport";
 
 export const createMailService = (transport: NodemailerLike) => {
 
-    const sendEMailConfirmEMail = async (user: User) => {
+    const sendEMailConfirmEMail = async (user: User, confirmLink: string) => {
 
-        const {html} = renderMjmlTemplate('emailConfirmTemplate', user);
+        const {html} = renderMjmlTemplate('emailConfirmTemplate', {...user, confirmLink});
 
         await transport.sendMail({
             to: user.email,

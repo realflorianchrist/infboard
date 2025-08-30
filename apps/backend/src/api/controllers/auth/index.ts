@@ -10,6 +10,7 @@ import {userDocumentToFileMapper} from "@src/api/mapper/userMapper";
 import {generateToken, verifyToken} from "@src/services/jwtTokenProvider";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import mailService from "@src/config/mail";
+import {createConfirmLink} from "@src/services/userService";
 
 const authController: Router = express.Router();
 
@@ -34,7 +35,7 @@ authController.get(
                         success: true,
                     }
                 }
-            } catch (error) {
+            } catch {
                 throw new ApiError(StatusCodes.UNAUTHORIZED, ErrorType.TOKEN_INVALID);
             }
         }
@@ -84,7 +85,11 @@ authController.post(
 
                 const user = userDocumentToFileMapper(userDoc);
 
-                await mailService.sendEmailConfirmEMail(user);
+                try {
+                    await mailService.sendEmailConfirmEMail(user, createConfirmLink(user));
+                } catch {
+                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.SEND_EMAIL_FAILED)
+                }
 
                 return {
                     status: StatusCodes.OK,
@@ -93,7 +98,9 @@ authController.post(
                         token: generateToken(user.id!, user.username)
                     }
                 };
-            } catch {
+            } catch (error) {
+                if (error instanceof ApiError) throw error;
+
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.API_ERROR);
             }
         }
@@ -134,6 +141,31 @@ authController.post(
                     token: generateToken(user.id!, user.username)
                 }
             };
+        }
+    )
+);
+
+authController.post(
+    apiRoutes.auth.resendConfirmEmail,
+    handleRequest<
+        { user: User },
+        {}
+    >(
+        async (req) => {
+
+            const user = req.body.user;
+
+            try {
+                await mailService.sendEmailConfirmEMail(user, createConfirmLink(user));
+
+                return {
+                    status: StatusCodes.OK,
+                    data: {}
+                }
+
+            } catch {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.SEND_EMAIL_FAILED)
+            }
         }
     )
 );

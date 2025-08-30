@@ -40,6 +40,7 @@ const generalErrorMessages: Record<ErrorType, string> = {
     [ErrorType.BAD_CREDENTIALS]: "Username oder Passwort ungültig.",
     [ErrorType.TOKEN_MISSING]: "Authentifizierungstoken fehlt.",
     [ErrorType.TOKEN_INVALID]: "Authentifizierungstoken ist ungültig oder abgelaufen.",
+    [ErrorType.SEND_EMAIL_FAILED]: "Beim senden der E-Mail ist ein fehler aufgetreten.",
     [ErrorType.FOLDER_NOT_FOUND]: "Der Ordner wurde nicht gefunden.",
     [ErrorType.FILE_NOT_FOUND]: "Die Datei wurde nicht gefunden.",
     [ErrorType.VALIDATION_ERROR]: "Die Eingabe enthält ungültige Werte.",

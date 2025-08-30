@@ -4,10 +4,11 @@
             Hello {{username}}
         </mj-text>
         <mj-text>
-            Bitte Bestätige deine email indem du auf folgenden link klickst.
+            Bitte Bestätige deine email indem du auf folgenden link klickst. <br>
+            Der Link ist 24h gültig.
         </mj-text>
         <mj-text>
-            link
+            {{confirmLink}}
         </mj-text>
     </mj-column>
 </mj-section>

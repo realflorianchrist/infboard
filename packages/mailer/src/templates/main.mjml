@@ -16,9 +16,7 @@
         <mj-section>
             <mj-column>
                 <mj-text>
-                    Freundliche Grüsse
-                </mj-text>
-                <mj-text>
+                    Freundliche Grüsse <br>
                     Dein Infboard-Team
                 </mj-text>
             </mj-column>
