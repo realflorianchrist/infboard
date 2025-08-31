@@ -17,6 +17,7 @@ export const apiRoutes = {
         add: '/add',
         update: '/update',
         delete: (id: string) => `/delete/${id}`,
+        hasDeletedFiles: (id: string) => `/has-deleted-files/${id}`,
     },
 
     files: {

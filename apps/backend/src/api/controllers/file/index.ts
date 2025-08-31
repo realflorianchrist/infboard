@@ -195,22 +195,41 @@ fileController.put(
 
             const {id} = req.params;
 
-            const fileDoc = await FileModel.findByIdAndUpdate(
-                id,
-                {$set: {deleted: true}},
-                {timestamps: false}
-            );
+            const file = await FileModel.findById(id);
+            if (!file) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
 
-            if (!fileDoc) {
-                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            try {
+                const versionBackup: FileVersion = {
+                    version: file.version ?? 1,
+                    name: file.name,
+                    contentType: file.contentType,
+                    size: file.size,
+                    updatedAt: file.updatedAt,
+                    userName: file.userName,
+                    parentFolderId: file.parentFolderId,
+                    comment: file.comment,
+                    deleted: file.deleted
+                };
+
+                file.previousVersions = [...(file.previousVersions ?? []), versionBackup];
+
+                file.deleted = true;
+
+                file.version = (file.version ?? 1) + 1;
+
+                await file.save();
+
+                return {
+                    status: StatusCodes.OK,
+                    data: {
+                        file: fileDocumentToFileMapper(file)
+                    }
+                };
+
+            } catch (error) {
+
+                throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, ErrorType.INTERNAL_SERVER_ERROR);
             }
-
-            return {
-                status: StatusCodes.OK,
-                data: {
-                    file: fileDocumentToFileMapper(fileDoc)
-                },
-            };
         }
     )
 );

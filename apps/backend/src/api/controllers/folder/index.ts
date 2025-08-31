@@ -9,6 +9,8 @@ import {ApiError} from "@src/api/utils/apiError";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 import {isDescendant} from "@src/api/controllers/utils/moveDataValidation";
+import {FileModel} from "@src/models/File";
+import logger from "@src/utils/logger";
 
 
 const folderController: Router = express.Router();
@@ -42,6 +44,28 @@ folderController.get(
                 status: StatusCodes.OK,
                 data: {folder},
             };
+        }
+    )
+);
+
+folderController.get(
+    apiRoutes.folders.hasDeletedFiles(':id'),
+    handleRequest<{}, { hasDeletedFiles: boolean }, { id: string }>(
+        async (req) => {
+            const {id} = req.params;
+
+            const count = await FileModel.countDocuments({
+                parentFolderId: id,
+                deleted: true,
+            });
+            const hasDeletedFiles = count > 0;
+
+            return {
+                status: StatusCodes.OK,
+                data: {
+                    hasDeletedFiles: hasDeletedFiles,
+                },
+            }
         }
     )
 );

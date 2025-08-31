@@ -15,6 +15,7 @@ export const FileVersionSchema = z.object({
     userName: z.string().optional(),
     parentFolderId: z.string(),
     comment: z.string().optional(),
+    deleted: z.boolean().optional(),
     s3Key: z.string().optional()
 });
 
@@ -85,6 +86,7 @@ const FileMongooseSchema = new Schema<FileDocument>(
             userName: String,
             parentFolderId: String,
             comment: String,
+            deleted: Boolean,
             s3Key: String,
         }]
     },

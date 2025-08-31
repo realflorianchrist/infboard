@@ -55,7 +55,7 @@ export default function DataTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const folderId = path[path.length - 1]?.id ?? ROOT_FOLDER_ID;
-    const {data: result} = useGetFolderDataById(folderId);
+    const {data: result, isPending: loadingData} = useGetFolderDataById(folderId);
     const {setNodeRef} = useDroppable({id: folderId});
 
     useEffect(() => {
@@ -198,7 +198,7 @@ export default function DataTable() {
 
     return (
         <>
-            {isDownloading && <Loader isFullScreen={true}/>}
+            {(isDownloading || loadingData) && <Loader isFullScreen={true}/>}
 
             <div ref={setNodeRef}
                  className={'flex min-h-full min-w-full'}

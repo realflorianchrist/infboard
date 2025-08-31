@@ -20,6 +20,13 @@ export const useGetFolderDataById = (id: string) =>
         [baseRoute, apiRoutes.folders.byId(id)],
     );
 
+export const useHasFolderDeletedFiles = (id: string) =>
+    useApiQuery<
+        { hasDeletedFiles: boolean }
+    >(
+        [baseRoute, apiRoutes.folders.hasDeletedFiles(id)],
+    );
+
 export const useCreateFolder = () =>
     useApiMutation<
         { folder: Folder },
@@ -59,7 +66,7 @@ export const useDeleteFolder = () =>
         { folder: Folder },
         { id: string }
     >(
-        ({ id }) => [baseRoute, apiRoutes.folders.delete(id)],
+        ({id}) => [baseRoute, apiRoutes.folders.delete(id)],
         HttpMethod.DELETE,
         {
             invalidatePaths: (data) => {

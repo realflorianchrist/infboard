@@ -18,7 +18,6 @@ import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
 
 
-
 const moveItem = async (item: Data, targetFolderId: string, session: mongoose.ClientSession) => {
     if (isFolder(item)) {
         await FolderModel.updateOne({_id: item.id}, {
@@ -40,13 +39,13 @@ const moveItem = async (item: Data, targetFolderId: string, session: mongoose.Cl
         };
 
         await FileModel.updateOne(
-            { _id: item.id },
+            {_id: item.id},
             {
                 parentFolderId: targetFolderId,
-                $inc: { version: 1 },
-                $push: { previousVersions: versionBackup }
+                $inc: {version: 1},
+                $push: {previousVersions: versionBackup}
             },
-            { session }
+            {session}
         );
     }
 };
