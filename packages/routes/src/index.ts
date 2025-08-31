@@ -6,6 +6,7 @@ export const apiRoutes = {
         register: '/register',
         login: '/login',
         validateToken: '/validate-token',
+        confirmEmail: '/confirmEmail',
         resendConfirmEmail: '/resend-confirm-email',
     },
 

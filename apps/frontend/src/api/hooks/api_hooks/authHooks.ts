@@ -10,15 +10,14 @@ const baseRoute = apiRoutes.auth.base;
 
 export const useRegister = () =>
     useApiMutation<
-        { user: User, token: string },
+        { user: User },
         { user: AuthUser }
     >(
         [baseRoute, apiRoutes.auth.register],
         HttpMethod.POST,
         {
             mutationOptions: {
-                onSuccess: ({user, token}) => {
-                    userDetails().setAuthToken(token);
+                onSuccess: ({user}) => {
                     userDetails().setUserInfos(user);
                 }
             }
@@ -50,3 +49,12 @@ export const useLogout = () => {
         router.push(routes.LOGIN);
     }
 }
+
+export const useConfirmEmail = () =>
+    useApiMutation<
+        {},
+        { token: string }
+    >(
+        [baseRoute, apiRoutes.auth.confirmEmail],
+        HttpMethod.POST,
+    );
