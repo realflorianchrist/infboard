@@ -11,7 +11,6 @@ import {generateToken, verifyToken} from "@src/services/jwtTokenProvider";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import mailService from "@src/config/mail";
 import {createConfirmLink} from "@src/services/userService";
-import logger from "@src/utils/logger";
 
 const authController: Router = express.Router();
 
