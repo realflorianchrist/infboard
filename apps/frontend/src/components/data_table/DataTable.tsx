@@ -211,24 +211,26 @@ export default function DataTable() {
                                     <TableHead
                                         key={header.id}
                                         style={{width: header.getSize()}}
-                                        className="group select-none"
+                                        className={'group relative select-none'}
                                     >
-                                        <div className="flex gap-2 items-center cursor-pointer"
+                                        <div className={'flex gap-2 items-center cursor-pointer'}
                                              onClick={header.column.getToggleSortingHandler()}
                                         >
                                             {!header.isPlaceholder && (
                                                 <>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
-                                                    <span className="w-4 flex justify-center">
-                                                {{
-                                                    asc: <FaCaretUp/>,
-                                                    desc: <FaCaretDown/>,
-                                                }[header.column.getIsSorted() as string] ?? (
-                                                    <span className="invisible">
-                                                        <FaCaretUp/>
+                                                    <span className={'w-4 flex justify-center'}>
+                                                {
+                                                    {
+                                                        asc: <FaCaretUp/>,
+                                                        desc: <FaCaretDown/>,
+                                                    }
+                                                        [header.column.getIsSorted() as string] ?? (
+                                                        <span className={'invisible'}>
+                                                            <FaCaretUp/>
+                                                        </span>
+                                                    )}
                                                     </span>
-                                                )}
-                                            </span>
                                                 </>
                                             )}
                                         </div>
