@@ -14,14 +14,7 @@ export const useRegister = () =>
         { user: AuthUser }
     >(
         [baseRoute, apiRoutes.auth.register],
-        HttpMethod.POST,
-        {
-            mutationOptions: {
-                onSuccess: ({user}) => {
-                    userDetails().setUserInfos(user);
-                }
-            }
-        }
+        HttpMethod.POST
     );
 
 export const useLogin = () =>
@@ -52,9 +45,17 @@ export const useLogout = () => {
 
 export const useConfirmEmail = () =>
     useApiMutation<
-        {},
+        { user: User, token: string },
         { token: string }
     >(
         [baseRoute, apiRoutes.auth.confirmEmail],
         HttpMethod.POST,
+        {
+            mutationOptions: {
+                onSuccess: ({user, token}) => {
+                    userDetails().setAuthToken(token);
+                    userDetails().setUserInfos(user);
+                }
+            }
+        }
     );

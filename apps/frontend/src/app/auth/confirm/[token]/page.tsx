@@ -23,9 +23,7 @@ export default function ConfirmPage({params}: Props) {
 
     useEffect(() => {
         if (token) {
-            confirmEmail.mutate({token}, {
-                onSuccess: () => userDetails().setAuthToken(token)
-            });
+            confirmEmail.mutate({token});
         }
     }, [token]);
 

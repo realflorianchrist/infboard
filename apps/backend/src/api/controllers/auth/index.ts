@@ -11,6 +11,7 @@ import {generateToken, verifyToken} from "@src/services/jwtTokenProvider";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import mailService from "@src/config/mail";
 import {createConfirmLink} from "@src/services/userService";
+import logger from "@src/utils/logger";
 
 const authController: Router = express.Router();
 
@@ -152,7 +153,7 @@ authController.post(
     apiRoutes.auth.confirmEmail,
     handleRequest<
         { token: string },
-        {}
+        { user: User, token: string }
     >(
         async (req) => {
 
@@ -167,8 +168,8 @@ authController.post(
 
                 const updated = await UserModel.findOneAndUpdate(
                     {_id: payload.id, isEmailVerified: {$ne: true}},
-                    {$set: {isEmailVerified: true, emailVerifiedAt: new Date()}},
-                    {new: true, projection: {_id: 1}}
+                    {$set: {isEmailVerified: true}},
+                    {new: true}
                 );
 
                 if (!updated) {
@@ -181,7 +182,10 @@ authController.post(
 
                 return {
                     status: StatusCodes.OK,
-                    data: {}
+                    data: {
+                        user: userDocumentToUserMapper(updated),
+                        token: token
+                    }
                 }
 
             } catch (error) {
