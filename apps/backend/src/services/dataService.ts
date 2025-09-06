@@ -1,8 +1,13 @@
 import {FolderModel} from "@src/models/Folder";
-import {Folder} from "@workspace/types/data";
-import {FileModel} from "@src/models/File";
+import {FileMeta, Folder, UpdateFileMeta, UpdateFolder} from "@workspace/types/data";
+import {FileModel, FileVersion, UpdateFileSchema} from "@src/models/File";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
+import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {ApiError} from "@src/api/utils/apiError";
+import {StatusCodes} from "http-status-codes";
+import {ErrorType} from "@workspace/types/apiResponses";
+import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 
 export const getFolderTree = async (): Promise<Folder[]> => {
     const flatFolders = await FolderModel.find().lean();
@@ -38,18 +43,18 @@ export const getFolderTree = async (): Promise<Folder[]> => {
 };
 
 export const getFolderContents = async (folderId: string): Promise<Folder | null> => {
-    if (folderId === 'root') {
+    if (folderId === ROOT_FOLDER_ID) {
         const [subfolderDocs, fileDocs] = await Promise.all([
-            FolderModel.find({ parentFolderId: null }).lean(),
-            FileModel.find({ parentFolderId: null }).lean(),
+            FolderModel.find({parentFolderId: ROOT_FOLDER_ID}).lean(),
+            FileModel.find({parentFolderId: ROOT_FOLDER_ID}).lean(),
         ]);
 
         const subfolders = subfolderDocs.map(folderDocumentToFolderMapper);
-        const files = fileDocs.map(fileDocumentToFileMapper);
+        const files = fileDocs.map(f => fileDocumentToFileMapper(f));
 
         return {
-            id: 'root',
-            name: 'Root',
+            id: ROOT_FOLDER_ID,
+            name: ROOT_FOLDER_ID,
             children: subfolders,
             files: files,
         };
@@ -59,12 +64,12 @@ export const getFolderContents = async (folderId: string): Promise<Folder | null
     if (!folderDoc) return null;
 
     const [subfolderDocs, fileDocs] = await Promise.all([
-        FolderModel.find({ parentFolderId: folderId }).lean(),
-        FileModel.find({ parentFolderId: folderId }).lean(),
+        FolderModel.find({parentFolderId: folderId}).lean(),
+        FileModel.find({parentFolderId: folderId}).lean(),
     ]);
 
     const subfolders = subfolderDocs.map(folderDocumentToFolderMapper);
-    const files = fileDocs.map(fileDocumentToFileMapper);
+    const files = fileDocs.map(f => fileDocumentToFileMapper(f));
 
     return {
         id: folderDoc._id.toString(),

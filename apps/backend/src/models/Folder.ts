@@ -1,46 +1,47 @@
-import { z } from 'zod/v4';
-import { model, Schema, Types, Document } from 'mongoose';
+import {z} from 'zod';
+import {model, Schema, Types, Document} from 'mongoose';
+import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {FolderValidationErrorType} from "@workspace/types/modelValidation";
+import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
 
 export const FolderSchema = z.object({
     id: z.string().optional(),
-    name: z.string(),
+    name: z.string()
+        .min(1, {message: FolderValidationErrorType.FOLDER_NAME_EMPTY})
+        .max(20, {message: FolderValidationErrorType.FOLDER_NAME_TOO_LONG}),
     created: z.date().optional(),
-    parentFolderId: z.string().nullable().optional(),
+    parentFolderId: z.string().default(ROOT_FOLDER_ID),
 });
 
-export type IFolder = z.infer<typeof FolderSchema>;
+export const UpdateFolderSchema = makeUpdateSchema(FolderSchema);
 
-export const newFolder = (input: Partial<IFolder> = {}): IFolder => {
-    return FolderSchema.parse({
-        id: '',
-        name: '',
-        created: new Date(),
-        parentFolderId: null,
-        files: [],
-        ...input,
-    });
-};
+export type IFolder = z.infer<typeof FolderSchema>;
 
 export type FolderDocument = Omit<IFolder, 'id' | 'created'> & Document & {
     _id: Types.ObjectId;
     created: Date;
-    parentFolderId?: Types.ObjectId | null;
 };
 
 const FolderMongooseSchema = new Schema<FolderDocument>(
     {
-        name: { type: String, required: true },
-        parentFolderId: { type: Schema.Types.ObjectId, ref: 'Folder', default: null },
+        name: {type: String, required: true},
+        parentFolderId: {type: String, required: true, default: ROOT_FOLDER_ID},
     },
     {
-        timestamps: { createdAt: 'created', updatedAt: false },
-        toJSON: { virtuals: true },
-        toObject: { virtuals: true },
+        timestamps: {createdAt: 'created', updatedAt: false},
+        toJSON: {virtuals: true},
+        toObject: {virtuals: true},
     }
 );
+
+FolderMongooseSchema.index({name: 1, parentFolderId: 1}, {unique: true});
 
 FolderMongooseSchema.virtual('id').get(function (this: FolderDocument) {
     return this._id.toHexString();
 });
 
 export const FolderModel = model<FolderDocument>('Folder', FolderMongooseSchema);
+
+// (async () => {
+//     await FolderModel.syncIndexes();
+// })();

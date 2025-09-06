@@ -13,16 +13,19 @@ export function errorHandler(
 ) {
     let errorType: ErrorType = ErrorType.INTERNAL_SERVER_ERROR;
     let status = StatusCodes.INTERNAL_SERVER_ERROR;
+    let validationErrors;
 
     if (err instanceof ApiError && err.errorType) {
         errorType = err.errorType;
         status = err.status;
+        validationErrors = err.validationErrors;
     } else {
         logger.err(`Unhandled Error: ${err}`);
     }
 
     const errorResponse: ApiErrorResponse = {
         errorType: errorType,
+        validationErrors: validationErrors,
     }
 
     res.status(status).json(errorResponse);

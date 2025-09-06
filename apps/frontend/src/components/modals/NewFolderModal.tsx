@@ -10,29 +10,47 @@ import {
 } from "@workspace/ui/components/breadcrumb";
 import {Fragment, useState} from "react";
 import {Input} from "@workspace/ui/components/input";
-import findPathInTree from "@/src/utils/findPathInTree";
 import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
+import findFolderPathById from "@/src/utils/findFolderPathById";
+import Loader from "../loader/Loader";
+import {getErrorMessage} from "@/src/utils/getErrorMessage";
+import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
+import {ErrorType} from "@workspace/types/apiResponses";
+import {toast} from "sonner";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 
 export default function NewFolderModal() {
     const {newFolderModal, closeNewFolderModal} = useContextMenu();
-    const {mutate} = useCreateFolder();
-
-    const {data} = useGetAllFolders();
-    const path = findPathInTree(data?.folders ?? null, newFolderModal?.parentFolderId);
+    const {mutate, isPending: savingFolder} = useCreateFolder();
 
     const [name, setName] = useState('');
-
+    const [errorMessage, setErrorMessage] = useState<string[]>([]);
 
     const handleAddNewFolder = () => {
 
-        mutate({name, parentFolderId: newFolderModal.parentFolderId}, {
-            onSuccess: () => close()
+        mutate({name, parentFolderId: newFolderModal?.parentFolderId}, {
+            onSuccess: () => {
+                toast.success(successMessage.FOLDER_CREATED);
+                close();
+            },
+            onError: (e) => {
+                const messages: string[] = [];
+                if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                    e.validationErrors?.forEach((error) => {
+                        messages.push(getErrorMessage(error));
+                    });
+                } else {
+                    messages.push(getErrorMessage(e.errorType));
+                }
+                setErrorMessage(messages);
+            },
         });
     };
 
     const close = () => {
         closeNewFolderModal();
         setName('');
+        setErrorMessage([]);
     }
 
     return (
@@ -42,20 +60,8 @@ export default function NewFolderModal() {
                     <DialogTitle>Neuer Ordner</DialogTitle>
                 </DialogHeader>
 
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>Home</BreadcrumbItem>
-                        {(path?.length ?? 0) > 0 && <BreadcrumbSeparator/>}
-                        {path?.map((pathSegment, index) => (
-                            <Fragment key={pathSegment.id}>
-                                <BreadcrumbItem>
-                                    <span>{pathSegment.name}</span>
-                                </BreadcrumbItem>
-                                {index < path?.length - 1 && <BreadcrumbSeparator/>}
-                            </Fragment>
-                        ))}
-                    </BreadcrumbList>
-                </Breadcrumb>
+                <ModalBreadCrumbs parentFolderId={newFolderModal.parentFolderId} />
+
                 <form onSubmit={(e) => {
                     e.preventDefault();
                     handleAddNewFolder();
@@ -67,14 +73,28 @@ export default function NewFolderModal() {
                         onChange={(e) => setName(e.target.value)}
                     />
 
-                    <div className="flex justify-end gap-2 mt-4">
-                        <Button type="button" variant="secondary" onClick={close}>
-                            Abbrechen
-                        </Button>
-                        <Button type="submit" disabled={!name.trim()}>
-                            Speichern
-                        </Button>
-                    </div>
+                    {errorMessage.length > 0 && (
+                        <ul className={'text-error whitespace-normal break-all pt-2'}>
+                            {errorMessage.map((error, i) => (
+                                <li key={i}>{error}</li>
+                            ))}
+                        </ul>
+                    )}
+
+                    {savingFolder ? (
+                        <Loader/>
+                    ) : (
+                        <div className="flex justify-end gap-2 mt-4">
+                            <Button type="button" variant="secondary" onClick={close}>
+                                Abbrechen
+                            </Button>
+                            <Button type="submit"
+                                    disabled={!name.trim() || savingFolder}
+                            >
+                                Speichern
+                            </Button>
+                        </div>
+                    )}
                 </form>
             </DialogContent>
         </Dialog>

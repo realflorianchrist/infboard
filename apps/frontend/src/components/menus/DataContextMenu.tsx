@@ -13,23 +13,21 @@ type FolderContextMenuProps = {
     children: ReactNode;
     onNewFolder?: () => void;
     onUploadFile?: () => void;
-    onRename?: () => void;
+    onEdit?: () => void;
     onDelete?: () => void;
     onDownload?: () => void;
     onSelect?: () => void;
-    onMove?: () => void;
 };
 
 export default function DataContextMenu(
     {
         children,
         onNewFolder,
-        onRename,
+        onEdit,
         onDelete,
         onDownload,
         onSelect,
         onUploadFile,
-        onMove,
     }: FolderContextMenuProps) {
 
     return (
@@ -48,9 +46,9 @@ export default function DataContextMenu(
                         {menuOptions.uploadFile}
                     </ContextMenuItem>
                 )}
-                {onRename && (
-                    <ContextMenuItem onClick={onRename}>
-                        {menuOptions.rename}
+                {onEdit && (
+                    <ContextMenuItem onClick={onEdit}>
+                        {menuOptions.edit}
                     </ContextMenuItem>
                 )}
                 {onDelete && (
@@ -66,11 +64,6 @@ export default function DataContextMenu(
                 {onSelect && (
                     <ContextMenuItem onClick={onSelect}>
                         {menuOptions.select}
-                    </ContextMenuItem>
-                )}
-                {onMove && (
-                    <ContextMenuItem onClick={onMove}>
-                        {menuOptions.move}
                     </ContextMenuItem>
                 )}
             </ContextMenuContent>

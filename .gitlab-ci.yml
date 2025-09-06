@@ -1,0 +1,69 @@
+build-backend:
+  stage: build
+  image: docker:latest
+  variables:
+    DOCKER_IMAGE_TAG: "$CI_REGISTRY_IMAGE/backend-$CI_COMMIT_REF_SLUG:latest"
+  services:
+    - docker:dind
+  script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build
+      --pull -t $DOCKER_IMAGE_TAG -f apps/backend/Dockerfile .
+    - docker push $DOCKER_IMAGE_TAG
+  only:
+    - dev
+
+build-frontend:
+  stage: build
+  image: docker:latest
+  variables:
+    DOCKER_IMAGE_TAG: "$CI_REGISTRY_IMAGE/frontend-$CI_COMMIT_REF_SLUG:latest"
+  services:
+    - docker:dind
+  script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build
+      --build-arg NEXT_PUBLIC_API_BASE_URL=$API_BASE_URL
+      --pull -t $DOCKER_IMAGE_TAG -f apps/frontend/Dockerfile .
+    - docker push $DOCKER_IMAGE_TAG
+  only:
+    - dev
+
+#--------------------$
+# Deploy Docker images (dev)
+#--------------------$
+deploy-dev:
+  stage: deploy
+  image: docker:latest
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "ssh://$DEPLOY_USER@$DEPLOY_HOST"
+    # ------------------------------------------------------------------------------------------------------------------
+    # NB: environment variables must be overridden in the docker compose file.
+    # ------------------------------------------------------------------------------------------------------------------
+  before_script:
+    - apk add --no-cache openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_KEY_DEV" | base64 -d > ~/.ssh/id_ed25519_gitlabci
+    - chmod 600 ~/.ssh/id_ed25519_gitlabci
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_ed25519_gitlabci
+    - echo -e "Host *\n  StrictHostKeyChecking no\n  IdentityFile ~/.ssh/id_ed25519_gitlabci" > ~/.ssh/config
+    - chmod 600 ~/.ssh/config
+  script:
+    - ssh $DEPLOY_USER@$DEPLOY_HOST 'mkdir -p ~/.docker'
+    - echo "$DOCKER_AUTH_CONFIG" | ssh $DEPLOY_USER@$DEPLOY_HOST 'cat > ~/.docker/config.json'
+    - scp docker-compose.dev.yml $DEPLOY_USER@$DEPLOY_HOST:/opt/infboard/docker-compose.yml
+    - ssh $DEPLOY_USER@$DEPLOY_HOST '
+      cd /opt/infboard &&
+      docker compose pull &&
+      docker compose up -d --remove-orphans &&
+      docker image prune -af
+      '
+  dependencies:
+    - build-backend
+    - build-frontend
+  only:
+    - dev

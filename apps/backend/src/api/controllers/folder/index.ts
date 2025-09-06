@@ -2,11 +2,16 @@ import express, {Router} from "express";
 import {ApiRoutes} from "@workspace/routes/apiRoutes";
 import {StatusCodes} from "http-status-codes";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {FolderModel} from "@src/models/Folder";
-import {Folder} from "@workspace/types/data";
+import {FolderModel, FolderSchema, UpdateFolderSchema} from "@src/models/Folder";
+import {Folder, UpdateFolder} from "@workspace/types/data";
 import {getFolderContents, getFolderTree} from "@src/services/dataService";
 import {ApiError} from "@src/api/utils/apiError";
 import {ErrorType} from "@workspace/types/apiResponses";
+import {validateOrThrow} from "@src/api/utils/validateOrThrow";
+import {FolderValidationErrorType} from "@workspace/types/modelValidation";
+import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
+import {isDescendant} from "@src/api/controllers/utils/moveDataValidation";
+
 
 const folderController: Router = express.Router();
 
@@ -45,22 +50,28 @@ folderController.get(
 
 folderController.post(
     ApiRoutes.folders.add,
-    handleRequest<{ name: string, parentFolderId: string | null }, { folder: Folder }>(
+    handleRequest<{ name: string, parentFolderId?: string }, { folder: Folder }>(
         async (req) => {
 
-            const {name, parentFolderId} = req.body;
+            const validated = validateOrThrow(FolderSchema, req.body);
+
+            const {name, parentFolderId} = validated;
+
+            const existing = await FolderModel.findOne({name, parentFolderId});
+
+            if (existing) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                    validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS]
+                });
+            }
 
             try {
-                const newFolder = await FolderModel.create({name, parentFolderId});
+                const newFolder = await FolderModel.create(validated);
 
                 return {
                     status: StatusCodes.OK,
                     data: {
-                        folder: {
-                            id: newFolder._id.toString(),
-                            name: newFolder.name,
-                            parentFolderId: newFolder.parentFolderId?.toString(),
-                        },
+                        folder: folderDocumentToFolderMapper(newFolder),
                     },
                 };
             } catch (error) {
@@ -72,31 +83,55 @@ folderController.post(
 
 folderController.put(
     ApiRoutes.folders.update,
-    handleRequest<{ folder: Folder }, { folder: Folder }>(
+    handleRequest<{ folder: UpdateFolder }, { folder: Folder }>(
         async (req) => {
 
-            const {folder} = req.body;
+            const validated = validateOrThrow(UpdateFolderSchema, req.body.folder);
 
-            const updatedFolder = await FolderModel.findByIdAndUpdate(
-                folder.id,
-                { name: folder.name },
-                { new: true }
-            );
-
-            if (!updatedFolder) {
-                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+            if (validated.id === validated.parentFolderId) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                    validationErrors: [FolderValidationErrorType.CANNOT_MOVE_INTO_SELF_OR_DESCENDANT],
+                });
             }
 
-            return {
-                status: StatusCodes.OK,
-                data: {
-                    folder: {
-                        id: updatedFolder._id.toString(),
-                        name: updatedFolder.name,
-                        parentFolderId: updatedFolder.parentFolderId?.toString(),
+            if (!validated.parentFolderId) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+
+            const isInvalid = await isDescendant(validated.id, validated.parentFolderId);
+            if (isInvalid) {
+                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                    validationErrors: [FolderValidationErrorType.CANNOT_MOVE_INTO_SELF_OR_DESCENDANT],
+                });
+            }
+
+            try {
+                const updatedFolder = await FolderModel.findByIdAndUpdate(
+                    validated.id,
+                    {...validated},
+                    {
+                        new: true,
+                        runValidators: true,
+                    }
+                );
+
+                if (!updatedFolder) {
+                    throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+                }
+
+                return {
+                    status: StatusCodes.OK,
+                    data: {
+                        folder: folderDocumentToFolderMapper(updatedFolder),
                     },
-                },
-            };
+                };
+            } catch (error) {
+                if (error.code === 11000) {
+                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                        validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS],
+                    });
+                }
+
+                throw error;
+            }
         }
     )
 );
@@ -118,11 +153,7 @@ folderController.delete(
             return {
                 status: StatusCodes.OK,
                 data: {
-                    folder: {
-                        id: folder._id.toString(),
-                        name: folder.name,
-                        parentFolderId: folder.parentFolderId?.toString(),
-                    },
+                    folder: folderDocumentToFolderMapper(folder),
                 },
             };
         }

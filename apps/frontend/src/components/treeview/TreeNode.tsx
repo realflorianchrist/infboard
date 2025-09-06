@@ -1,12 +1,15 @@
 'use client'
-import {useFolderPath} from "@/src/providers/FolderPathProvider";
-import {Folder} from "@workspace/types/data";
+import {Folder, isFolder} from "@workspace/types/data";
 import {useEffect, useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
 import {FolderPathSegment} from "@workspace/types/folderPath";
 import {IoFolderOutline} from "react-icons/io5";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
+import {useFolderPath} from "@/src/hooks/useFolderPath";
+import {useDraggable, useDroppable} from "@dnd-kit/core";
+import {cn} from "@workspace/ui/lib/utils";
+import {useHasSelectedAncestor} from "@/src/hooks/useHasSelectedAncestor";
 
 export default function TreeNode(
     {
@@ -19,40 +22,67 @@ export default function TreeNode(
         parents?: FolderPathSegment[];
     }) {
 
-    const {path, setPath} = useFolderPath();
+    const {path, pushFolderById} = useFolderPath();
     const {
         openNewFolderModal,
         openRenameFolderModal,
         openDeleteFolderModal,
         setSelected,
-        addSelected,
         openUploadFileModal,
     } = useContextMenu();
 
-    const [isOpen, setIsOpen] = useState(false);
+    const {attributes, listeners, setNodeRef: setDraggableRef} = useDraggable({
+        id: `${folder.id}-treeNode`,
+        data: folder
+    });
+    const {setNodeRef: setDroppableRef, isOver, node: dropNode, active} = useDroppable({id: `${folder.id}-treeNode`});
+
+    const {isSelected, selected} = useContextMenu();
+
+    const {hasSelectedAncestor} = useHasSelectedAncestor();
+
+    const [isOpen, setIsOpen] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return sessionStorage.getItem(`open-${folder.id}`) === 'true'
+                || path.some((s) => s.id === folder.id);
+        }
+        return false;
+    });
 
     useEffect(() => {
-        if (!isOpen) {
-            setIsOpen(path.some(s => s.id === folder.id));
-        }
-    }, [path]);
+        sessionStorage.setItem(`open-${folder.id}`, isOpen.toString());
+    }, [isOpen]);
+
+    const draggedItemId = (active?.id as string)?.split('-')[0];
+
+    const canDrop = isOver
+        && draggedItemId !== folder.id
+        && !hasSelectedAncestor(folder.id)
+        && !isSelected(folder.id);
 
     return (
-        <div>
+        <div className={cn("p-1 rounded",)}>
             <DataContextMenu
                 onNewFolder={() => openNewFolderModal(folder.id)}
-                onRename={() => openRenameFolderModal(folder.id, folder.name)}
+                onEdit={() => openRenameFolderModal(folder.id, folder.name, folder.parentFolderId)}
                 onDelete={() => openDeleteFolderModal(folder.id)}
                 onUploadFile={() => openUploadFileModal(folder.id)}
             >
                 <div
+                    id={`${folder.id}-treeNode`}
+                    ref={(node) => {
+                        setDroppableRef(node);
+                        setDraggableRef(node);
+                    }}
                     className={`cursor-pointer select-none flex items-center gap-2 text-sm
                           px-2 py-1 rounded
                           hover:bg-accent/10
                           ${path[path.length - 1]?.id === folder.id ? 'bg-accent/20' : ''}
+                          ${canDrop && "bg-accent/40"}
                         `}
                     style={{paddingLeft: `${depth * 1}rem`}}
-
+                    {...attributes}
+                    {...listeners}
                 >
                     {folder.children?.length ? (
                         <button
@@ -65,9 +95,9 @@ export default function TreeNode(
                         <div className="w-4"/>
                     )}
                     <div
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 flex-1"
                         onClick={() => {
-                            setPath([...parents, {id: folder.id, name: folder.name}]);
+                            pushFolderById(folder.id);
                             setSelected([]);
                         }}
                     >

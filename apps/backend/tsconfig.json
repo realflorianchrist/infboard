@@ -1,32 +1,37 @@
 {
-  "extends": "@workspace/typescript-config/nextjs.json",
   "compilerOptions": {
+    "target": "ES2020",
     "module": "CommonJS",
+    "lib": ["ES2020"],
     "baseUrl": "./",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "useUnknownInCatchVariables": false,
     "paths": {
       "@src/*": ["src/*"],
-      "@workspace/ui/*": ["../../packages/ui/src/*"],
       "@workspace/types/*": ["../../packages/types/*"],
-      "@workspace/routes/*": ["../../packages/routes/src/*"]
+      "@workspace/routes/*": ["../../packages/routes/*"],
+      "@workspace/constants/*": ["../../packages/constants/*"]
     },
-    "useUnknownInCatchVariables": false,
-    "types": ["vitest/globals"],
-    "allowSyntheticDefaultImports": true
+    "types": ["vitest/globals"]
   },
   "ts-node": {
     "swc": true,
-    "require": [
-      "tsconfig-paths/register",
-      "./config.ts"
-    ]
+    "require": ["tsconfig-paths/register"]
   },
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",
-    "config.ts",
     "scripts",
     "eslint.config.js",
-    "vitest.config.mts"
+    "vitest.config.mts",
   ],
-  "exclude": ["src/public/*"]
+  "exclude": [
+    "src/public/*"
+  ]
 }

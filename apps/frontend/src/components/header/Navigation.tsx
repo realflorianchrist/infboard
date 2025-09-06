@@ -1,5 +1,5 @@
 'use client'
-import Routes from "@/src/constants/routes";
+import routes from "@/src/constants/routes";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {Separator} from "@workspace/ui/components/separator";
@@ -19,22 +19,22 @@ export default function Navigation() {
                 }`}
             >
                 <Link
-                    href={Routes.HOME}
-                    className={path === Routes.HOME ? 'text-accent' : ''}
+                    href={routes.HOME}
+                    className={path.includes('folder') ? 'text-accent' : ''}
                 >
                     Daten
                 </Link>
                 <Separator orientation="vertical"/>
                 <Link
-                    href={Routes.DASHBOARD}
-                    className={path === Routes.DASHBOARD ? 'text-accent' : ''}
+                    href={routes.DASHBOARD}
+                    className={path === routes.DASHBOARD ? 'text-accent' : ''}
                 >
                     Dashboard
                 </Link>
                 <Separator orientation="vertical"/>
                 <div
                     onClick={() => setIsSearching(true)}
-                    className={`cursor-pointer ${path === Routes.SEARCH ? 'text-accent' : ''}`}
+                    className={`cursor-pointer ${path === routes.SEARCH ? 'text-accent' : ''}`}
                 >
                     Suchen
                 </div>

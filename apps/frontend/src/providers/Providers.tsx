@@ -1,6 +1,5 @@
 'use client'
-import {PropsWithChildren, useState} from "react";
-import {FolderPathProvider} from "@/src/providers/FolderPathProvider";
+import {PropsWithChildren, Suspense, useState} from "react";
 import {ThemeProvider} from "@/src/providers/ThemeProvider";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {ContextMenuProvider} from "@/src/providers/ContextMenuProvider";
@@ -11,11 +10,11 @@ export default function Providers({children}: Readonly<PropsWithChildren>) {
     return (
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
-                <FolderPathProvider>
+                <Suspense>
                     <ContextMenuProvider>
                         {children}
                     </ContextMenuProvider>
-                </FolderPathProvider>
+                </Suspense>
             </ThemeProvider>
         </QueryClientProvider>
     );
