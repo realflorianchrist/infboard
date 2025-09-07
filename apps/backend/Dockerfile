@@ -3,8 +3,6 @@ FROM node:${NODE_VERSION}-alpine AS base
 
 WORKDIR /app
 
-ENV CI=true
-
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/backend/package.json ./apps/backend/
 
@@ -25,8 +23,6 @@ FROM node:${NODE_VERSION}-alpine AS production
 
 WORKDIR /app
 
-ENV CI=true
-
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/backend/package.json ./apps/backend/
 COPY packages ./packages
@@ -36,6 +32,7 @@ RUN corepack enable  \
     && pnpm install --filter backend... --prod
 
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+COPY --from=builder /app/packages ./packages
 
 WORKDIR /app/apps/backend
 
