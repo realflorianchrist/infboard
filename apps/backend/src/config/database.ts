@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import logger from "jet-logger";
 import {ENV} from "@src/constants/ENV";
+import logger from "@src/utils/logger";
 
 const username = encodeURIComponent(ENV.MONGO_USER);
 const password = encodeURIComponent(ENV.MONGO_PASSWORD);

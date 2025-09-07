@@ -1,22 +1,22 @@
 import express, {Router} from "express";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {apiRoutes} from "@workspace/routes";
 import {StatusCodes} from "http-status-codes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {FolderModel, FolderSchema, UpdateFolderSchema} from "@src/models/Folder";
-import {Folder, UpdateFolder} from "@workspace/types/data";
+import {ErrorType, Folder, FolderValidationErrorType, UpdateFolder} from "@workspace/types";
 import {getFolderContents, getFolderTree} from "@src/services/dataService";
 import {ApiError} from "@src/api/utils/apiError";
-import {ErrorType} from "@workspace/types/apiResponses";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
-import {FolderValidationErrorType} from "@workspace/types/modelValidation";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 import {isDescendant} from "@src/api/controllers/utils/moveDataValidation";
+import {FileModel} from "@src/models/File";
+import logger from "@src/utils/logger";
 
 
 const folderController: Router = express.Router();
 
 folderController.get(
-    ApiRoutes.folders.all,
+    apiRoutes.folders.all,
     handleRequest<{}, { folders: Folder[] }>(
         async () => {
 
@@ -31,7 +31,7 @@ folderController.get(
 );
 
 folderController.get(
-    ApiRoutes.folders.byId(':id'),
+    apiRoutes.folders.byId(':id'),
     handleRequest<{}, { folder: Folder }, { id: string }>(
         async (req) => {
             const {id} = req.params;
@@ -48,8 +48,30 @@ folderController.get(
     )
 );
 
+folderController.get(
+    apiRoutes.folders.hasDeletedFiles(':id'),
+    handleRequest<{}, { hasDeletedFiles: boolean }, { id: string }>(
+        async (req) => {
+            const {id} = req.params;
+
+            const count = await FileModel.countDocuments({
+                parentFolderId: id,
+                deleted: true,
+            });
+            const hasDeletedFiles = count > 0;
+
+            return {
+                status: StatusCodes.OK,
+                data: {
+                    hasDeletedFiles: hasDeletedFiles,
+                },
+            }
+        }
+    )
+);
+
 folderController.post(
-    ApiRoutes.folders.add,
+    apiRoutes.folders.add,
     handleRequest<{ name: string, parentFolderId?: string }, { folder: Folder }>(
         async (req) => {
 
@@ -82,7 +104,7 @@ folderController.post(
 );
 
 folderController.put(
-    ApiRoutes.folders.update,
+    apiRoutes.folders.update,
     handleRequest<{ folder: UpdateFolder }, { folder: Folder }>(
         async (req) => {
 
@@ -137,7 +159,7 @@ folderController.put(
 );
 
 folderController.delete(
-    ApiRoutes.folders.delete(':id'),
+    apiRoutes.folders.delete(':id'),
     handleRequest<{ id: string }, { folder: Folder }>(
         async (req) => {
 

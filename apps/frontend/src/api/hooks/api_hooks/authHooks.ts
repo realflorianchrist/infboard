@@ -1,28 +1,20 @@
 import {useApiMutation} from "@/src/api/client/reactQuery";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {apiRoutes} from "@workspace/routes";
 import {HttpMethod} from "@/src/api/client/client";
-import {AuthUser, User} from "@workspace/types/user";
+import {AuthUser, User} from "@workspace/types";
 import {userDetails} from "@/src/utils/userDetails";
 import {useRouter} from "next/navigation";
 import routes from "@/src/constants/routes";
 
-const baseRoute = ApiRoutes.auth.base;
+const baseRoute = apiRoutes.auth.base;
 
 export const useRegister = () =>
     useApiMutation<
-        { user: User, token: string },
+        { user: User },
         { user: AuthUser }
     >(
-        [baseRoute, ApiRoutes.auth.register],
-        HttpMethod.POST,
-        {
-            mutationOptions: {
-                onSuccess: ({user, token}) => {
-                    userDetails().setAuthToken(token);
-                    userDetails().setUserInfos(user);
-                }
-            }
-        }
+        [baseRoute, apiRoutes.auth.register],
+        HttpMethod.POST
     );
 
 export const useLogin = () =>
@@ -30,7 +22,7 @@ export const useLogin = () =>
         { user: User, token: string },
         { user: AuthUser }
     >(
-        [baseRoute, ApiRoutes.auth.login],
+        [baseRoute, apiRoutes.auth.login],
         HttpMethod.POST,
         {
             mutationOptions: {
@@ -50,3 +42,20 @@ export const useLogout = () => {
         router.push(routes.LOGIN);
     }
 }
+
+export const useConfirmEmail = () =>
+    useApiMutation<
+        { user: User, token: string },
+        { token: string }
+    >(
+        [baseRoute, apiRoutes.auth.confirmEmail],
+        HttpMethod.POST,
+        {
+            mutationOptions: {
+                onSuccess: ({user, token}) => {
+                    userDetails().setAuthToken(token);
+                    userDetails().setUserInfos(user);
+                }
+            }
+        }
+    );

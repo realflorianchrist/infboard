@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {model, Schema, Types, Document, Query} from 'mongoose';
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
-import {FileValidationErrorType} from "@workspace/types/modelValidation";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
+import {FileValidationErrorType} from "@workspace/types";
 import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
 
 
@@ -15,6 +15,7 @@ export const FileVersionSchema = z.object({
     userName: z.string().optional(),
     parentFolderId: z.string(),
     comment: z.string().optional(),
+    deleted: z.boolean().optional(),
     s3Key: z.string().optional()
 });
 
@@ -85,6 +86,7 @@ const FileMongooseSchema = new Schema<FileDocument>(
             userName: String,
             parentFolderId: String,
             comment: String,
+            deleted: Boolean,
             s3Key: String,
         }]
     },

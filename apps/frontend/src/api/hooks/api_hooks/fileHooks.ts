@@ -1,10 +1,10 @@
 import {useApiMutation} from "@/src/api/client/reactQuery";
-import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/data";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types";
+import {apiRoutes} from "@workspace/routes";
 import {HttpMethod} from "@/src/api/client/client";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 
-const baseRoute = ApiRoutes.files.base;
+const baseRoute = apiRoutes.files.base;
 
 export const useAddFile = () =>
     useApiMutation<{
@@ -13,7 +13,7 @@ export const useAddFile = () =>
         file: NewFileInput
     }
     >(
-        [baseRoute, ApiRoutes.files.add],
+        [baseRoute, apiRoutes.files.add],
         HttpMethod.POST,
     );
 
@@ -22,7 +22,7 @@ export const useGetFileDownloadUrl = () =>
         { url: string, file: FileMeta },
         { id: string }
     >(
-        (variables) => [baseRoute, ApiRoutes.files.downloadUrlById(variables.id)],
+        (variables) => [baseRoute, apiRoutes.files.downloadUrlById(variables.id)],
         HttpMethod.PUT,
     );
 
@@ -31,7 +31,7 @@ export const useGetFileDownloadUrlsForFolder = () =>
         { url: string, file: FileMeta }[],
         { folderId: string }
     >(
-        (variables) => [baseRoute, ApiRoutes.files.downloadUrlsByFolderId(variables.folderId)],
+        (variables) => [baseRoute, apiRoutes.files.downloadUrlsByFolderId(variables.folderId)],
         HttpMethod.PUT,
     );
 
@@ -40,11 +40,11 @@ export const useUpdateFile = () =>
         { file: FileMeta },
         { file: UpdateFileMeta }
     >(
-        [baseRoute, ApiRoutes.files.update],
+        [baseRoute, apiRoutes.files.update],
         HttpMethod.PUT,
         {
             invalidatePaths: (_, variables) =>
-                [`${ApiRoutes.folders.base}${ApiRoutes.folders.byId(variables.file.parentFolderId ?? ROOT_FOLDER_ID)}`],
+                [`${apiRoutes.folders.base}${apiRoutes.folders.byId(variables.file.parentFolderId ?? ROOT_FOLDER_ID)}`],
         }
     );
 
@@ -53,11 +53,11 @@ export const useDeleteFile = () =>
         { file: FileMeta },
         { id: string }
     >(
-        (variables) => [baseRoute, ApiRoutes.files.delete(variables.id)],
+        (variables) => [baseRoute, apiRoutes.files.delete(variables.id)],
         HttpMethod.PUT,
         {
             invalidatePaths: (data) =>
-                [`${ApiRoutes.folders.base}${ApiRoutes.folders.byId(data.file.parentFolderId ?? ROOT_FOLDER_ID)}`],
+                [`${apiRoutes.folders.base}${apiRoutes.folders.byId(data.file.parentFolderId ?? ROOT_FOLDER_ID)}`],
         }
     );
 
@@ -66,10 +66,10 @@ export const useRollbackFile = () =>
         {},
         { file: FileMeta }
     >(
-        (variables) => [baseRoute, ApiRoutes.files.rollback(variables.file.id)],
+        (variables) => [baseRoute, apiRoutes.files.rollback(variables.file.id)],
         HttpMethod.PUT,
         {
             invalidatePaths: (_, variables) =>
-                [`${ApiRoutes.folders.base}${ApiRoutes.folders.byId(variables.file.parentFolderId ?? ROOT_FOLDER_ID)}`],
+                [`${apiRoutes.folders.base}${apiRoutes.folders.byId(variables.file.parentFolderId ?? ROOT_FOLDER_ID)}`],
         }
     );

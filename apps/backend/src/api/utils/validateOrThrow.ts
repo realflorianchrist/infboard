@@ -1,8 +1,8 @@
 import {ZodError, ZodSchema} from "zod";
 import {ApiError} from "@src/api/utils/apiError";
 import {StatusCodes} from "http-status-codes";
-import {ErrorType} from "@workspace/types/apiResponses";
-import {ValidationErrorType} from "@workspace/types/modelValidation";
+import {ErrorType, ValidationErrorType} from "@workspace/types";
+
 
 export const validateOrThrow = <T>(schema: ZodSchema<T>, data: unknown): T => {
     try {

@@ -1,5 +1,5 @@
 import {FileDocument} from "@src/models/File";
-import {FileMeta} from "@workspace/types/data";
+import {FileMeta} from "@workspace/types";
 
 export const fileDocumentToFileMapper = (fileDocument: FileDocument, url?: string): FileMeta => {
     return {

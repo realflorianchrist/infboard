@@ -7,7 +7,7 @@ import {useEffect, useState} from 'react';
 import {useUpdateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types";
 import {toast} from "sonner";
 import {successMessage} from "@/src/utils/getSuccessMessage";
 

@@ -1,8 +1,7 @@
 'use client'
-import {Folder, isFolder} from "@workspace/types/data";
+import {Folder, FolderPathSegment} from "@workspace/types";
 import {useEffect, useState} from "react";
 import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
-import {FolderPathSegment} from "@workspace/types/folderPath";
 import {IoFolderOutline} from "react-icons/io5";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";

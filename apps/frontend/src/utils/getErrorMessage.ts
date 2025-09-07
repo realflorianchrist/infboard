@@ -1,10 +1,10 @@
-import {ErrorType} from "@workspace/types/apiResponses";
 import {
+    ErrorType,
     FileValidationErrorType,
     FolderValidationErrorType,
     UserValidationErrorType,
     ValidationErrorType
-} from "@workspace/types/modelValidation";
+} from "@workspace/types";
 
 
 const validationErrorMessages: Record<ValidationErrorType, string> = {
@@ -40,14 +40,26 @@ const generalErrorMessages: Record<ErrorType, string> = {
     [ErrorType.BAD_CREDENTIALS]: "Username oder Passwort ungültig.",
     [ErrorType.TOKEN_MISSING]: "Authentifizierungstoken fehlt.",
     [ErrorType.TOKEN_INVALID]: "Authentifizierungstoken ist ungültig oder abgelaufen.",
+    [ErrorType.EMAIL_ALREADY_VERIFIED]: "E-Mail ist bereits betätigt.",
+    [ErrorType.EMAIL_VERIFICATION_FAILED]: "Beim verifizieren ist ein fehler aufgetreten.",
+    [ErrorType.EMAIL_NOT_VERIFIED]: "E-Mail noch nicht betätigt.",
+
+    [ErrorType.SEND_EMAIL_FAILED]: "Beim senden der E-Mail ist ein fehler aufgetreten.",
+
     [ErrorType.FOLDER_NOT_FOUND]: "Der Ordner wurde nicht gefunden.",
+
     [ErrorType.FILE_NOT_FOUND]: "Die Datei wurde nicht gefunden.",
+
     [ErrorType.VALIDATION_ERROR]: "Die Eingabe enthält ungültige Werte.",
+
     [ErrorType.ALREADY_EXISTS]: "Das Objekt existiert bereits.",
+
     [ErrorType.API_ERROR]: "Es ist ein Fehler bei der Anfrage aufgetreten.",
     [ErrorType.INTERNAL_SERVER_ERROR]: "Ein interner Serverfehler ist aufgetreten.",
+
     [ErrorType.UPLOAD_ERROR]: "Beim upload ist ein Fehler aufgetreten.",
     [ErrorType.DOWNLOAD_ERROR]: "Beim download ist ein Fehler aufgetreten.",
+
     [ErrorType.FOLDER_DELETION_FAILED]: "Beim löschen des Ordners ist ein Fehler aufgetreten.",
     [ErrorType.FILE_DELETION_FAILED]: "Beim löschen der Datei ist ein Fehler aufgetreten."
 };

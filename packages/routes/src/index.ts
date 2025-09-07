@@ -1,4 +1,4 @@
-export const ApiRoutes = {
+export const apiRoutes = {
     base: '/api',
 
     auth: {
@@ -6,6 +6,8 @@ export const ApiRoutes = {
         register: '/register',
         login: '/login',
         validateToken: '/validate-token',
+        confirmEmail: '/confirmEmail',
+        resendConfirmEmail: '/resend-confirm-email',
     },
 
     folders: {
@@ -15,6 +17,7 @@ export const ApiRoutes = {
         add: '/add',
         update: '/update',
         delete: (id: string) => `/delete/${id}`,
+        hasDeletedFiles: (id: string) => `/has-deleted-files/${id}`,
     },
 
     files: {

@@ -5,7 +5,7 @@ import {Button} from "@workspace/ui/components/button";
 import {useDeleteFile} from "@/src/api/hooks/api_hooks/fileHooks";
 import {toast} from "sonner";
 import {successMessage} from "@/src/utils/getSuccessMessage";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types";
 
 export default function DeleteFileModal() {
     const {deleteFileModal, closeDeleteFileModal} = useContextMenu();

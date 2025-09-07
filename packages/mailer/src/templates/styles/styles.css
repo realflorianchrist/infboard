@@ -1,0 +1,12 @@
+:root {
+    --accent: oklch(0.448 0.145 11.164);
+}
+
+.body {
+
+}
+
+.header {
+    background-color: oklch(0.448 0.145 11.164);
+    font-size: 2rem;
+}

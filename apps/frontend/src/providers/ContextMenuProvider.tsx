@@ -1,6 +1,6 @@
 'use client'
-import {createContext, useContext, useEffect, useState} from "react";
-import {Folder, FileMeta, Data} from "@workspace/types/data";
+import {createContext, useContext, useState} from "react";
+import {Data} from "@workspace/types";
 
 type ContextMenuContextType = {
     newFolderModal: { open: boolean; parentFolderId?: string; };
@@ -90,11 +90,21 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
                 closeNewFolderModal: () => setNewFolderModal({open: false, parentFolderId: undefined}),
 
                 renameFolderModal,
-                openRenameFolderModal: (id, folderName, parentFolderId) => setRenameFolderModal({open: true, folderId: id, folderName, parentFolderId}),
+                openRenameFolderModal: (id, folderName, parentFolderId) => setRenameFolderModal({
+                    open: true,
+                    folderId: id,
+                    folderName,
+                    parentFolderId
+                }),
                 closeRenameFolderModal: () => setRenameFolderModal({open: false, folderId: null, folderName: null}),
 
                 editFileModal,
-                openEditFileModal: (id, fileName, parentFolderId) => setEditFileModal({open: true, fileId: id, fileName, parentFolderId}),
+                openEditFileModal: (id, fileName, parentFolderId) => setEditFileModal({
+                    open: true,
+                    fileId: id,
+                    fileName,
+                    parentFolderId
+                }),
                 closeEditFileModal: () => setEditFileModal({open: false, fileId: null, fileName: null}),
 
                 deleteFolderModal,

@@ -8,7 +8,7 @@ import {FiUpload} from "react-icons/fi";
 import {useUploadFiles} from "@/src/hooks/useUploadFiles";
 import Loader from "../loader/Loader";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
 import {Input} from "@workspace/ui/components/input";
 import {successMessage} from "@/src/utils/getSuccessMessage";

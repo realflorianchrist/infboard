@@ -1,22 +1,20 @@
 import express, {Router} from "express";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/data";
+import {ErrorType, FileMeta, FileValidationErrorType, NewFileInput, UpdateFileMeta} from "@workspace/types";
 import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
-import {ErrorType} from "@workspace/types/apiResponses";
 import {FileModel, FileSchema, FileVersion, UpdateFileSchema} from "@src/models/File";
 import {generateFileKey, generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {apiRoutes} from "@workspace/routes";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
-import {FileValidationErrorType} from "@workspace/types/modelValidation";
 import logger from "jet-logger";
 
 const fileController: Router = express.Router();
 
 
 fileController.post(
-    ApiRoutes.files.add,
+    apiRoutes.files.add,
     handleRequest<{ file: NewFileInput }, { file: FileMeta }>(
         async (req) => {
 
@@ -64,7 +62,7 @@ fileController.post(
 
 
 fileController.put(
-    ApiRoutes.files.update,
+    apiRoutes.files.update,
     handleRequest<{ file: UpdateFileMeta }, { file: FileMeta }>(
         async (req) => {
 
@@ -114,7 +112,7 @@ fileController.put(
 );
 
 fileController.put(
-    ApiRoutes.files.downloadUrlById(':id'),
+    apiRoutes.files.downloadUrlById(':id'),
     handleRequest<{}, { url: string, file: FileMeta }, { id: string }>(
         async (req) => {
 
@@ -149,7 +147,7 @@ fileController.put(
 );
 
 fileController.put(
-    ApiRoutes.files.downloadUrlsByFolderId(':folderId'),
+    apiRoutes.files.downloadUrlsByFolderId(':folderId'),
     handleRequest<{}, { url: string, file: FileMeta }[], { folderId: string }>(
         async (req) => {
 
@@ -191,34 +189,53 @@ fileController.put(
 );
 
 fileController.put(
-    ApiRoutes.files.delete(':id'),
+    apiRoutes.files.delete(':id'),
     handleRequest<{}, { file: FileMeta }, { id: string }>(
         async (req) => {
 
             const {id} = req.params;
 
-            const fileDoc = await FileModel.findByIdAndUpdate(
-                id,
-                {$set: {deleted: true}},
-                {timestamps: false}
-            );
+            const file = await FileModel.findById(id);
+            if (!file) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
 
-            if (!fileDoc) {
-                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            try {
+                const versionBackup: FileVersion = {
+                    version: file.version ?? 1,
+                    name: file.name,
+                    contentType: file.contentType,
+                    size: file.size,
+                    updatedAt: file.updatedAt,
+                    userName: file.userName,
+                    parentFolderId: file.parentFolderId,
+                    comment: file.comment,
+                    deleted: file.deleted
+                };
+
+                file.previousVersions = [...(file.previousVersions ?? []), versionBackup];
+
+                file.deleted = true;
+
+                file.version = (file.version ?? 1) + 1;
+
+                await file.save();
+
+                return {
+                    status: StatusCodes.OK,
+                    data: {
+                        file: fileDocumentToFileMapper(file)
+                    }
+                };
+
+            } catch (error) {
+
+                throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, ErrorType.INTERNAL_SERVER_ERROR);
             }
-
-            return {
-                status: StatusCodes.OK,
-                data: {
-                    file: fileDocumentToFileMapper(fileDoc)
-                },
-            };
         }
     )
 );
 
 fileController.put(
-    ApiRoutes.files.rollback(':id'),
+    apiRoutes.files.rollback(':id'),
     handleRequest<{}, { file: FileMeta }, { id: string }>(
         async (req) => {
 

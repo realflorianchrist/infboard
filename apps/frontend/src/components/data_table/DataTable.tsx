@@ -19,12 +19,12 @@ import {cn} from "@workspace/ui/lib/utils";
 import {useDownloadFile} from "@/src/hooks/useDownloadFile";
 import {formatDate, formatFileSize} from "@/src/utils/formatter";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {getFileSymbol} from "@/src/utils/getFileSymbol";
 import Loader from "@/src/components/loader/Loader";
 import DnDTableRow from "@/src/components/dnd/DnDTableRow";
 import {useDroppable} from "@dnd-kit/core";
-import {Data, isFolder} from "@workspace/types/data";
+import {Data, isFolder} from "@workspace/types";
 
 export type RowData = Data & {
     select?: boolean;
@@ -55,7 +55,7 @@ export default function DataTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const folderId = path[path.length - 1]?.id ?? ROOT_FOLDER_ID;
-    const {data: result} = useGetFolderDataById(folderId);
+    const {data: result, isPending: loadingData} = useGetFolderDataById(folderId);
     const {setNodeRef} = useDroppable({id: folderId});
 
     useEffect(() => {
@@ -198,7 +198,7 @@ export default function DataTable() {
 
     return (
         <>
-            {isDownloading && <Loader isFullScreen={true}/>}
+            {(isDownloading || loadingData) && <Loader isFullScreen={true}/>}
 
             <div ref={setNodeRef}
                  className={'flex min-h-full min-w-full'}
@@ -211,24 +211,26 @@ export default function DataTable() {
                                     <TableHead
                                         key={header.id}
                                         style={{width: header.getSize()}}
-                                        className="group select-none"
+                                        className={'group relative select-none'}
                                     >
-                                        <div className="flex gap-2 items-center cursor-pointer"
+                                        <div className={'flex gap-2 items-center cursor-pointer'}
                                              onClick={header.column.getToggleSortingHandler()}
                                         >
                                             {!header.isPlaceholder && (
                                                 <>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
-                                                    <span className="w-4 flex justify-center">
-                                                {{
-                                                    asc: <FaCaretUp/>,
-                                                    desc: <FaCaretDown/>,
-                                                }[header.column.getIsSorted() as string] ?? (
-                                                    <span className="invisible">
-                                                        <FaCaretUp/>
+                                                    <span className={'w-4 flex justify-center'}>
+                                                {
+                                                    {
+                                                        asc: <FaCaretUp/>,
+                                                        desc: <FaCaretDown/>,
+                                                    }
+                                                        [header.column.getIsSorted() as string] ?? (
+                                                        <span className={'invisible'}>
+                                                            <FaCaretUp/>
+                                                        </span>
+                                                    )}
                                                     </span>
-                                                )}
-                                            </span>
                                                 </>
                                             )}
                                         </div>

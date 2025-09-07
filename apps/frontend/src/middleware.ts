@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {apiRoutes} from "@workspace/routes";
 import routes from "@/src/constants/routes";
-import {TOKEN_KEY} from "@workspace/constants/index";
+import {TOKEN_KEY} from "@workspace/constants";
 
 export async function middleware(req: NextRequest) {
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
@@ -14,7 +14,7 @@ export async function middleware(req: NextRequest) {
 
     try {
         const response = await fetch(
-            `${API_BASE_URL}${ApiRoutes.auth.base}${ApiRoutes.auth.validateToken}`,
+            `${API_BASE_URL}${apiRoutes.auth.base}${apiRoutes.auth.validateToken}`,
             {
                 method: 'GET',
                 headers: {

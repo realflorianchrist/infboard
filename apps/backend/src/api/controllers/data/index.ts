@@ -1,17 +1,21 @@
 import express, {Router} from "express";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {apiRoutes} from "@workspace/routes";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {Data, isFileMeta, isFolder} from "@workspace/types/data";
+import {
+    Data,
+    ErrorType,
+    FileValidationErrorType,
+    FolderValidationErrorType,
+    isFileMeta,
+    isFolder
+} from "@workspace/types";
 import {StatusCodes} from "http-status-codes";
 import {FolderModel} from "@src/models/Folder";
 import {ApiError} from "@src/api/utils/apiError";
-import {ErrorType} from "@workspace/types/apiResponses";
 import {FileModel, FileVersion} from "@src/models/File";
 import mongoose from "mongoose";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
-import {FileValidationErrorType, FolderValidationErrorType} from "@workspace/types/modelValidation";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
-
 
 
 const moveItem = async (item: Data, targetFolderId: string, session: mongoose.ClientSession) => {
@@ -35,13 +39,13 @@ const moveItem = async (item: Data, targetFolderId: string, session: mongoose.Cl
         };
 
         await FileModel.updateOne(
-            { _id: item.id },
+            {_id: item.id},
             {
                 parentFolderId: targetFolderId,
-                $inc: { version: 1 },
-                $push: { previousVersions: versionBackup }
+                $inc: {version: 1},
+                $push: {previousVersions: versionBackup}
             },
-            { session }
+            {session}
         );
     }
 };
@@ -50,7 +54,7 @@ const moveItem = async (item: Data, targetFolderId: string, session: mongoose.Cl
 const dataController: Router = express.Router();
 
 dataController.put(
-    ApiRoutes.data.move,
+    apiRoutes.data.move,
     handleRequest<{ data: Data[]; targetFolderId: string }, {}>(
         async (req) => {
             const {data, targetFolderId} = req.body;
