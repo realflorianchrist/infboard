@@ -3,6 +3,7 @@ import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types";
 import {apiRoutes} from "@workspace/routes";
 import {HttpMethod} from "@/src/api/client/client";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
+import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 
 const baseRoute = apiRoutes.files.base;
 
@@ -17,23 +18,43 @@ export const useAddFile = () =>
         HttpMethod.POST,
     );
 
-export const useGetFileDownloadUrl = () =>
-    useApiMutation<
+export const useGetFileDownloadUrl = () => {
+    const {includeDeleted} = useContextMenu();
+
+    return useApiMutation<
         { url: string, file: FileMeta },
         { id: string }
     >(
         (variables) => [baseRoute, apiRoutes.files.downloadUrlById(variables.id)],
         HttpMethod.PUT,
+        {
+            requestOptions: {
+                params: {
+                    includeDeleted: String(includeDeleted),
+                },
+            },
+        }
     );
+};
 
-export const useGetFileDownloadUrlsForFolder = () =>
-    useApiMutation<
+export const useGetFileDownloadUrlsForFolder = () => {
+    const {includeDeleted} = useContextMenu();
+
+    return useApiMutation<
         { url: string, file: FileMeta }[],
         { folderId: string }
     >(
         (variables) => [baseRoute, apiRoutes.files.downloadUrlsByFolderId(variables.folderId)],
         HttpMethod.PUT,
+        {
+            requestOptions: {
+                params: {
+                    includeDeleted: String(includeDeleted),
+                },
+            },
+        }
     );
+};
 
 export const useUpdateFile = () =>
     useApiMutation<

@@ -8,8 +8,7 @@ import {isFileMeta, isFolder} from "@workspace/types";
 import Loader from "@/src/components/loader/Loader";
 import {useDndMonitor} from "@dnd-kit/core";
 import {useState} from "react";
-import {useGetFolderDataById, useHasFolderDeletedFiles} from "@/src/api/hooks/api_hooks/folderHooks";
-import {ROOT_FOLDER_ID} from "@workspace/constants";
+import {useHasFolderDeletedFiles} from "@/src/api/hooks/api_hooks/folderHooks";
 
 export default function Toolbox() {
 
@@ -39,9 +38,7 @@ export default function Toolbox() {
 
     const {downloadFile, downloadFiles, isDownloading} = useDownloadFile();
 
-    const {path} = useFolderPath();
-    const folderId = path[path.length - 1]?.id ?? ROOT_FOLDER_ID;
-
+    const {folderId} = useFolderPath();
     const {data} = useHasFolderDeletedFiles(folderId);
     const hasFolderDeletedFiles = data?.hasDeletedFiles;
 

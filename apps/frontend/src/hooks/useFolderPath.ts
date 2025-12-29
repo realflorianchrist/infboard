@@ -3,6 +3,7 @@ import {Folder, FolderPath} from '@workspace/types';
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import routes from "@/src/constants/routes";
 import findFolderPathById from "@/src/utils/findFolderPathById";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 
 export const useFolderPath = () => {
     const pathname = usePathname();
@@ -20,6 +21,7 @@ export const useFolderPath = () => {
             },
             resetPath: () => {
             },
+            folderId: ROOT_FOLDER_ID,
         };
     }
 
@@ -68,11 +70,14 @@ export const useFolderPath = () => {
         router.push(routes.HOME);
     };
 
+    const getFolderId = () => path[path.length - 1]?.id ?? ROOT_FOLDER_ID;
+
     return {
         path,
         setPath,
         pushFolderById,
         popFolder,
         resetPath,
+        folderId: getFolderId(),
     };
 };

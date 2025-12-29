@@ -113,16 +113,18 @@ fileController.put(
 
 fileController.put(
     apiRoutes.files.downloadUrlById(':id'),
-    handleRequest<{}, { url: string, file: FileMeta }, { id: string }>(
+    handleRequest<{}, { url: string, file: FileMeta }, { id: string }, { includeDeleted: string }>(
         async (req) => {
 
             const {id} = req.params;
+            const includeDeleted = req.query.includeDeleted === 'true';
+            const findOpts = includeDeleted ? {includeDeleted: true} : undefined;
 
             const fileDoc = await FileModel.findByIdAndUpdate(
                 id,
                 {$inc: {downloads: 1}},
                 {timestamps: false, new: true},
-            );
+            ).setOptions(findOpts ?? {});
 
             if (!fileDoc) {
                 throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
@@ -148,16 +150,20 @@ fileController.put(
 
 fileController.put(
     apiRoutes.files.downloadUrlsByFolderId(':folderId'),
-    handleRequest<{}, { url: string, file: FileMeta }[], { folderId: string }>(
+    handleRequest<{}, { url: string, file: FileMeta }[], { folderId: string }, { includeDeleted: string }>(
         async (req) => {
 
             const {folderId} = req.params;
+            const includeDeleted = req.query.includeDeleted === 'true';
+            const findOpts = includeDeleted ? {includeDeleted: true} : undefined;
 
-            const fileDocs = await FileModel.find({parentFolderId: folderId});
+            const fileDocs = await FileModel.find({parentFolderId: folderId})
+                .setOptions(findOpts ?? {});
 
             await Promise.all(
                 fileDocs.map((file) =>
                     FileModel.findByIdAndUpdate(file._id, {$inc: {downloads: 1}}, {timestamps: false})
+                        .setOptions(findOpts ?? {})
                 )
             );
 

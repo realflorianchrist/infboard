@@ -32,7 +32,7 @@ export type RowData = Data & {
 
 
 export default function DataTable() {
-    const {path, pushFolderById} = useFolderPath();
+    const {path, pushFolderById, folderId} = useFolderPath();
     const {
         openNewFolderModal,
         openRenameFolderModal,
@@ -54,7 +54,6 @@ export default function DataTable() {
     const [data, setData] = useState<RowData[]>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const folderId = path[path.length - 1]?.id ?? ROOT_FOLDER_ID;
     const {data: result, isPending: loadingData} = useGetFolderDataById(folderId);
     const {setNodeRef} = useDroppable({id: folderId});
 

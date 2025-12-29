@@ -22,8 +22,7 @@ export const useDownloadFile = () => {
 
     const {setSelected} = useContextMenu();
 
-    const {path} = useFolderPath();
-    const parentFolderId = path[path.length - 1]?.id;
+    const {path, folderId} = useFolderPath();
 
     const {data: folderData} = useGetAllFolders();
 
@@ -55,7 +54,7 @@ export const useDownloadFile = () => {
 
             await queryClient.invalidateQueries({
                 queryKey: [
-                    `${apiRoutes.folders.base}${apiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
+                    `${apiRoutes.folders.base}${apiRoutes.folders.byId(folderId)}`,
                 ],
             });
 
@@ -121,7 +120,7 @@ export const useDownloadFile = () => {
 
             await queryClient.invalidateQueries({
                 queryKey: [
-                    `${apiRoutes.folders.base}${apiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
+                    `${apiRoutes.folders.base}${apiRoutes.folders.byId(folderId)}`,
                 ],
             });
 
