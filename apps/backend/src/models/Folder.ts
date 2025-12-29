@@ -19,7 +19,7 @@ export const FolderSchema = z.object({
         .max(20, {message: FolderValidationErrorType.FOLDER_NAME_TOO_LONG}),
 
     version: z.number()
-        .optional()
+        .default(1)
         .refine(val => val === undefined || val >= 0, {
             message: FolderValidationErrorType.FOLDER_VERSION_NEGATIVE,
         }),
@@ -34,6 +34,7 @@ export const FolderSchema = z.object({
 export const UpdateFolderSchema = makeUpdateSchema(FolderSchema);
 
 export type IFolder = z.infer<typeof FolderSchema>;
+export type IUpdateFolder = z.infer<typeof UpdateFolderSchema>;
 export type FolderVersion = z.infer<typeof FolderVersionSchema>;
 
 export type FolderDocument = Omit<IFolder, 'id' | 'created'> & Document & {

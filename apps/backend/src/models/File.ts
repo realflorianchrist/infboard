@@ -28,7 +28,7 @@ export const FileSchema = z.object({
         .max(100, {message: FileValidationErrorType.FILE_NAME_TOO_LONG}),
 
     version: z.number()
-        .optional()
+        .default(1)
         .refine(val => val === undefined || val >= 0, {
             message: FileValidationErrorType.FILE_VERSION_NEGATIVE,
         }),

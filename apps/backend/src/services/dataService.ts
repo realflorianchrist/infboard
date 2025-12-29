@@ -1,11 +1,9 @@
-import {FolderDocument, FolderModel, FolderVersion} from "@src/models/Folder";
-import {ErrorType, FileValidationErrorType, Folder, UpdateFileMeta} from "@workspace/types";
-import {FileDocument, FileModel, FileVersion, IUpdateFile, UpdateFileSchema} from "@src/models/File";
+import {FolderDocument, FolderModel, FolderVersion, IUpdateFolder} from "@src/models/Folder";
+import {Folder} from "@workspace/types";
+import {FileDocument, FileModel, FileVersion, IUpdateFile} from "@src/models/File";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
-import {StatusCodes} from "http-status-codes";
-import {ApiError} from "@src/api/utils/apiError";
 
 
 export const getFolderTree = async (): Promise<Folder[]> => {
@@ -85,27 +83,33 @@ export const getFolderContents = async (
     };
 };
 
-export const createFileVersion = (file: FileDocument): FileVersion => {
+const checkForUpdate = <T>(oldValue: T | undefined, newValue: T | undefined): T | undefined => {
+    return newValue != null && newValue !== oldValue
+        ? oldValue
+        : undefined;
+};
+
+export const createFileVersion = (file: FileDocument, update: IUpdateFile): FileVersion => {
     return {
-        version: file.version ?? 1,
-        name: file.name,
-        contentType: file.contentType,
-        size: file.size,
+        version: file.version,
+        name: checkForUpdate(file.name, update.name),
+        contentType: checkForUpdate(file.contentType, update.contentType),
+        size: checkForUpdate(file.size, update.size),
         updatedAt: file.updatedAt,
-        userName: file.userName,
-        parentFolderId: file.parentFolderId,
-        comment: file.comment,
-        deleted: file.deleted,
-        s3Key: file.s3Key
+        userName: checkForUpdate(file.userName, update.userName),
+        parentFolderId: checkForUpdate(file.parentFolderId, update.parentFolderId),
+        comment: checkForUpdate(file.comment, update.comment),
+        deleted: checkForUpdate(file.deleted, update.deleted),
+        s3Key: checkForUpdate(file.s3Key, update.s3Key)
     };
 };
 
-export const createFolderVersion = (folder: FolderDocument): FolderVersion => {
+export const createFolderVersion = (folder: FolderDocument, update: IUpdateFolder): FolderVersion => {
     return {
-        version: folder.version ?? 1,
-        name: folder.name,
+        version: folder.version,
+        name: checkForUpdate(folder.name, update.name),
         updatedAt: folder.updatedAt,
-        parentFolderId: folder.parentFolderId,
-        deleted: folder.deleted,
+        parentFolderId: checkForUpdate(folder.parentFolderId, update.parentFolderId),
+        deleted: checkForUpdate(folder.deleted, update.deleted)
     };
 };

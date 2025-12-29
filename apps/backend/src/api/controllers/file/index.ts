@@ -3,7 +3,7 @@ import {handleRequest} from "@src/api/utils/handleRequest";
 import {ErrorType, FileMeta, FileValidationErrorType, NewFileInput, UpdateFileMeta} from "@workspace/types";
 import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
-import {FileModel, FileSchema, FileVersion, UpdateFileSchema} from "@src/models/File";
+import {FileModel, FileSchema, UpdateFileSchema} from "@src/models/File";
 import {generateFileKey, generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {apiRoutes} from "@workspace/routes";
@@ -73,7 +73,7 @@ fileController.put(
             if (!file) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
 
             try {
-                const versionBackup = createFileVersion(file);
+                const versionBackup = createFileVersion(file, validated);
 
                 file.previousVersions = [...(file.previousVersions ?? []), versionBackup];
 

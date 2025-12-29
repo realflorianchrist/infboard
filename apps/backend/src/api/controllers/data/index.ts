@@ -12,7 +12,7 @@ import {
 import {StatusCodes} from "http-status-codes";
 import {FolderModel} from "@src/models/Folder";
 import {ApiError} from "@src/api/utils/apiError";
-import {FileModel, FileVersion} from "@src/models/File";
+import {FileModel} from "@src/models/File";
 import mongoose from "mongoose";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
@@ -24,7 +24,7 @@ const moveItem = async (item: Data, targetFolderId: string, session: mongoose.Cl
         const folder = await FolderModel.findById(item.id).session(session);
         if (!folder) return;
 
-        const versionBackup = createFolderVersion(folder);
+        const versionBackup = createFolderVersion(folder, {id: item.id, parentFolderId: targetFolderId});
 
         await FolderModel.updateOne(
             {_id: item.id}, {
@@ -38,7 +38,7 @@ const moveItem = async (item: Data, targetFolderId: string, session: mongoose.Cl
         const file = await FileModel.findById(item.id).session(session);
         if (!file) return;
 
-        const versionBackup = createFileVersion(file);
+        const versionBackup = createFileVersion(file, {id: item.id, parentFolderId: targetFolderId});
 
         await FileModel.updateOne(
             {_id: item.id},

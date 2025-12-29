@@ -116,26 +116,27 @@ folderController.put(
                 });
             }
 
-            if (!validated.parentFolderId) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
-
-            const isInvalid = await isDescendant(validated.id, validated.parentFolderId);
-            if (isInvalid) {
-                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
-                    validationErrors: [FolderValidationErrorType.CANNOT_MOVE_INTO_SELF_OR_DESCENDANT],
-                });
-            }
+            // todo: refactor move, it should also be an update not a separate endpoint
+            // if (!validated.parentFolderId) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+            //
+            // const isInvalid = await isDescendant(validated.id, validated.parentFolderId);
+            // if (isInvalid) {
+            //     throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+            //         validationErrors: [FolderValidationErrorType.CANNOT_MOVE_INTO_SELF_OR_DESCENDANT],
+            //     });
+            // }
 
             const folder = await FolderModel.findById(validated.id);
             if (!folder) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
 
             try {
-                const versionBackup = createFolderVersion(folder);
+                const versionBackup = createFolderVersion(folder, validated);
 
                 folder.previousVersions = [...(folder.previousVersions ?? []), versionBackup];
 
                 Object.assign(folder, validated);
 
-                folder.version = (folder.version ?? 1) + 1;
+                folder.version = (folder.version) + 1;
 
                 await folder.save();
 
