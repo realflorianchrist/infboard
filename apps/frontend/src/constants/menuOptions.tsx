@@ -12,6 +12,7 @@ const menuOptions = {
     edit: <div className={className}><MdOutlineEdit/>Bearbeiten</div>,
     delete: <div className={className}><MdOutlineDeleteOutline/>Löschen</div>,
     showDeletedFile: <div className={className}><LuFileX />Zeige gelöschte</div>,
+    hideDeletedFile: <div className={className}><LuFileX />Verstecke gelöschte</div>,
     download: <div className={className}><IoDownloadOutline/>Download</div>,
     uploadFile: <div className={className}><FiUpload />Datei hochladen</div>,
     select: <div className={className}><BsCheck2Square/>Auswählen</div>,

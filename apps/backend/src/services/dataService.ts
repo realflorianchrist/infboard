@@ -39,39 +39,44 @@ export const getFolderTree = async (): Promise<Folder[]> => {
     return roots;
 };
 
-export const getFolderContents = async (folderId: string): Promise<Folder | null> => {
-    if (folderId === ROOT_FOLDER_ID) {
+export const getFolderContents = async (
+    folderId: string,
+    includeDeleted: boolean
+): Promise<Folder | null> => {
+    const findOpts = includeDeleted ? { includeDeleted: true } : undefined;
+
+    const listChildren = async (parentId: string) => {
         const [subfolderDocs, fileDocs] = await Promise.all([
-            FolderModel.find({parentFolderId: ROOT_FOLDER_ID}).sort({name: 1}).lean(),
-            FileModel.find({parentFolderId: ROOT_FOLDER_ID}).sort({name: 1}).lean(),
+            FolderModel.find({ parentFolderId: parentId }).setOptions(findOpts ?? {}).sort({ name: 1 }).lean(),
+            FileModel.find({ parentFolderId: parentId }).setOptions(findOpts ?? {}).sort({ name: 1 }).lean(),
         ]);
 
-        const subfolders = subfolderDocs.map(folderDocumentToFolderMapper);
-        const files = fileDocs.map(f => fileDocumentToFileMapper(f));
+        return {
+            subfolders: subfolderDocs.map(folderDocumentToFolderMapper),
+            files: fileDocs.map(f => fileDocumentToFileMapper(f)),
+        };
+    };
 
+    if (folderId === ROOT_FOLDER_ID) {
+        const { subfolders, files } = await listChildren(ROOT_FOLDER_ID);
         return {
             id: ROOT_FOLDER_ID,
             name: ROOT_FOLDER_ID,
             children: subfolders,
-            files: files,
+            files,
         };
     }
 
-    const folderDoc = await FolderModel.findById(folderId).lean();
+    const folderDoc = await FolderModel.findById(folderId).setOptions(findOpts ?? {}).lean();
     if (!folderDoc) return null;
 
-    const [subfolderDocs, fileDocs] = await Promise.all([
-        FolderModel.find({parentFolderId: folderId}).sort({ name: 1 }).lean(),
-        FileModel.find({parentFolderId: folderId}).sort({ name: 1 }).lean(),
-    ]);
-
-    const subfolders = subfolderDocs.map(folderDocumentToFolderMapper);
-    const files = fileDocs.map(f => fileDocumentToFileMapper(f));
+    const { subfolders, files } = await listChildren(folderId);
 
     return {
         id: folderDoc._id.toString(),
         name: folderDoc.name,
         children: subfolders,
-        files: files,
+        files,
     };
 };
+

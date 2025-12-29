@@ -8,12 +8,13 @@ import {isFileMeta, isFolder} from "@workspace/types";
 import Loader from "@/src/components/loader/Loader";
 import {useDndMonitor} from "@dnd-kit/core";
 import {useState} from "react";
-import {useHasFolderDeletedFiles} from "@/src/api/hooks/api_hooks/folderHooks";
+import {useGetFolderDataById, useHasFolderDeletedFiles} from "@/src/api/hooks/api_hooks/folderHooks";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 
 export default function Toolbox() {
 
     const [isDragging, setIsDragging] = useState(false);
+
 
     useDndMonitor({
         onDragStart() {
@@ -28,6 +29,8 @@ export default function Toolbox() {
     });
 
     const {
+        includeDeleted,
+        setIncludeDeleted,
         openNewFolderModal,
         isSelectMode,
         selected,
@@ -37,7 +40,6 @@ export default function Toolbox() {
     const {downloadFile, downloadFiles, isDownloading} = useDownloadFile();
 
     const {path} = useFolderPath();
-
     const folderId = path[path.length - 1]?.id ?? ROOT_FOLDER_ID;
 
     const {data} = useHasFolderDeletedFiles(folderId);
@@ -71,9 +73,15 @@ export default function Toolbox() {
                     <Button
                         variant={'secondary'}
                         onClick={() => {
+                            includeDeleted
+                                ? setIncludeDeleted(false)
+                                : setIncludeDeleted(true)
                         }}
                     >
-                        {menuOptions.showDeletedFile}
+                        {includeDeleted
+                            ? menuOptions.hideDeletedFile
+                            : menuOptions.showDeletedFile
+                        }
                     </Button>
                 )}
 

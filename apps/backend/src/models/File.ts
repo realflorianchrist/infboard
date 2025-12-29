@@ -99,18 +99,21 @@ const FileMongooseSchema = new Schema<FileDocument>(
 
 const softDeletePlugin = (schema: Schema) => {
     schema.pre(/^find/, function (this: Query<any, any>, next) {
-        const queryFilter = this.getFilter();
+        const opts: any = this.getOptions?.() ?? (this as any).options ?? {};
+        const includeDeleted = opts.includeDeleted === true;
 
-        if (!queryFilter.includeDeleted) {
-            this.where({deleted: false});
-        } else {
-            const {includeDeleted, ...rest} = queryFilter;
-            this.setQuery(rest);
+        if (!includeDeleted) {
+            this.where({ deleted: false });
+        }
+
+        if (opts.includeDeleted != null) {
+            const { includeDeleted: _x, ...rest } = opts;
+            this.setOptions(rest);
         }
 
         next();
     });
-}
+};
 
 FileMongooseSchema.plugin(softDeletePlugin);
 

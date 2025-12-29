@@ -3,6 +3,8 @@ import {apiRoutes} from "@workspace/routes";
 import {Data, Folder, UpdateFolder} from "@workspace/types";
 import {HttpMethod} from "@/src/api/client/client";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
+import {useState} from "react";
+import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 
 const baseRoute = apiRoutes.folders.base;
 
@@ -13,12 +15,21 @@ export const useGetAllFolders = () =>
         [baseRoute, apiRoutes.folders.all],
     );
 
-export const useGetFolderDataById = (id: string) =>
-    useApiQuery<
-        { folder: Folder }
-    >(
+export const useGetFolderDataById = (id: string) => {
+    const {includeDeleted} = useContextMenu();
+
+    return useApiQuery<{ folder: Folder }>(
         [baseRoute, apiRoutes.folders.byId(id)],
+        {
+            requestOptions: {
+                params: {
+                    includeDeleted: String(includeDeleted),
+                },
+            },
+            queryOptions: {}
+        }
     );
+};
 
 export const useHasFolderDeletedFiles = (id: string) =>
     useApiQuery<

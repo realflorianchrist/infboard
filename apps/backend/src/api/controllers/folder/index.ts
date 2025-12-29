@@ -35,8 +35,9 @@ folderController.get(
     handleRequest<{}, { folder: Folder }, { id: string }>(
         async (req) => {
             const {id} = req.params;
+            const includeDeleted = req.query.includeDeleted === "true";
 
-            const folder = await getFolderContents(id);
+            const folder = await getFolderContents(id, includeDeleted);
 
             if (!folder) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FOLDER_NOT_FOUND);
 

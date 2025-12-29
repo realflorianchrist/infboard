@@ -3,6 +3,9 @@ import {createContext, useContext, useState} from "react";
 import {Data} from "@workspace/types";
 
 type ContextMenuContextType = {
+    includeDeleted: boolean,
+    setIncludeDeleted: (v: boolean) => void,
+
     newFolderModal: { open: boolean; parentFolderId?: string; };
     openNewFolderModal: (parentFolderId?: string) => void;
     closeNewFolderModal: () => void;
@@ -38,6 +41,8 @@ type ContextMenuContextType = {
 const ContextMenuContext = createContext<ContextMenuContextType | undefined>(undefined);
 
 export const ContextMenuProvider = ({children}: { children: React.ReactNode }) => {
+    const [includeDeleted, setIncludeDeleted] = useState<boolean>(false);
+
     const [newFolderModal, setNewFolderModal] = useState<{ open: boolean; parentFolderId?: string; }>({
         open: false,
     });
@@ -85,6 +90,8 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
     return (
         <ContextMenuContext.Provider
             value={{
+                includeDeleted,
+                setIncludeDeleted,
                 newFolderModal,
                 openNewFolderModal: (id) => setNewFolderModal({open: true, parentFolderId: id}),
                 closeNewFolderModal: () => setNewFolderModal({open: false, parentFolderId: undefined}),
