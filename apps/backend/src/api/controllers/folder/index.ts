@@ -32,10 +32,10 @@ folderController.get(
 
 folderController.get(
     apiRoutes.folders.byId(':id'),
-    handleRequest<{}, { folder: Folder }, { id: string }>(
+    handleRequest<{}, { folder: Folder }, { id: string }, {includeDeleted: string}>(
         async (req) => {
             const {id} = req.params;
-            const includeDeleted = req.query.includeDeleted === "true";
+            const includeDeleted = req.query.includeDeleted === 'true';
 
             const folder = await getFolderContents(id, includeDeleted);
 

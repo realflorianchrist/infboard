@@ -9,9 +9,10 @@ type HandlerResult<T> = {
 type RequestHandler<
     TRequestBody,
     TResponseBody,
-    TParams = {}
+    TReqParams = {},
+    TReqQuery = {}
 > = (
-    req: Request<TParams, {}, TRequestBody>,
+    req: Request<TReqParams, {}, TRequestBody, TReqQuery>,
     res: Response,
 ) => Promise<HandlerResult<TResponseBody>>;
 
@@ -20,12 +21,13 @@ export const handleRequest =
     <
         TRequestBody,
         TResponseBody,
-        TParams = {}
+        TReqParams = {},
+        TReqQuery = {}
     >(
-        handler: RequestHandler<TRequestBody, TResponseBody, TParams>
+        handler: RequestHandler<TRequestBody, TResponseBody, TReqParams, TReqQuery>
     ) =>
         async (
-            req: Request<TParams, {}, TRequestBody>,
+            req: Request<TReqParams, {}, TRequestBody, TReqQuery>,
             res: Response<ApiResponse<TResponseBody>>,
             next: NextFunction
         ) => {

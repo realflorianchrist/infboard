@@ -26,7 +26,6 @@ export const useGetFolderDataById = (id: string) => {
                     includeDeleted: String(includeDeleted),
                 },
             },
-            queryOptions: {}
         }
     );
 };
