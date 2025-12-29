@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {model, Schema, Types, Document} from 'mongoose';
+import {Document, model, Query, Schema, Types} from 'mongoose';
 import {FolderValidationErrorType} from "@workspace/types";
 import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
@@ -11,6 +11,13 @@ export const FolderSchema = z.object({
         .max(20, {message: FolderValidationErrorType.FOLDER_NAME_TOO_LONG}),
     created: z.date().optional(),
     parentFolderId: z.string().default(ROOT_FOLDER_ID),
+
+    version: z.number()
+        .optional()
+        .refine(val => val === undefined || val >= 0, {
+            message: FolderValidationErrorType.FOLDER_VERSION_NEGATIVE,
+        }),
+    deleted: z.boolean().optional(),
 });
 
 export const UpdateFolderSchema = makeUpdateSchema(FolderSchema);
@@ -26,6 +33,8 @@ const FolderMongooseSchema = new Schema<FolderDocument>(
     {
         name: {type: String, required: true},
         parentFolderId: {type: String, required: true, default: ROOT_FOLDER_ID},
+        version: {type: Number, required: true, default: 1},
+        deleted: {type: Boolean, default: false},
     },
     {
         timestamps: {createdAt: 'created', updatedAt: false},
@@ -33,6 +42,26 @@ const FolderMongooseSchema = new Schema<FolderDocument>(
         toObject: {virtuals: true},
     }
 );
+
+const softDeletePlugin = (schema: Schema) => {
+    schema.pre(/^find/, function (this: Query<any, any>, next) {
+        const opts: any = this.getOptions?.() ?? (this as any).options ?? {};
+        const includeDeleted = opts.includeDeleted === true;
+
+        if (!includeDeleted) {
+            this.where({ deleted: false });
+        }
+
+        if (opts.includeDeleted != null) {
+            const { includeDeleted: _x, ...rest } = opts;
+            this.setOptions(rest);
+        }
+
+        next();
+    });
+};
+
+FolderMongooseSchema.plugin(softDeletePlugin);
 
 FolderMongooseSchema.index({name: 1, parentFolderId: 1}, {unique: true});
 

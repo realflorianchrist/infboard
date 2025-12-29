@@ -6,5 +6,6 @@ export const folderDocumentToFolderMapper = (folderDocument: FolderDocument): Fo
         id: folderDocument._id.toString(),
         name: folderDocument.name,
         parentFolderId: folderDocument.parentFolderId?.toString(),
+        deleted: folderDocument.deleted
     }
 }

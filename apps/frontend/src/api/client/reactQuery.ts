@@ -44,6 +44,12 @@ export const useApiQuery = <TApiResponse, TTransformed = TApiResponse>(
                 ...requestOptions,
                 method: HttpMethod.GET,
             }),
+
+        staleTime: 60_000,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+        refetchOnMount: false,
+        gcTime: 30 * 60_000,
         ...queryOptions,
     });
 };

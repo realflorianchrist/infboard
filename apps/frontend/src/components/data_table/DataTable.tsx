@@ -11,7 +11,6 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@wo
 import {useEffect, useState} from "react";
 import {IoFolderOutline} from "react-icons/io5";
 import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
-import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {Checkbox} from "@workspace/ui/components/checkbox";
@@ -19,12 +18,12 @@ import {cn} from "@workspace/ui/lib/utils";
 import {useDownloadFile} from "@/src/hooks/useDownloadFile";
 import {formatDate, formatFileSize} from "@/src/utils/formatter";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {getFileSymbol} from "@/src/utils/getFileSymbol";
 import Loader from "@/src/components/loader/Loader";
-import DnDTableRow from "@/src/components/dnd/DnDTableRow";
 import {useDroppable} from "@dnd-kit/core";
 import {Data, isFolder} from "@workspace/types";
+import FolderRow from "@/src/components/data_table/FolderRow";
+import FileRow from "@/src/components/data_table/FileRow";
 
 export type RowData = Data & {
     select?: boolean;
@@ -32,22 +31,16 @@ export type RowData = Data & {
 
 
 export default function DataTable() {
-    const {path, pushFolderById, folderId} = useFolderPath();
+    const {folderId} = useFolderPath();
     const {
-        openNewFolderModal,
-        openRenameFolderModal,
-        openDeleteFolderModal,
-        openDeleteFileModal,
         selected,
         isSelected,
         setSelected,
         addSelected,
         removeSelected,
-        openUploadFileModal,
-        openEditFileModal,
     } = useContextMenu();
 
-    const {downloadFile, isDownloading} = useDownloadFile();
+    const {isDownloading} = useDownloadFile();
 
     const columnHelper = createColumnHelper<RowData>();
 
@@ -260,51 +253,27 @@ export default function DataTable() {
                                 ))
 
                             const rowClassNames = cn('cursor-pointer select-none group', {
-                                'bg-accent/10 hover:bg-accent/20': isSelected(item.id)
+                                'bg-accent/10 hover:bg-accent/20': isSelected(item.id),
+                                'opacity-50': item.deleted
                             });
 
                             return (
                                 isFolder(item) ? (
-                                    <DataContextMenu
+                                    <FolderRow
                                         key={row.id}
-                                        onNewFolder={() => openNewFolderModal(item.id)}
-                                        onEdit={() => openRenameFolderModal(item.id, item.name, item.parentFolderId)}
-                                        onDelete={() => openDeleteFolderModal(item.id)}
-                                        onSelect={() => {
-                                            const folder = result?.folder.children?.find(f => f.id === item.id);
-                                            if (!isSelected(item.id) && folder) addSelected(folder);
-                                        }}
-                                        onUploadFile={() => openUploadFileModal(item.id)}
+                                        folder={item}
+                                        className={rowClassNames}
                                     >
-                                        <DnDTableRow
-                                            data={item}
-                                            className={rowClassNames}
-                                            onDoubleClick={() => {
-                                                pushFolderById(item.id);
-                                                setSelected([]);
-                                            }}
-                                        >
-                                            {Cells()}
-                                        </DnDTableRow>
-                                    </DataContextMenu>
+                                        {Cells()}
+                                    </FolderRow>
                                 ) : (
-                                    <DataContextMenu
+                                    <FileRow
                                         key={row.id}
-                                        onEdit={() => openEditFileModal(item.id, item.name, item.parentFolderId)}
-                                        onDelete={() => openDeleteFileModal(item.id)}
-                                        onSelect={() => {
-                                            const file = result?.folder.files?.find(f => f.id === item.id);
-                                            if (!isSelected(item.id) && file) addSelected(file);
-                                        }}
+                                        file={item}
+                                        className={rowClassNames}
                                     >
-                                        <DnDTableRow
-                                            data={item}
-                                            className={rowClassNames}
-                                            onDoubleClick={() => downloadFile(item.id)}
-                                        >
-                                            {Cells()}
-                                        </DnDTableRow>
-                                    </DataContextMenu>
+                                        {Cells()}
+                                    </FileRow>
                                 )
                             );
                         })}
