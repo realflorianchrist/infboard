@@ -26,12 +26,3 @@ export const generatePresignedDownloadUrl = async (s3Key: string) => {
 
     return await getSignedUrl(s3, command, {expiresIn: ENV.S3_EXPIRE_URL_SECONDS});
 }
-
-// export const generatePresignedDeleteUrl = async (fileId: string) => {
-//     const command = new DeleteObjectCommand({
-//         Bucket: ENV.S3_BUCKET,
-//         Key: generateFileKey(fileId),
-//     });
-//
-//     return await getSignedUrl(s3, command, {expiresIn: ENV.S3_EXPIRE_URL_SECONDS});
-// }

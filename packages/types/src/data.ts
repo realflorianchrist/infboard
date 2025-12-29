@@ -7,7 +7,7 @@ export type Folder = {
     children?: Folder[];
     files?: FileMeta[];
     version?: number;
-    deleted: boolean;
+    deleted?: boolean;
 };
 
 export type BaseFileMeta = {
@@ -27,7 +27,7 @@ export type FileMeta = BaseFileMeta & {
     updatedAt?: Date;
     userName?: string;
     downloads?: number;
-    deleted: boolean;
+    deleted?: boolean;
 };
 
 export type Data = Folder | FileMeta;

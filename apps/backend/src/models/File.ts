@@ -56,6 +56,7 @@ export const FileSchema = z.object({
 export const UpdateFileSchema = makeUpdateSchema(FileSchema);
 
 export type IFile = z.infer<typeof FileSchema>;
+export type IUpdateFile = z.infer<typeof UpdateFileSchema>;
 export type FileVersion = z.infer<typeof FileVersionSchema>;
 
 export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {

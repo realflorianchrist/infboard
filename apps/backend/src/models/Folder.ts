@@ -4,25 +4,37 @@ import {FolderValidationErrorType} from "@workspace/types";
 import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 
+export const FolderVersionSchema = z.object({
+    version: z.number(),
+    name: z.string().optional(),
+    updatedAt: z.date().optional(),
+    parentFolderId: z.string(),
+    deleted: z.boolean().optional(),
+});
+
 export const FolderSchema = z.object({
     id: z.string().optional(),
     name: z.string()
         .min(1, {message: FolderValidationErrorType.FOLDER_NAME_EMPTY})
         .max(20, {message: FolderValidationErrorType.FOLDER_NAME_TOO_LONG}),
-    created: z.date().optional(),
-    parentFolderId: z.string().default(ROOT_FOLDER_ID),
 
     version: z.number()
         .optional()
         .refine(val => val === undefined || val >= 0, {
             message: FolderValidationErrorType.FOLDER_VERSION_NEGATIVE,
         }),
+
+    created: z.date().optional(),
+    parentFolderId: z.string().default(ROOT_FOLDER_ID),
+    updatedAt: z.date().optional(),
     deleted: z.boolean().optional(),
+    previousVersions: z.array(FolderVersionSchema).optional(),
 });
 
 export const UpdateFolderSchema = makeUpdateSchema(FolderSchema);
 
 export type IFolder = z.infer<typeof FolderSchema>;
+export type FolderVersion = z.infer<typeof FolderVersionSchema>;
 
 export type FolderDocument = Omit<IFolder, 'id' | 'created'> & Document & {
     _id: Types.ObjectId;
@@ -35,6 +47,13 @@ const FolderMongooseSchema = new Schema<FolderDocument>(
         parentFolderId: {type: String, required: true, default: ROOT_FOLDER_ID},
         version: {type: Number, required: true, default: 1},
         deleted: {type: Boolean, default: false},
+        previousVersions: [{
+            version: Number,
+            name: String,
+            updatedAt: Date,
+            parentFolderId: String,
+            deleted: Boolean,
+        }]
     },
     {
         timestamps: {createdAt: 'created', updatedAt: false},

@@ -9,7 +9,7 @@ const baseRoute = apiRoutes.data.base;
 export const useMoveData = () =>
     useApiMutation<
         {},
-        {data: Data[], targetFolderId: string}
+        { data: Data[], targetFolderId: string }
     >(
         [baseRoute, apiRoutes.data.move],
         HttpMethod.PUT,

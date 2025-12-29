@@ -16,27 +16,29 @@ import {FileModel, FileVersion} from "@src/models/File";
 import mongoose from "mongoose";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
+import {createFileVersion, createFolderVersion} from "@src/services/dataService";
 
 
 const moveItem = async (item: Data, targetFolderId: string, session: mongoose.ClientSession) => {
     if (isFolder(item)) {
-        await FolderModel.updateOne({_id: item.id}, {
-            parentFolderId: targetFolderId
-        }, {session});
+        const folder = await FolderModel.findById(item.id).session(session);
+        if (!folder) return;
+
+        const versionBackup = createFolderVersion(folder);
+
+        await FolderModel.updateOne(
+            {_id: item.id}, {
+                parentFolderId: targetFolderId,
+                $inc: {version: 1},
+                $push: {previousVersions: versionBackup}
+            },
+            {session});
+
     } else if (isFileMeta(item)) {
         const file = await FileModel.findById(item.id).session(session);
         if (!file) return;
 
-        const versionBackup: FileVersion = {
-            version: file.version ?? 1,
-            name: file.name,
-            contentType: file.contentType,
-            size: file.size,
-            updatedAt: file.updatedAt,
-            userName: file.userName,
-            parentFolderId: file.parentFolderId,
-            comment: file.comment,
-        };
+        const versionBackup = createFileVersion(file);
 
         await FileModel.updateOne(
             {_id: item.id},

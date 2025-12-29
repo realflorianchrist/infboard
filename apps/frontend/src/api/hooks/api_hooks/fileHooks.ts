@@ -69,19 +69,6 @@ export const useUpdateFile = () =>
         }
     );
 
-export const useDeleteFile = () =>
-    useApiMutation<
-        { file: FileMeta },
-        { id: string }
-    >(
-        (variables) => [baseRoute, apiRoutes.files.delete(variables.id)],
-        HttpMethod.PUT,
-        {
-            invalidatePaths: (data) =>
-                [`${apiRoutes.folders.base}${apiRoutes.folders.byId(data.file.parentFolderId ?? ROOT_FOLDER_ID)}`],
-        }
-    );
-
 export const useRollbackFile = () =>
     useApiMutation<
         {},

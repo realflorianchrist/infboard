@@ -48,7 +48,6 @@ export const useApiQuery = <TApiResponse, TTransformed = TApiResponse>(
         staleTime: 60_000,
         refetchOnWindowFocus: false,
         refetchOnReconnect: true,
-        refetchOnMount: false,
         gcTime: 30 * 60_000,
         ...queryOptions,
     });
@@ -114,7 +113,9 @@ export const useApiMutation = <TApiResponse, TRequestBody>(
 
             // Automatically invalidate queries after a successful mutation
             paths?.forEach((key) => {
-                queryClient.invalidateQueries({queryKey: [key]});
+                queryClient.invalidateQueries({
+                    queryKey: [key],
+                });
             });
         },
         ...mutationOptions,

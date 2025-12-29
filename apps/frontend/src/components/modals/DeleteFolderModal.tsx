@@ -2,20 +2,21 @@
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
-import {useDeleteFolder} from "@/src/api/hooks/api_hooks/folderHooks";
+import {useDeleteFolder, useUpdateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import {toast} from "sonner";
 import {successMessage} from "@/src/utils/getSuccessMessage";
 import {ErrorType} from "@workspace/types";
+import {useUpdateFile} from "@/src/api/hooks/api_hooks/fileHooks";
 
 export default function DeleteFolderModal() {
     const {deleteFolderModal, closeDeleteFolderModal} = useContextMenu();
 
-    const {mutate} = useDeleteFolder();
+    const {mutate} = useUpdateFolder();
 
     const handleDelete = () => {
         if (!deleteFolderModal.folderId) return;
 
-        mutate({id: deleteFolderModal.folderId}, {
+        mutate({folder: {id: deleteFolderModal.folderId, deleted: true}}, {
             onSuccess: () => {
                 toast.success(successMessage.FOLDER_DELETED);
                 closeDeleteFolderModal();
