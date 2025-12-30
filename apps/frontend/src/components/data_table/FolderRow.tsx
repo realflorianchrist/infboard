@@ -3,8 +3,8 @@ import DnDTableRow from "@/src/components/dnd/DnDTableRow";
 import {Folder} from "@workspace/types";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import React from "react";
 import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
+import {TableRow} from "@workspace/ui/components/table";
 
 
 type FolderRow = React.ComponentProps<"tr"> & {
@@ -30,9 +30,10 @@ export default function FolderRow({folder, ...props}: FolderRow) {
 
     return (
         <DataContextMenu
-            onNewFolder={() => openNewFolderModal(folder.id)}
-            onEdit={() => openRenameFolderModal(folder.id, folder.name, folder.parentFolderId)}
             {...(!folder.deleted && {
+                onNewFolder: () => openNewFolderModal(folder.id),
+                onUploadFile: () => openUploadFileModal(folder.id),
+                onEdit: () => openRenameFolderModal(folder.id, folder.name, folder.parentFolderId),
                 onDelete: () => openDeleteFolderModal(folder.id),
             })}
             {...(folder.deleted && {
@@ -42,16 +43,21 @@ export default function FolderRow({folder, ...props}: FolderRow) {
                 const folderToSelect = result?.folder.children?.find(f => f.id === folder.id);
                 if (!isSelected(folder.id) && folderToSelect) addSelected(folderToSelect);
             }}
-            onUploadFile={() => openUploadFileModal(folder.id)}
         >
-            <DnDTableRow
-                {...props}
-                data={folder}
-                onDoubleClick={() => {
-                    pushFolderById(folder.id);
-                    setSelected([]);
-                }}
-            />
+            {folder.deleted ? (
+                <TableRow
+                    {...props}
+                />
+            ) : (
+                <DnDTableRow
+                    {...props}
+                    data={folder}
+                    onDoubleClick={() => {
+                        pushFolderById(folder.id);
+                        setSelected([]);
+                    }}
+                />
+            )}
         </DataContextMenu>
     );
 }

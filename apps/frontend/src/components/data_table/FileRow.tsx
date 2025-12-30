@@ -2,10 +2,10 @@ import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import DnDTableRow from "@/src/components/dnd/DnDTableRow";
 import {FileMeta} from "@workspace/types";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
-import React from "react";
 import {useDownloadFile} from "@/src/hooks/useDownloadFile";
 import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
+import {TableRow} from "@workspace/ui/components/table";
 
 
 type FileRow = React.ComponentProps<"tr"> & {
@@ -28,8 +28,8 @@ export default function FileRow({file, ...props}: FileRow) {
 
     return (
         <DataContextMenu
-            onEdit={() => openEditFileModal(file.id, file.name, file.parentFolderId)}
             {...(!file.deleted && {
+                onEdit: () => openEditFileModal(file.id, file.name, file.parentFolderId),
                 onDelete: () => openDeleteFileModal(file.id),
             })}
             {...(file.deleted && {
@@ -40,11 +40,18 @@ export default function FileRow({file, ...props}: FileRow) {
                 if (!isSelected(file.id) && fileToSelect) addSelected(fileToSelect);
             }}
         >
-            <DnDTableRow
-                {...props}
-                data={file}
-                onDoubleClick={() => downloadFile(file.id)}
-            />
+            {file.deleted ? (
+                <TableRow
+                    {...props}
+                    onDoubleClick={() => downloadFile(file.id)}
+                />
+            ) : (
+                <DnDTableRow
+                    {...props}
+                    data={file}
+                    onDoubleClick={() => downloadFile(file.id)}
+                />
+            )}
         </DataContextMenu>
     );
 }
