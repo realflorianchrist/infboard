@@ -8,6 +8,7 @@ export type Folder = {
     files?: FileMeta[];
     version?: number;
     deleted?: boolean;
+    updatedAt?: Date;
 };
 
 export type BaseFileMeta = {

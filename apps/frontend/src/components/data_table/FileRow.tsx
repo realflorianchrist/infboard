@@ -35,6 +35,7 @@ export default function FileRow({file, ...props}: FileRow) {
             {...(file.deleted && {
                 onUnDelete: () => console.log('undelete'),
             })}
+            onShowHistory={() => console.log('show history')}
             onSelect={() => {
                 const fileToSelect = result?.folder.files?.find(f => f.id === file.id);
                 if (!isSelected(file.id) && fileToSelect) addSelected(fileToSelect);

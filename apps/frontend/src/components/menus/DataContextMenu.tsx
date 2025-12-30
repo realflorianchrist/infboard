@@ -17,6 +17,7 @@ type FolderContextMenuProps = {
     onDelete?: () => void;
     onUnDelete?: () => void;
     onDownload?: () => void;
+    onShowHistory?: () => void;
     onSelect?: () => void;
 };
 
@@ -29,6 +30,7 @@ export default function DataContextMenu(
         onUnDelete,
         onDownload,
         onSelect,
+        onShowHistory,
         onUploadFile,
     }: FolderContextMenuProps) {
 
@@ -66,6 +68,11 @@ export default function DataContextMenu(
                 {onDownload && (
                     <ContextMenuItem onClick={onDownload}>
                         {menuOptions.download}
+                    </ContextMenuItem>
+                )}
+                {onShowHistory && (
+                    <ContextMenuItem onClick={onShowHistory}>
+                        {menuOptions.showHistory}
                     </ContextMenuItem>
                 )}
                 {onSelect && (

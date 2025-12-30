@@ -59,7 +59,7 @@ const FolderMongooseSchema = new Schema<FolderDocument>(
         }]
     },
     {
-        timestamps: {createdAt: 'created', updatedAt: false},
+        timestamps: {createdAt: 'created', updatedAt: 'updatedAt'},
         toJSON: {virtuals: true},
         toObject: {virtuals: true},
     }

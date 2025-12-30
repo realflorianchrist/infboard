@@ -56,11 +56,7 @@ export default function DataTable() {
 
         const folderRows: RowData[] = (currentFolder.children ?? []);
 
-        const fileRows: RowData[] = (currentFolder.files ?? []).map((file) => ({
-            ...file,
-            updatedAt: formatDate(file.updatedAt),
-            size: formatFileSize(file.size),
-        }));
+        const fileRows: RowData[] = (currentFolder.files ?? []);
 
         setData([...folderRows, ...fileRows]);
     }, [result]);
@@ -139,6 +135,7 @@ export default function DataTable() {
         }),
         columnHelper.accessor('updatedAt', {
             header: () => <span className={'truncate'}>Geändert</span>,
+            cell: (info) => formatDate(info.row.original.updatedAt),
             size: 150,
             minSize: 75,
             maxSize: 300,
@@ -167,8 +164,13 @@ export default function DataTable() {
             minSize: 75,
             maxSize: 300,
         }),
-        columnHelper.accessor('size', {
-            header: () => <span className={'truncate'}>Grösse</span>,
+        columnHelper.accessor(row => (isFolder(row) ? undefined : row.size), {
+            id: "size",
+            header: () => <span className="truncate">Grösse</span>,
+            cell: (info) => {
+                const value = info.getValue();
+                return value == null ? "" : formatFileSize(value);
+            },
             size: 100,
             minSize: 75,
             maxSize: 300,
