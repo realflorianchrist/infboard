@@ -24,6 +24,7 @@ const validationErrorMessages: Record<ValidationErrorType, string> = {
     [FolderValidationErrorType.FOLDER_NAME_TOO_LONG]: "Der Ordnername ist zu lang.",
     [FolderValidationErrorType.FOLDER_ALREADY_EXISTS]: "Ein Ordner mit diesem Namen existiert bereits.",
     [FolderValidationErrorType.CANNOT_MOVE_INTO_SELF_OR_DESCENDANT]: "Ein Ordner kann nicht in sich selbst oder einen Nachfahren verschoben werden.",
+    [FolderValidationErrorType.FOLDER_VERSION_NEGATIVE]: "Die Version darf nicht negativ sein.",
 
     // File errors
     [FileValidationErrorType.FILE_NAME_EMPTY]: "Der Dateiname darf nicht leer sein.",

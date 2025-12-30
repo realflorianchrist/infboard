@@ -7,7 +7,7 @@ export const FolderVersionSchema = z.object({
     version: z.number(),
     name: z.string().optional(),
     updatedAt: z.date().optional(),
-    parentFolderId: z.string(),
+    parentFolderId: z.string().optional(),
     deleted: z.boolean().optional(),
 });
 

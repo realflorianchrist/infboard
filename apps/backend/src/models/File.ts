@@ -12,7 +12,7 @@ export const FileVersionSchema = z.object({
     status: z.string().optional(),
     updatedAt: z.date().optional(),
     userName: z.string().optional(),
-    parentFolderId: z.string(),
+    parentFolderId: z.string().optional(),
     comment: z.string().optional(),
     deleted: z.boolean().optional(),
     s3Key: z.string().optional()

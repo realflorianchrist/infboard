@@ -16,12 +16,12 @@ export const ensureBucketExists = async () => {
     try {
         await s3.send(new HeadBucketCommand({Bucket: ENV.S3_BUCKET}));
         logger.info(`Bucket "${ENV.S3_BUCKET}" already exists`);
-    } catch (err) {
+    } catch (err: any) {
         if (err.$metadata?.httpStatusCode === 404) {
             await s3.send(new CreateBucketCommand({Bucket: ENV.S3_BUCKET}));
             logger.info(`Bucket "${ENV.S3_BUCKET}" created`);
         } else {
-            logger.err("Error checking/creating bucket", err);
+            logger.err(`Error checking/creating bucket ${err}`);
             throw err;
         }
     }
