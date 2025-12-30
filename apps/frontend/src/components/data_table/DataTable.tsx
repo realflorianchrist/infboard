@@ -8,7 +8,7 @@ import {
     useReactTable
 } from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@workspace/ui/components/table";
-import {useEffect, useState} from "react";
+import {useMemo, useState} from "react";
 import {IoFolderOutline} from "react-icons/io5";
 import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
@@ -44,22 +44,16 @@ export default function DataTable() {
 
     const columnHelper = createColumnHelper<RowData>();
 
-    const [data, setData] = useState<RowData[]>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const {data: result, isPending: loadingData} = useGetFolderDataById(folderId);
     const {setNodeRef} = useDroppable({id: folderId});
 
-    useEffect(() => {
-        const currentFolder = result?.folder;
-        if (!currentFolder) return;
-
-        const folderRows: RowData[] = (currentFolder.children ?? []);
-
-        const fileRows: RowData[] = (currentFolder.files ?? []);
-
-        setData([...folderRows, ...fileRows]);
-    }, [result]);
+    const rows = useMemo<RowData[]>(() => {
+        const f = result?.folder;
+        if (!f) return [];
+        return [...(f.children ?? []), ...(f.files ?? [])];
+    }, [result?.folder?.children, result?.folder?.files]);
 
 
     const columns = [
@@ -178,7 +172,7 @@ export default function DataTable() {
     ];
 
     const table = useReactTable({
-        data,
+        data: rows,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
