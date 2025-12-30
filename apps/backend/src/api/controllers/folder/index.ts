@@ -8,7 +8,7 @@ import {createFolderVersion, getFolderContents, getFolderTree} from "@src/servic
 import {ApiError} from "@src/api/utils/apiError";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
-import {isDescendant} from "@src/api/controllers/utils/moveDataValidation";
+import {isDescendant, validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
 import {FileModel} from "@src/models/File";
 
 
@@ -116,20 +116,15 @@ folderController.put(
                 });
             }
 
-            // todo: refactor move, it should also be an update not a separate endpoint
-            // if (!validated.parentFolderId) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
-            //
-            // const isInvalid = await isDescendant(validated.id, validated.parentFolderId);
-            // if (isInvalid) {
-            //     throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
-            //         validationErrors: [FolderValidationErrorType.CANNOT_MOVE_INTO_SELF_OR_DESCENDANT],
-            //     });
-            // }
 
             const folder = await FolderModel.findById(validated.id);
             if (!folder) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
 
             try {
+                if (validated.parentFolderId) {
+                    await validateMoveItem(validated, validated.parentFolderId);
+                }
+
                 const versionBackup = createFolderVersion(folder, validated);
 
                 folder.previousVersions = [...(folder.previousVersions ?? []), versionBackup];
@@ -147,7 +142,7 @@ folderController.put(
                     },
                 };
 
-            } catch (error) {
+            } catch (error: any) {
                 if (error.code === 11000) {
                     throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
                         validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS],

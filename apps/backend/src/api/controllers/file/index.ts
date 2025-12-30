@@ -10,6 +10,7 @@ import {apiRoutes} from "@workspace/routes";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import logger from "jet-logger";
 import {createFileVersion} from "@src/services/dataService";
+import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
 
 const fileController: Router = express.Router();
 
@@ -73,6 +74,10 @@ fileController.put(
             if (!file) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
 
             try {
+                if (validated.parentFolderId) {
+                    await validateMoveItem(validated, validated.parentFolderId);
+                }
+
                 const versionBackup = createFileVersion(file, validated);
 
                 file.previousVersions = [...(file.previousVersions ?? []), versionBackup];
@@ -90,7 +95,7 @@ fileController.put(
                     }
                 };
 
-            } catch (error) {
+            } catch (error: any) {
                 if (error.code === 11000) {
                     throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
                         validationErrors: [FileValidationErrorType.FILE_ALREADY_EXISTS]

@@ -1,7 +1,6 @@
 import {z} from 'zod';
 import {Document, model, Query, Schema, Types} from 'mongoose';
 import {FolderValidationErrorType} from "@workspace/types";
-import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 
 export const FolderVersionSchema = z.object({
@@ -31,7 +30,10 @@ export const FolderSchema = z.object({
     previousVersions: z.array(FolderVersionSchema).optional(),
 });
 
-export const UpdateFolderSchema = makeUpdateSchema(FolderSchema);
+export const UpdateFolderSchema = FolderSchema
+    .omit({ id: true, created: true, previousVersions: true })
+    .partial()
+    .extend({ id: z.string() });
 
 export type IFolder = z.infer<typeof FolderSchema>;
 export type IUpdateFolder = z.infer<typeof UpdateFolderSchema>;
@@ -69,11 +71,11 @@ const softDeletePlugin = (schema: Schema) => {
         const includeDeleted = opts.includeDeleted === true;
 
         if (!includeDeleted) {
-            this.where({ deleted: false });
+            this.where({deleted: false});
         }
 
         if (opts.includeDeleted != null) {
-            const { includeDeleted: _x, ...rest } = opts;
+            const {includeDeleted: _x, ...rest} = opts;
             this.setOptions(rest);
         }
 

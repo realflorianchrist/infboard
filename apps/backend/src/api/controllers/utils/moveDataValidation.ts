@@ -1,4 +1,4 @@
-import {Data, ErrorType, FolderValidationErrorType, isFolder} from "@workspace/types";
+import {Data, ErrorType, FolderValidationErrorType, isFolder, UpdateFileMeta, UpdateFolder} from "@workspace/types";
 import {FolderModel} from "@src/models/Folder";
 import {FileModel} from "@src/models/File";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
@@ -20,7 +20,7 @@ export const isDescendant = async (parentId: string, childId: string): Promise<b
     return false;
 };
 
-export const validateMoveItem = async (item: Data, targetFolderId: string): Promise<void> => {
+export const validateMoveItem = async (item: Data | UpdateFileMeta | UpdateFolder, targetFolderId: string): Promise<void> => {
     if (isFolder(item)) {
         if (item.id === targetFolderId) {
             throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {

@@ -1,8 +1,7 @@
 import {z} from 'zod';
-import {model, Schema, Types, Document, Query} from 'mongoose';
+import {Document, model, Query, Schema, Types} from 'mongoose';
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {FileValidationErrorType} from "@workspace/types";
-import {makeUpdateSchema} from "@src/utils/makeUpdateSchema";
 
 
 export const FileVersionSchema = z.object({
@@ -52,8 +51,10 @@ export const FileSchema = z.object({
     previousVersions: z.array(FileVersionSchema).optional(),
 });
 
-
-export const UpdateFileSchema = makeUpdateSchema(FileSchema);
+export const UpdateFileSchema = FileSchema
+    .omit({ id: true, created: true, previousVersions: true })
+    .partial()
+    .extend({ id: z.string() });
 
 export type IFile = z.infer<typeof FileSchema>;
 export type IUpdateFile = z.infer<typeof UpdateFileSchema>;
