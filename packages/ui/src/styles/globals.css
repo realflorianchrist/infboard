@@ -141,12 +141,6 @@
   }
 }
 
-@layer utilities {
-  .input-group {
-    @apply flex flex-col gap-2;
-  }
-}
-
 .react-grid-placeholder {
   background: var(--accent) !important;
   opacity: 0.1 !important;
