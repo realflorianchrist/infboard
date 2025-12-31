@@ -3,7 +3,7 @@ import {apiRoutes} from "@workspace/routes";
 import routes from "@/src/constants/routes";
 import {TOKEN_KEY} from "@workspace/constants";
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
 
     const token = req.cookies.get(TOKEN_KEY)?.value;
