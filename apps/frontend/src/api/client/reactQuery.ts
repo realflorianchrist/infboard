@@ -103,8 +103,8 @@ export const useApiMutation = <TApiResponse, TRequestBody>(
                 body: requestBody ? JSON.stringify(requestBody) : undefined,
             })
         },
-        onSuccess: (data, variables, context) => {
-            mutationOptions?.onSuccess?.(data, variables, context);
+        onSuccess: (data, variables, onMutateResult, context) => {
+            mutationOptions?.onSuccess?.(data, variables, onMutateResult, context);
 
             const paths =
                 typeof invalidatePaths === "function"
