@@ -8,7 +8,7 @@ import {createFolderVersion, getFolderContents, getFolderTree} from "@src/servic
 import {ApiError} from "@src/api/utils/apiError";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
-import {isDescendant, validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
+import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
 import {FileModel} from "@src/models/File";
 
 
@@ -79,12 +79,19 @@ folderController.post(
 
             const {name, parentFolderId} = validated;
 
-            const existing = await FolderModel.findOne({name, parentFolderId});
+            const existing = await FolderModel.findOne({name, parentFolderId})
+                .setOptions({includeDeleted: true});
 
             if (existing) {
-                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
-                    validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS]
-                });
+                if (existing.deleted) {
+                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                        validationErrors: [FolderValidationErrorType.FOLDER_EXISTS_DELETED]
+                    });
+                } else {
+                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                        validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS]
+                    });
+                }
             }
 
             try {
@@ -116,8 +123,9 @@ folderController.put(
                 });
             }
 
+            const folder = await FolderModel.findById(validated.id)
+                .setOptions({includeDeleted: true});
 
-            const folder = await FolderModel.findById(validated.id);
             if (!folder) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
 
             try {
