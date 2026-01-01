@@ -3,6 +3,7 @@ enum FolderSuccessMessage {
     FOLDER_MOVED = "Ordner erfolgreich verschoben.",
     FOLDER_DELETED = "Ordner erfolgreich gelöscht.",
     FOLDER_RENAMED = "Ordner erfolgreich umbenannt.",
+    FOLDER_UNDELETED = "Ordner erfolgreich wiederhergestellt.",
 }
 
 enum FileSuccessMessage {

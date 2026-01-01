@@ -37,7 +37,7 @@ export default function FolderRow({folder, ...props}: FolderRow) {
     const unDeleteFolder = (folderId: string) => {
         updateFile.mutate({folder: {id: folderId, deleted: false}}, {
             onSuccess: () => {
-                toast.success(successMessage.FILE_UNDELETED);
+                toast.success(successMessage.FOLDER_UNDELETED);
             },
             onError: (e) => {
                 const messages: string[] = [];
