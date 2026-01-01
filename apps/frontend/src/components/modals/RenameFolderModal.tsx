@@ -47,7 +47,7 @@ export default function RenameFolderModal() {
     const close = () => {
         closeRenameFolderModal();
         setErrorMessage([]);
-    }
+    };
 
     return (
         <Dialog open={renameFolderModal.open} onOpenChange={close}>

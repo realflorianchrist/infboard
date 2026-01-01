@@ -19,6 +19,7 @@ export default function FileRow({file, ...props}: FileRow) {
         isSelected,
         addSelected,
         openEditFileModal,
+        openFileVersionHistoryModal,
     } = useContextMenu();
 
     const {downloadFile} = useDownloadFile();
@@ -35,7 +36,7 @@ export default function FileRow({file, ...props}: FileRow) {
             {...(file.deleted && {
                 onUnDelete: () => console.log('undelete'),
             })}
-            onShowHistory={() => console.log('show history')}
+            onShowHistory={() => openFileVersionHistoryModal()}
             onSelect={() => {
                 const fileToSelect = result?.folder.files?.find(f => f.id === file.id);
                 if (!isSelected(file.id) && fileToSelect) addSelected(fileToSelect);

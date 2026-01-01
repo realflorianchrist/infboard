@@ -30,6 +30,14 @@ type ContextMenuContextType = {
     openUploadFileModal: (parentFolderId?: string) => void;
     closeUploadFileModal: () => void;
 
+    folderVersionHistoryModal: { open: boolean; folderId?: string };
+    openFolderVersionHistoryModal: (folderId?: string) => void;
+    closeFolderVersionHistoryModal: () => void;
+
+    fileVersionHistoryModal: { open: boolean; fileId?: string };
+    openFileVersionHistoryModal: (fileId?: string) => void;
+    closeFileVersionHistoryModal: () => void;
+
     isSelectMode: boolean;
     selected: Data[];
     isSelected: (id: string) => boolean;
@@ -83,6 +91,14 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
         open: false,
     });
 
+    const [folderVersionHistoryModal, setFolderVersionHistoryModal] = useState<{ open: boolean; folderId?: string }>({
+        open: false,
+    });
+
+    const [fileVersionHistoryModal, setFileVersionHistoryModal] = useState<{ open: boolean; fileId?: string }>({
+        open: false,
+    });
+
     const [selected, setSelected] = useState<Data[]>([]);
 
     const isSelectMode = selected.length > 0;
@@ -125,6 +141,14 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
                 uploadFileModal,
                 openUploadFileModal: (id) => setUploadFileModal({open: true, parentFolderId: id}),
                 closeUploadFileModal: () => setUploadFileModal({open: false, parentFolderId: undefined}),
+
+                folderVersionHistoryModal,
+                openFolderVersionHistoryModal: (id) => setFolderVersionHistoryModal({open: true, folderId: id}),
+                closeFolderVersionHistoryModal: () => setFolderVersionHistoryModal({open: false, folderId: undefined}),
+
+                fileVersionHistoryModal,
+                openFileVersionHistoryModal: (id) => setFileVersionHistoryModal({open: true, fileId: id}),
+                closeFileVersionHistoryModal: () => setFileVersionHistoryModal({open: false, fileId: undefined}),
 
                 isSelectMode,
                 selected,

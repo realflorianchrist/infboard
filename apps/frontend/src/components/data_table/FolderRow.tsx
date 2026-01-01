@@ -23,6 +23,7 @@ export default function FolderRow({folder, ...props}: FolderRow) {
         setSelected,
         addSelected,
         openUploadFileModal,
+        openFolderVersionHistoryModal,
     } = useContextMenu();
 
     const {folderId} = useFolderPath();
@@ -39,7 +40,7 @@ export default function FolderRow({folder, ...props}: FolderRow) {
             {...(folder.deleted && {
                 onUnDelete: () => console.log('undelete'),
             })}
-            onShowHistory={() => console.log('show history')}
+            onShowHistory={() => openFolderVersionHistoryModal()}
             onSelect={() => {
                 const folderToSelect = result?.folder.children?.find(f => f.id === folder.id);
                 if (!isSelected(folder.id) && folderToSelect) addSelected(folderToSelect);
