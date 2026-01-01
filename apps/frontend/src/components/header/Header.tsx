@@ -1,27 +1,18 @@
 'use client'
-import Link from "next/link";
-import routes from "@/src/constants/routes";
 import Navigation from "./Navigation";
 import {Avatar, AvatarFallback} from "@workspace/ui/components/avatar";
 import {IoIosPerson} from "react-icons/io";
 import UserDropDownMenu from "@/src/components/menus/UserDropDownMenu";
-import {usePathname} from "next/navigation";
 import {userDetails} from "@/src/utils/userDetails";
+import HeaderBrand from "@/src/components/header/HeaderBrand";
 
-export default function Header() {
-
-    const pathName = usePathname();
+export default function Header({hideNavigation}: {hideNavigation?: boolean}) {
 
     return (
         <header className={'flex items-center justify-between w-full p-4'}>
-            <Link
-                href={routes.HOME}
-                className="text-2xl font-bold text-accent"
-            >
-                infboard.ch
-            </Link>
+            <HeaderBrand/>
 
-            {!pathName.includes('/auth') && (
+            {!hideNavigation && (
                 <>
                     <div className={'absolute left-1/2 -translate-x-1/2'}>
                         <Navigation/>

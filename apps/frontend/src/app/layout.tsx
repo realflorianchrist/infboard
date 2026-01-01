@@ -1,7 +1,6 @@
 import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
-import "@workspace/ui/globals.css"
-import Header from "../components/header/Header";
+import "@workspace/ui/styles/globals.css"
 import Providers from "@/src/providers/Providers";
 import {Toaster} from "@workspace/ui/components/sonner";
 
@@ -32,10 +31,7 @@ export default function RootLayout(
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
         <Providers>
-            <Header/>
-            <main>
-                {children}
-            </main>
+            {children}
             <Toaster position={'bottom-right'} richColors/>
         </Providers>
         </body>
