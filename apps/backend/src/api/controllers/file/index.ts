@@ -24,7 +24,8 @@ fileController.post(
 
             const {name, parentFolderId} = validated;
 
-            const existing = await FileModel.findOne({name, parentFolderId});
+            const existing = await FileModel.findOne({name, parentFolderId})
+                .setOptions({includeDeleted: true});
 
             if (existing) {
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
@@ -70,8 +71,12 @@ fileController.put(
 
             const validated = validateOrThrow(UpdateFileSchema, req.body.file);
 
-            const file = await FileModel.findById(validated.id);
-            if (!file) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            const file = await FileModel.findById(validated.id)
+                .setOptions({includeDeleted: true});
+
+            if (!file) {
+                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            }
 
             try {
                 if (validated.parentFolderId) {

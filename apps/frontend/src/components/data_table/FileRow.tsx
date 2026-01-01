@@ -1,11 +1,15 @@
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import DnDTableRow from "@/src/components/dnd/DnDTableRow";
-import {FileMeta} from "@workspace/types";
+import {ErrorType, FileMeta} from "@workspace/types";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {useDownloadFile} from "@/src/hooks/useDownloadFile";
 import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {TableRow} from "@workspace/ui/components/table";
+import {useUpdateFile} from "@/src/api/hooks/api_hooks/fileHooks";
+import {toast} from "sonner";
+import {successMessage} from "@/src/utils/getSuccessMessage";
+import {getErrorMessage} from "@/src/utils/getErrorMessage";
 
 
 type FileRow = React.ComponentProps<"tr"> & {
@@ -27,6 +31,27 @@ export default function FileRow({file, ...props}: FileRow) {
     const {folderId} = useFolderPath();
     const {data: result} = useGetFolderDataById(folderId);
 
+    const updateFile = useUpdateFile();
+
+    const unDeleteFile = (fileId: string) => {
+        updateFile.mutate({file: {id: fileId, deleted: false}}, {
+            onSuccess: () => {
+                toast.success(successMessage.FILE_UNDELETED);
+            },
+            onError: (e) => {
+                const messages: string[] = [];
+                if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                    e.validationErrors?.forEach((error) => {
+                        messages.push(getErrorMessage(error));
+                    });
+                } else {
+                    messages.push(getErrorMessage(e.errorType));
+                }
+                messages.forEach(m => toast.error(m));
+            },
+        });
+    };
+
     return (
         <DataContextMenu
             {...(!file.deleted && {
@@ -34,7 +59,7 @@ export default function FileRow({file, ...props}: FileRow) {
                 onDelete: () => openDeleteFileModal(file.id),
             })}
             {...(file.deleted && {
-                onUnDelete: () => console.log('undelete'),
+                onUnDelete: () => unDeleteFile(file.id),
             })}
             onShowHistory={() => openFileVersionHistoryModal()}
             onSelect={() => {

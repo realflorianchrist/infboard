@@ -1,10 +1,13 @@
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import DnDTableRow from "@/src/components/dnd/DnDTableRow";
-import {Folder} from "@workspace/types";
+import {ErrorType, Folder} from "@workspace/types";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
+import {useGetFolderDataById, useUpdateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import {TableRow} from "@workspace/ui/components/table";
+import {toast} from "sonner";
+import {successMessage} from "@/src/utils/getSuccessMessage";
+import {getErrorMessage} from "@/src/utils/getErrorMessage";
 
 
 type FolderRow = React.ComponentProps<"tr"> & {
@@ -29,6 +32,27 @@ export default function FolderRow({folder, ...props}: FolderRow) {
     const {folderId} = useFolderPath();
     const {data: result} = useGetFolderDataById(folderId);
 
+    const updateFile = useUpdateFolder();
+
+    const unDeleteFolder = (folderId: string) => {
+        updateFile.mutate({folder: {id: folderId, deleted: false}}, {
+            onSuccess: () => {
+                toast.success(successMessage.FILE_UNDELETED);
+            },
+            onError: (e) => {
+                const messages: string[] = [];
+                if (e.errorType === ErrorType.VALIDATION_ERROR) {
+                    e.validationErrors?.forEach((error) => {
+                        messages.push(getErrorMessage(error));
+                    });
+                } else {
+                    messages.push(getErrorMessage(e.errorType));
+                }
+                messages.forEach(m => toast.error(m));
+            },
+        });
+    };
+
     return (
         <DataContextMenu
             {...(!folder.deleted && {
@@ -38,7 +62,7 @@ export default function FolderRow({folder, ...props}: FolderRow) {
                 onDelete: () => openDeleteFolderModal(folder.id),
             })}
             {...(folder.deleted && {
-                onUnDelete: () => console.log('undelete'),
+                onUnDelete: () => unDeleteFolder(folder.id),
             })}
             onShowHistory={() => openFolderVersionHistoryModal()}
             onSelect={() => {

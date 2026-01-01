@@ -10,6 +10,7 @@ enum FileSuccessMessage {
     FILE_MOVED = "Datei erfolgreich verschoben.",
     FILES_MOVED = "Dateien erfolgreich verschoben.",
     FILE_DELETED = "Datei erfolgreich gelöscht.",
+    FILE_UNDELETED = "Datei erfolgreich wiederhergestellt.",
 }
 
 
