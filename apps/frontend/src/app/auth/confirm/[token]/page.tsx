@@ -31,7 +31,6 @@ export default function ConfirmPage({params}: Props) {
 
     return (
         <>
-
             <div className={'flex flex-col items-center text-center gap-5'}>
 
                 {confirmEmail.isSuccess && (

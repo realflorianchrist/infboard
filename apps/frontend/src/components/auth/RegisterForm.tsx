@@ -13,6 +13,7 @@ import {successMessage} from "@/src/utils/getSuccessMessage";
 import AuthForm from "@/src/components/auth/form/AuthForm";
 import FormItem from "@/src/components/auth/form/FormItem";
 import PasswordInputField from "@/src/components/auth/form/PasswordInputField";
+import Loader from "@/src/components/loader/Loader";
 
 
 export default function RegisterForm() {
@@ -40,7 +41,7 @@ export default function RegisterForm() {
         registerMutation.mutate({user}, {
             onSuccess: () => {
                 toast.success(successMessage.REGISTER_SUCCESSFUL);
-                window.location.replace(routes.HOME);
+                router.push(routes.EMAIL_SENT);
             },
             onError: (e) => {
                 if (e.errorType === ErrorType.VALIDATION_ERROR) {
@@ -63,65 +64,69 @@ export default function RegisterForm() {
     }
 
     return (
-        <AuthForm
-            onSubmit={handleRegister}
-        >
-            <FormItem>
-                <Label htmlFor='email'>E-Mail</Label>
-                <Input
-                    id='email'
-                    type='email'
-                    required={true}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </FormItem>
+        <>
+            {registerMutation.isPending && <Loader isFullScreen={true}/>}
 
-            <FormItem>
-                <Label htmlFor='username'>Username</Label>
-                <Input
-                    id='username'
-                    required={true}
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-            </FormItem>
+            <AuthForm
+                onSubmit={handleRegister}
+            >
+                <FormItem>
+                    <Label htmlFor='email'>E-Mail</Label>
+                    <Input
+                        id='email'
+                        type='email'
+                        required={true}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </FormItem>
 
-            <FormItem>
-                <Label htmlFor='password'>Passwort</Label>
-                <PasswordInputField
-                    id={'password'}
-                    required={true}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </FormItem>
+                <FormItem>
+                    <Label htmlFor='username'>Username</Label>
+                    <Input
+                        id='username'
+                        required={true}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </FormItem>
 
-            <FormItem>
-                <Label htmlFor='repeat-password'>Passwort wiederholen</Label>
-                <PasswordInputField
-                    id={'repeat-password'}
-                    required={true}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-            </FormItem>
+                <FormItem>
+                    <Label htmlFor='password'>Passwort</Label>
+                    <PasswordInputField
+                        id={'password'}
+                        required={true}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </FormItem>
 
-            <Button type={'submit'}>
-                Registrieren
-            </Button>
+                <FormItem>
+                    <Label htmlFor='repeat-password'>Passwort wiederholen</Label>
+                    <PasswordInputField
+                        id={'repeat-password'}
+                        required={true}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                </FormItem>
 
-            <div className={'flex self-center items-center text-sm gap-3'}>
-                <p>Schon registriert?</p>
-                <Button
-                    variant={'link'}
-                    type={'button'}
-                    onClick={() => router.push(routes.LOGIN)}
-                    className={'p-0'}
-                >
-                    Login
+                <Button type={'submit'}>
+                    Registrieren
                 </Button>
-            </div>
-        </AuthForm>
+
+                <div className={'flex self-center items-center text-sm gap-3'}>
+                    <p>Schon registriert?</p>
+                    <Button
+                        variant={'link'}
+                        type={'button'}
+                        onClick={() => router.push(routes.LOGIN)}
+                        className={'p-0'}
+                    >
+                        Login
+                    </Button>
+                </div>
+            </AuthForm>
+        </>
     );
 }
