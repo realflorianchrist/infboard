@@ -124,7 +124,6 @@
 @layer base {
     * {
         @apply border-border outline-ring/50;
-        /*scrollbar-gutter: stable;*/
     }
 
     body {
@@ -155,6 +154,12 @@
 
     ::-webkit-scrollbar-button {
         @apply hidden;
+    }
+}
+
+@layer utilities {
+    .scrollbar-gutter-stable {
+        scrollbar-gutter: stable;
     }
 }
 

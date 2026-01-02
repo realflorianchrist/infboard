@@ -55,7 +55,7 @@ export default function FolderPage() {
                         onNewFolder={() => openNewFolderModal()}
                         onUploadFile={() => openUploadFileModal()}
                     >
-                        <div className={'h-full overflow-auto'}>
+                        <div className={'h-full overflow-auto scrollbar-gutter-stable'}>
                             <Treeview/>
                         </div>
                     </DataContextMenu>
