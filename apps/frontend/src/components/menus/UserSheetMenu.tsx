@@ -1,11 +1,10 @@
 'use client'
-import React, {ReactNode, useRef} from 'react'
+import React, {ReactNode} from 'react'
 import {Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger} from "@workspace/ui/components/sheet";
 import {Avatar, AvatarFallback} from "@workspace/ui/components/avatar";
 import {IoIosPerson} from "react-icons/io";
 import {Separator} from "@workspace/ui/components/separator";
 import {userDetails} from "@/src/utils/userDetails";
-import ThemeSwitch from "@/src/components/ThemeSwitch";
 import {useLogout} from "@/src/api/hooks/api_hooks/authHooks";
 import {Button} from "@workspace/ui/components/button";
 import {IoSettingsOutline} from "react-icons/io5";
@@ -13,11 +12,12 @@ import {useTheme} from "next-themes";
 import {MdOutlineDarkMode, MdOutlineLightMode} from "react-icons/md";
 import {FiLogOut, FiUpload} from "react-icons/fi";
 import {cn} from "@workspace/ui/lib/utils";
+import useToggleTheme from "@/src/hooks/useToggleTheme";
 
 export default function UserSheetMenu({children}: { children: ReactNode }) {
     const logout = useLogout();
+    const toggleTheme = useToggleTheme();
     const {theme} = useTheme();
-    const switchRef = useRef<HTMLButtonElement>(null);
 
     return (
         <Sheet>
@@ -56,25 +56,15 @@ export default function UserSheetMenu({children}: { children: ReactNode }) {
                         Meine Uploads
                     </button>
 
-                    <div
+                    <button
                         className={'flex w-full p-1 gap-4 items-center justify-items-start cursor-pointer hover:bg-accent/15 rounded-md'}
-                        onClick={() => switchRef.current?.click()}
+                        onClick={toggleTheme}
                     >
                         {theme === 'dark'
-                            ? (
-                                <>
-                                    <MdOutlineLightMode/>
-                                    Light mode
-                                </>
-                            ) : (
-                                <>
-                                    <MdOutlineDarkMode/>
-                                    Dark mode
-                                </>
-                            )}
-                        <ThemeSwitch ref={switchRef}/>
-                    </div>
-
+                            ? <><MdOutlineLightMode/>Light mode</>
+                            : <><MdOutlineDarkMode/>Dark mode</>
+                        }
+                    </button>
                 </div>
 
                 <SheetFooter>
