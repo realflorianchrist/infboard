@@ -3,8 +3,8 @@ import routes from "@/src/constants/routes";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {Separator} from "@workspace/ui/components/separator";
-import SearchBar from "@/src/components/header/SearchBar";
 import {useState} from "react";
+import SearchBarWithResults from "@/src/components/header/SearchBarWithResults";
 
 export default function Navigation() {
     const path = usePathname();
@@ -48,7 +48,10 @@ export default function Navigation() {
                     ${isSearching ? 'w-full opacity-100 pointer-events-auto' : 'w-0 opacity-0 pointer-events-none'}
                   `}
             >
-                <SearchBar setIsSearching={setIsSearching}/>
+                <SearchBarWithResults
+                    isSearching={isSearching}
+                    setIsSearching={setIsSearching}
+                />
             </div>
         </nav>
     );
