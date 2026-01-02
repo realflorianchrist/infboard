@@ -2,9 +2,9 @@
 import Navigation from "./Navigation";
 import {Avatar, AvatarFallback} from "@workspace/ui/components/avatar";
 import {IoIosPerson} from "react-icons/io";
-import UserDropDownMenu from "@/src/components/menus/UserDropDownMenu";
 import {userDetails} from "@/src/utils/userDetails";
 import HeaderBrand from "@/src/components/header/HeaderBrand";
+import UserSheetMenu from "@/src/components/menus/UserSheetMenu";
 
 export default function Header({hideNavigation}: {hideNavigation?: boolean}) {
 
@@ -18,7 +18,7 @@ export default function Header({hideNavigation}: {hideNavigation?: boolean}) {
                         <Navigation/>
                     </div>
 
-                    <UserDropDownMenu>
+                    <UserSheetMenu>
                         <div className={'flex items-center justify-center gap-4 cursor-pointer'}>
                             {userDetails().getUserInfos()?.username}
                             <Avatar>
@@ -27,7 +27,7 @@ export default function Header({hideNavigation}: {hideNavigation?: boolean}) {
                                 </AvatarFallback>
                             </Avatar>
                         </div>
-                    </UserDropDownMenu>
+                    </UserSheetMenu>
                 </>
             )}
         </header>

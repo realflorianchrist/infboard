@@ -39,7 +39,10 @@ export default function DeleteFileModal() {
                     <Button variant="secondary" onClick={closeDeleteFileModal}>
                         Abbrechen
                     </Button>
-                    <Button onClick={handleDelete}>
+                    <Button
+                        variant={'destructive'}
+                        onClick={handleDelete}
+                    >
                         Löschen
                     </Button>
                 </div>
