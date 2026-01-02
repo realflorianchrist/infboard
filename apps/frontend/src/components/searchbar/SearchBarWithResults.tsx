@@ -11,8 +11,6 @@ import FileItem from "@/src/components/data_table/FileItem";
 import ResultPath from "@/src/components/searchbar/ResultPath";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
-import {useRouter} from "next/navigation";
-import routes from "@/src/constants/routes";
 
 type Props = {
     isSearching: boolean
@@ -24,8 +22,7 @@ export default function SearchBarWithResults({isSearching, setIsSearching}: Prop
     const [open, setOpen] = useState(false);
 
     const {data: result} = useGetSearchPreviews(q);
-    const {path, pushFolderById} = useFolderPath();
-    const router = useRouter();
+    const {resetPath, pushFolderById} = useFolderPath();
 
     const previews = useMemo(() => result?.searchPreviews ?? [], [result]);
     const hasResults = previews.length > 0;
@@ -76,9 +73,9 @@ export default function SearchBarWithResults({isSearching, setIsSearching}: Prop
                                 } else if (d.parentFolderId !== ROOT_FOLDER_ID) {
                                     pushFolderById(d.parentFolderId!);
                                 } else {
-                                    router.push(routes.HOME);
+                                    resetPath();
                                 }
-                                setOpen(false)
+                                setOpen(false);
                             }}
                         >
                             {isFolder(d)
