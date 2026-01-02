@@ -5,6 +5,8 @@ import {AuthUser, User} from "@workspace/types";
 import {userDetails} from "@/src/utils/userDetails";
 import {useRouter} from "next/navigation";
 import routes from "@/src/constants/routes";
+import {toast} from "sonner";
+import {successMessage} from "@/src/utils/getSuccessMessage";
 
 const baseRoute = apiRoutes.auth.base;
 
@@ -40,8 +42,9 @@ export const useLogout = () => {
     return () => {
         userDetails().removeAuthToken();
         router.push(routes.LOGIN);
+        toast.success(successMessage.LOGOUT_SUCCESSFUL)
     }
-}
+};
 
 export const useConfirmEmail = () =>
     useApiMutation<

@@ -12,6 +12,7 @@ import {IoSettingsOutline} from "react-icons/io5";
 import {useTheme} from "next-themes";
 import {MdOutlineDarkMode, MdOutlineLightMode} from "react-icons/md";
 import {FiLogOut, FiUpload} from "react-icons/fi";
+import {cn} from "@workspace/ui/lib/utils";
 
 export default function UserSheetMenu({children}: { children: ReactNode }) {
     const logout = useLogout();
@@ -23,21 +24,28 @@ export default function UserSheetMenu({children}: { children: ReactNode }) {
             <SheetTrigger>{children}</SheetTrigger>
             <SheetContent className={'gap-0'}>
                 <SheetHeader>
-                    <SheetTitle className={'text-2xl'}>Mein Account</SheetTitle>
+                    <SheetTitle className={'text-xl'}>Mein Account</SheetTitle>
                 </SheetHeader>
                 <Separator className={'my-0'}/>
-                <div className={'flex flex-col items-center p-6 pt-12 gap-4'}>
-                    <Avatar className={'w-28 h-28'}>
-                        <AvatarFallback>
-                            <IoIosPerson size={'5rem'}/>
-                        </AvatarFallback>
-                    </Avatar>
-                    <div className={'text-2xl'}>
+                <div className={'flex flex-col items-center p-6 pt-12'}>
+                    <div>
+                        <Avatar className={'w-28 h-28'}>
+                            <AvatarFallback>
+                                <IoIosPerson size={'5rem'}/>
+                            </AvatarFallback>
+                        </Avatar>
+                        <button
+                            className={cn('flex items-center justify-center w-10 h-10 relative left-19 bottom-8',
+                                'z-100 bg-background border rounded-full hover:border-accent active:border-accent/60')}>
+                            <FiUpload/>
+                        </button>
+                    </div>
+                    <div className={'text-xl'}>
                         {userDetails().getUserInfos()?.username}
                     </div>
                 </div>
                 <div className={'flex flex-col items-start p-3 gap-3'}>
-                    <div className={'flex text-2xl p-1 gap-4 items-center justify-center'}><
+                    <div className={'flex text-xl p-1 gap-4 items-center justify-center'}><
                         IoSettingsOutline/>Einstellungen
                     </div>
 
@@ -73,7 +81,7 @@ export default function UserSheetMenu({children}: { children: ReactNode }) {
                     <Button
                         variant={'destructive'}
                         onClick={logout}>
-                        <FiLogOut />
+                        <FiLogOut/>
                         Abmelden
                     </Button>
                 </SheetFooter>

@@ -18,6 +18,7 @@ enum FileSuccessMessage {
 enum UserSuccessMessage {
     LOGIN_SUCCESSFUL = "Login erfolgreich",
     REGISTER_SUCCESSFUL = "Registrierung erfolgreich",
+    LOGOUT_SUCCESSFUL = "Logout erfolgreich",
 }
 
 export const successMessage = {
