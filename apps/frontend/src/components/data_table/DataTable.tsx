@@ -24,6 +24,8 @@ import {useDroppable} from "@dnd-kit/core";
 import {Data, isFolder} from "@workspace/types";
 import FolderRow from "@/src/components/data_table/FolderRow";
 import FileRow from "@/src/components/data_table/FileRow";
+import FolderItem from "@/src/components/data_table/FolderItem";
+import FileItem from "@/src/components/data_table/FileItem";
 
 export type RowData = Data & {
     select?: boolean;
@@ -117,9 +119,8 @@ export default function DataTable() {
                         title={row.name}
                     >
                         <span className="shrink-0">
-                            {isFolder(row) ? <IoFolderOutline/> : getFileSymbol(row.contentType)}
+                            {isFolder(row) ? <FolderItem folder={row}/> : <FileItem file={row}/>}
                         </span>
-                        <span className="truncate whitespace-nowrap">{row.name}</span>
                     </div>
                 );
             },

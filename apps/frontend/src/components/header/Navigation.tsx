@@ -4,7 +4,7 @@ import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {Separator} from "@workspace/ui/components/separator";
 import {useState} from "react";
-import SearchBarWithResults from "@/src/components/header/SearchBarWithResults";
+import SearchBarWithResults from "@/src/components/searchbar/SearchBarWithResults";
 
 export default function Navigation() {
     const path = usePathname();

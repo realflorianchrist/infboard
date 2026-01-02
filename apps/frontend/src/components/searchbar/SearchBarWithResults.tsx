@@ -1,20 +1,31 @@
 'use client'
 import * as React from "react"
-import { useEffect, useMemo, useState } from "react"
-import SearchBar from "@/src/components/header/SearchBar"
-import { Popover, PopoverAnchor, PopoverContent } from "@workspace/ui/components/popover"
-import { useGetSearchPreviews } from "@/src/api/hooks/api_hooks/searchHooks"
+import {useEffect, useMemo, useState} from "react"
+import SearchBar from "@/src/components/searchbar/SearchBar"
+import {Popover, PopoverAnchor, PopoverContent} from "@workspace/ui/components/popover"
+import {useGetSearchPreviews} from "@/src/api/hooks/api_hooks/searchHooks"
+import {isFolder} from "@workspace/types";
+import SearchResultContainer from "@/src/components/searchbar/SearchResultContainer";
+import FolderItem from "@/src/components/data_table/FolderItem";
+import FileItem from "@/src/components/data_table/FileItem";
+import ResultPath from "@/src/components/searchbar/ResultPath";
+import {useFolderPath} from "@/src/hooks/useFolderPath";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
+import {useRouter} from "next/navigation";
+import routes from "@/src/constants/routes";
 
 type Props = {
     isSearching: boolean
     setIsSearching: (v: boolean) => void
 }
 
-export default function SearchBarWithResults({ isSearching, setIsSearching }: Props) {
+export default function SearchBarWithResults({isSearching, setIsSearching}: Props) {
     const [q, setQ] = useState("");
     const [open, setOpen] = useState(false);
 
-    const { data: result } = useGetSearchPreviews(q);
+    const {data: result} = useGetSearchPreviews(q);
+    const {path, pushFolderById} = useFolderPath();
+    const router = useRouter();
 
     const previews = useMemo(() => result?.searchPreviews ?? [], [result]);
     const hasResults = previews.length > 0;
@@ -56,18 +67,26 @@ export default function SearchBarWithResults({ isSearching, setIsSearching }: Pr
             >
                 <div className="max-h-64 overflow-auto rounded-md">
                     {previews.map((d) => (
-                        <button
+                        <SearchResultContainer
                             key={d.id}
-                            type="button"
-                            className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent/15"
                             onMouseDown={(e) => e.preventDefault()}
                             onClick={() => {
-                                setQ(d.name)
+                                if (isFolder(d)) {
+                                    pushFolderById(d.id);
+                                } else if (d.parentFolderId !== ROOT_FOLDER_ID) {
+                                    pushFolderById(d.parentFolderId!);
+                                } else {
+                                    router.push(routes.HOME);
+                                }
                                 setOpen(false)
                             }}
                         >
-                            {d.name}
-                        </button>
+                            {isFolder(d)
+                                ? <FolderItem folder={d}/>
+                                : <FileItem file={d}/>
+                            }
+                            <ResultPath parentFolderId={d.parentFolderId} className={'self-end'}/>
+                        </SearchResultContainer>
                     ))}
                 </div>
             </PopoverContent>

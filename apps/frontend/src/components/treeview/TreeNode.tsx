@@ -9,6 +9,7 @@ import {useFolderPath} from "@/src/hooks/useFolderPath";
 import {useDraggable, useDroppable} from "@dnd-kit/core";
 import {cn} from "@workspace/ui/lib/utils";
 import {useHasSelectedAncestor} from "@/src/hooks/useHasSelectedAncestor";
+import FolderItem from "@/src/components/data_table/FolderItem";
 
 export default function TreeNode(
     {
@@ -100,10 +101,7 @@ export default function TreeNode(
                             setSelected([]);
                         }}
                     >
-                        <IoFolderOutline className={'shrink-0'}/>
-                        <div>
-                            {folder.name}
-                        </div>
+                        <FolderItem folder={folder} />
                     </div>
                 </div>
             </DataContextMenu>

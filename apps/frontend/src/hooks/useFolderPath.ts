@@ -13,14 +13,10 @@ export const useFolderPath = () => {
     if (!folderTree) {
         return {
             path: [],
-            setPath: () => {
-            },
-            pushFolderById: () => {
-            },
-            popFolder: () => {
-            },
-            resetPath: () => {
-            },
+            setPath: () => {},
+            pushFolderById: () => {},
+            popFolder: () => {},
+            resetPath: () => {},
             folderId: ROOT_FOLDER_ID,
         };
     }
