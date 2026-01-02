@@ -10,6 +10,10 @@ import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 
 const searchController: Router = express.Router();
 
+const escapeSearch = (search: string) => {
+    return search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 searchController.get(
     apiRoutes.search.preview,
     handleRequest<{}, { searchPreviews: Data[] }, {}, { search: string }>(
@@ -25,7 +29,7 @@ searchController.get(
 
             const PREVIEW_RESULT_LIMIT = 8;
 
-            const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const escapedSearch = escapeSearch(search);
             const regex = new RegExp(`^${escapedSearch}`, "i");
 
             const folders = await FolderModel
