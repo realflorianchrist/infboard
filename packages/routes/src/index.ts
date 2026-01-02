@@ -35,5 +35,11 @@ export const apiRoutes = {
     data: {
         base: '/data',
         move: '/move',
-    }
+    },
+
+    search: {
+        base: '/search',
+        preview: '/preview',
+        results: '/move',
+    },
 };
