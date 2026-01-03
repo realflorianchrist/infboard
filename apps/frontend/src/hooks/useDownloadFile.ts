@@ -81,6 +81,7 @@ export const useDownloadFile = () => {
         setIsDownloading(true);
         const zip = new JSZip();
 
+        // todo: also handle subfolders and check for empty folders
         try {
             const childrenUrls = (
                 await Promise.all(

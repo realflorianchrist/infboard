@@ -7,6 +7,7 @@ export const FolderVersionSchema = z.object({
     version: z.number(),
     name: z.string().optional(),
     updatedAt: z.date().optional(),
+    userName: z.string().optional(),
     parentFolderId: z.string().optional(),
     deleted: z.boolean().optional(),
 });
@@ -26,6 +27,7 @@ export const FolderSchema = z.object({
     created: z.date().optional(),
     parentFolderId: z.string().default(ROOT_FOLDER_ID),
     updatedAt: z.date().optional(),
+    userName: z.string().optional(),
     deleted: z.boolean().optional(),
     previousVersions: z.array(FolderVersionSchema).optional(),
 });
@@ -50,10 +52,12 @@ const FolderMongooseSchema = new Schema<FolderDocument>(
         parentFolderId: {type: String, required: true, default: ROOT_FOLDER_ID},
         version: {type: Number, required: true, default: 1},
         deleted: {type: Boolean, default: false},
+        userName: String,
         previousVersions: [{
             version: Number,
             name: String,
             updatedAt: Date,
+            userName: String,
             parentFolderId: String,
             deleted: Boolean,
         }]

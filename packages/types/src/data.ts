@@ -9,6 +9,7 @@ export type Folder = {
     version?: number;
     deleted?: boolean;
     updatedAt?: Date;
+    userName?: string;
 };
 
 export type BaseFileMeta = {

@@ -2,8 +2,7 @@ import {NextFunction, Request, Response} from 'express';
 import {ErrorType} from "@workspace/types";
 import {ApiError} from "@src/api/utils/apiError";
 import {StatusCodes} from "http-status-codes";
-import {verifyToken} from "@src/services/jwtTokenProvider";
-import {JwtPayload} from "jsonwebtoken";
+import {JwtPayload, verifyToken} from "@src/services/jwtTokenProvider";
 
 declare global {
     namespace Express {

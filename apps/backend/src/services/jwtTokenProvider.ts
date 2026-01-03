@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import {ENV} from "@src/constants/ENV";
 
-type JwtPayload = {
+export type JwtPayload = {
     id: string;
     username: string;
 };
@@ -17,6 +17,12 @@ export const generateToken = (userId: string, username: string) => {
     });
 };
 
-export const verifyToken = (token: string) => {
-    return jwt.verify(token, ENV.JWT_SECRET);
+export const verifyToken = (token: string): JwtPayload => {
+    const decoded = jwt.verify(token, ENV.JWT_SECRET);
+
+    if (typeof decoded === "string") {
+        throw new Error("Invalid token payload");
+    }
+
+    return decoded as JwtPayload;
 };

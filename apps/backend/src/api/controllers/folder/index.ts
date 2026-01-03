@@ -95,7 +95,10 @@ folderController.post(
             }
 
             try {
-                const newFolder = await FolderModel.create(validated);
+                const newFolder = await FolderModel.create({
+                    ...validated,
+                    userName: req.user?.username
+                });
 
                 return {
                     status: StatusCodes.OK,
@@ -138,6 +141,10 @@ folderController.put(
                 folder.previousVersions = [...(folder.previousVersions ?? []), versionBackup];
 
                 Object.assign(folder, validated);
+
+                if (folder.userName !== req.user?.username) {
+                    Object.assign(folder, {userName: req.user?.username})
+                }
 
                 folder.version = (folder.version) + 1;
 

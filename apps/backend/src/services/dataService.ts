@@ -96,7 +96,7 @@ export const createFileVersion = (file: FileDocument, update: IUpdateFile): File
         contentType: checkForUpdate(file.contentType, update.contentType),
         size: checkForUpdate(file.size, update.size),
         updatedAt: file.updatedAt,
-        userName: checkForUpdate(file.userName, update.userName),
+        userName: file.userName,
         parentFolderId: checkForUpdate(file.parentFolderId, update.parentFolderId),
         comment: checkForUpdate(file.comment, update.comment),
         deleted: checkForUpdate(file.deleted, update.deleted),
@@ -109,7 +109,8 @@ export const createFolderVersion = (folder: FolderDocument, update: IUpdateFolde
         version: folder.version,
         name: checkForUpdate(folder.name, update.name),
         updatedAt: folder.updatedAt,
+        userName: folder.userName,
         parentFolderId: checkForUpdate(folder.parentFolderId, update.parentFolderId),
-        deleted: checkForUpdate(folder.deleted, update.deleted)
+        deleted: checkForUpdate(folder.deleted, update.deleted),
     };
 };

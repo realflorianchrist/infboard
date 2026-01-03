@@ -89,6 +89,10 @@ fileController.put(
 
                 Object.assign(file, validated);
 
+                if (file.userName !== req.user?.username) {
+                    Object.assign(file, {userName: req.user?.username})
+                }
+
                 file.version = (file.version ?? 1) + 1;
 
                 await file.save();
