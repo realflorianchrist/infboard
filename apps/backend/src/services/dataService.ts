@@ -5,7 +5,17 @@ import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 
-
+/**
+ * Loads all folders from the database and builds a hierarchical folder tree.
+ *
+ * Notes:
+ * - Sorts folders by name (ascending) before building the tree.
+ * - Uses the folder's `parentFolderId` to attach children to their parent.
+ * - Folders whose parent is missing (or `parentFolderId` is not set) become roots.
+ * - Files are not included here, `files` is always undefined in the result.
+ *
+ * @returns {Promise<Folder[]>} A list of root folders, each with nested `children`.
+ */
 export const getFolderTree = async (): Promise<Folder[]> => {
     const flatFolders = await FolderModel.find().sort({name: 1}).lean({virtuals: true});
 
@@ -17,7 +27,6 @@ export const getFolderTree = async (): Promise<Folder[]> => {
             name: f.name,
             parentFolderId: f.parentFolderId,
             children: [],
-            files: [],
             deleted: f.deleted
         });
     }
@@ -40,6 +49,23 @@ export const getFolderTree = async (): Promise<Folder[]> => {
     return roots;
 };
 
+/**
+ * Loads a folder and its direct contents (subfolders + files) for display.
+ *
+ * Behavior:
+ * - Returns a synthetic root folder when `folderId === ROOT_FOLDER_ID`.
+ * - Otherwise loads the folder by id and returns its direct children and files.
+ * - Sorting: subfolders and files are each sorted by `name` ascending.
+ *
+ * Deleted handling:
+ * - When `includeDeleted` is `true`, the query option `{ includeDeleted: true }`
+ *   is passed to Mongoose via `setOptions(...)` (requires matching plugin/support).
+ * - When `includeDeleted` is `false`, default query behavior applies.
+ *
+ * @param {string} folderId The folder id to load, or `ROOT_FOLDER_ID` for the virtual root.
+ * @param {boolean} includeDeleted Whether to include deleted subfolders/files in the result.
+ * @returns {Promise<Folder | null>} The folder with `children` and `files`, or `null` if not found.
+ */
 export const getFolderContents = async (
     folderId: string,
     includeDeleted: boolean
@@ -83,6 +109,25 @@ export const getFolderContents = async (
     };
 };
 
+/**
+ * Creates an immutable snapshot of a file document for version history.
+ *
+ * Intended use:
+ * - Store in `previousVersions` (or similar) before mutating the file.
+ * - Allows reconstructing past states and showing an audit trail.
+ *
+ * Snapshot contents:
+ * - Metadata: the file's current `version`, snapshot `createdAt`, and audit fields.
+ * - State: a subset of the file properties needed to restore or display history.
+ *
+ * @param {FileDocument} file The current file document (typically read within a session/transaction).
+ * @param {{ updatedBy: string; reason?: "create" | "update" | "restore"; restoreFromVersion?: number; }} options
+ * Audit information describing why the snapshot was created.
+ * @param {string} options.updatedBy Username or identifier of the user making the change.
+ * @param {"create" | "update" | "restore"} [options.reason] Reason for the snapshot.
+ * @param {number} [options.restoreFromVersion] If reason is "restore", the version restored from.
+ * @returns {FileSnapshot} A snapshot object containing versioned state for this file.
+ */
 export const createFileSnapshot = (
     file: FileDocument,
     options: {
@@ -111,7 +156,25 @@ export const createFileSnapshot = (
     };
 };
 
-
+/**
+ * Creates an immutable snapshot of a folder document for version history.
+ *
+ * Intended use:
+ * - Store in `previousVersions` (or similar) before mutating the folder.
+ * - Allows reconstructing past states and showing an audit trail.
+ *
+ * Snapshot contents:
+ * - Metadata: the folder's current `version`, snapshot `createdAt`, and audit fields.
+ * - State: a subset of folder properties needed to restore or display history.
+ *
+ * @param {FolderDocument} folder The current folder document (typically read within a session/transaction).
+ * @param {{ updatedBy: string; reason?: "create" | "update" | "restore"; restoreFromVersion?: number; }} options
+ * Audit information describing why the snapshot was created.
+ * @param {string} options.updatedBy Username or identifier of the user making the change.
+ * @param {"create" | "update" | "restore"} [options.reason] Reason for the snapshot.
+ * @param {number} [options.restoreFromVersion] If reason is "restore", the version restored from.
+ * @returns {FolderSnapshot} A snapshot object containing versioned state for this folder.
+ */
 export const createFolderSnapshot = (
     folder: FolderDocument,
     options: {
