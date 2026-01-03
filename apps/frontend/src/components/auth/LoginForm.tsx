@@ -34,7 +34,8 @@ export default function LoginForm() {
         loginMutation.mutate({user}, {
             onSuccess: () => {
                 toast.success(successMessage.LOGIN_SUCCESSFUL);
-                router.push(routes.HOME);
+                // window.location.replace(routes.HOME); // router.push doesn't work here sometimes
+                router.replace(routes.HOME);
             },
             onError: (e) => {
                 if (e.errorType === ErrorType.VALIDATION_ERROR) {
