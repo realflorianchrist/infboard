@@ -43,11 +43,11 @@ fileController.post(
                     userName: req.user?.username,
                 });
 
+                newFile.s3Key = generateFileKey(newFile.id);
+
                 newFile.previousVersions.push(
                     createFileSnapshot(newFile, {updatedBy: req.user?.username!, reason: 'create'})
                 );
-
-                newFile.s3Key = generateFileKey(newFile.id);
 
                 await newFile.save();
 
