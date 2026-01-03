@@ -41,9 +41,8 @@ export default function RegisterForm() {
         registerMutation.mutate({user}, {
             onSuccess: async () => {
                 toast.success(successMessage.REGISTER_SUCCESSFUL);
-                // window.location.replace(routes.EMAIL_SENT); // router.push doesn't work here sometimes
-                await Promise.resolve();
-                router.replace(routes.EMAIL_SENT);
+                window.location.replace(routes.EMAIL_SENT); // router.push doesn't work here sometimes
+                // router.replace(routes.EMAIL_SENT);
             },
             onError: (e) => {
                 if (e.errorType === ErrorType.VALIDATION_ERROR) {
