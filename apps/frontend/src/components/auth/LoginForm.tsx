@@ -32,9 +32,10 @@ export default function LoginForm() {
         const user = getAuthUser();
 
         loginMutation.mutate({user}, {
-            onSuccess: () => {
+            onSuccess: async () => {
                 toast.success(successMessage.LOGIN_SUCCESSFUL);
                 // window.location.replace(routes.HOME); // router.push doesn't work here sometimes
+                await Promise.resolve();
                 router.replace(routes.HOME);
             },
             onError: (e) => {
