@@ -11,6 +11,7 @@ import {generateToken, verifyToken} from "@src/services/jwtTokenProvider";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import mailService from "@src/config/mail";
 import {createConfirmLink} from "@src/services/userService";
+import mongoose from "mongoose";
 
 const authController: Router = express.Router();
 
@@ -76,20 +77,25 @@ authController.post(
 
             const hashedPassword = await bcrypt.hash(password, 10);
 
+            const session = await mongoose.startSession();
             try {
-                const userDoc = await UserModel.create({
+                session.startTransaction();
+
+                const userDoc = await UserModel.create([{
                     username: username,
                     email: email,
                     password: hashedPassword
-                });
+                }], {session});
 
-                const user = userDocumentToUserMapper(userDoc);
+                const user = userDocumentToUserMapper(userDoc[0]);
 
                 try {
                     await mailService.sendEmailConfirmEMail(user, createConfirmLink(user));
                 } catch {
-                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.SEND_EMAIL_FAILED)
+                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.SEND_EMAIL_FAILED);
                 }
+
+                await session.commitTransaction();
 
                 return {
                     status: StatusCodes.OK,
@@ -98,9 +104,13 @@ authController.post(
                     }
                 };
             } catch (error) {
+                await session.abortTransaction();
+
                 if (error instanceof ApiError) throw error;
 
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.API_ERROR);
+            } finally {
+                await session.endSession();
             }
         }
     )
