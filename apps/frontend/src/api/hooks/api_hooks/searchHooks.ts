@@ -10,6 +10,9 @@ export const useGetSearchPreviews = (search: string) =>
     >(
         [baseRoute, apiRoutes.search.preview],
         {
+            queryOptions: {
+                enabled: Boolean(search && search.trim().length > 0)
+            },
             requestOptions: {
                 params: {
                     search
