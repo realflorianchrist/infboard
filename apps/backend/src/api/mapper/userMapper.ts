@@ -3,7 +3,7 @@ import {User} from "@workspace/types";
 
 export const userDocumentToUserMapper = (userDocument: UserDocument): User => {
     return {
-        id: userDocument._id.toString(),
+        id: userDocument.id,
         username: userDocument.username,
         email: userDocument.email,
     }

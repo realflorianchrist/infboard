@@ -3,7 +3,7 @@ import {FileMeta} from "@workspace/types";
 
 export const fileDocumentToFileMapper = (fileDocument: FileDocument, url?: string): FileMeta => {
     return {
-        id: fileDocument._id.toString(),
+        id: fileDocument.id,
         contentType: fileDocument.contentType,
         name: fileDocument.name,
         url: url,
@@ -15,5 +15,5 @@ export const fileDocumentToFileMapper = (fileDocument: FileDocument, url?: strin
         downloads: fileDocument.downloads,
         parentFolderId: fileDocument.parentFolderId,
         deleted: fileDocument.deleted
-    }
-}
+    };
+};

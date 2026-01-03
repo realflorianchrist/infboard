@@ -2,6 +2,7 @@ import {z} from 'zod';
 import {Document, model, Query, Schema, Types} from 'mongoose';
 import {FolderValidationErrorType} from "@workspace/types";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 export const FolderStateSchema = z.object({
     name: z.string(),
@@ -52,6 +53,7 @@ export type FolderSnapshot = z.infer<typeof FolderSnapshotSchema>;
 
 export type FolderDocument = Omit<IFolder, 'id' | 'created'> & Document & {
     _id: Types.ObjectId;
+    id: string;
     created: Date;
 };
 
@@ -116,9 +118,7 @@ FolderMongooseSchema.plugin(softDeletePlugin);
 
 FolderMongooseSchema.index({name: 1, parentFolderId: 1}, {unique: true});
 
-FolderMongooseSchema.virtual('id').get(function (this: FolderDocument) {
-    return this._id.toHexString();
-});
+FolderMongooseSchema.plugin(mongooseLeanVirtuals);
 
 export const FolderModel = model<FolderDocument>('Folder', FolderMongooseSchema);
 

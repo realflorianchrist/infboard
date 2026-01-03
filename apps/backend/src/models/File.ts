@@ -2,6 +2,7 @@ import {z} from 'zod';
 import {Document, model, Query, Schema, Types} from 'mongoose';
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {FileValidationErrorType} from "@workspace/types";
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 
 export const FileStateSchema = z.object({
@@ -68,6 +69,7 @@ export type FileSnapshot = z.infer<typeof FileSnapshotSchema>;
 
 export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
     _id: Types.ObjectId;
+    id: string;
     created: Date;
 }
 
@@ -141,9 +143,7 @@ FileMongooseSchema.plugin(softDeletePlugin);
 
 FileMongooseSchema.index({name: 1, parentFolderId: 1}, {unique: true});
 
-FileMongooseSchema.virtual('id').get(function (this: FileDocument) {
-    return this._id.toHexString();
-});
+FileMongooseSchema.plugin(mongooseLeanVirtuals);
 
 export const FileModel = model<FileDocument>('File', FileMongooseSchema);
 

@@ -1,19 +1,19 @@
-import {FolderDocument, FolderModel, FolderSnapshot, IUpdateFolder} from "@src/models/Folder";
+import {FolderDocument, FolderModel, FolderSnapshot} from "@src/models/Folder";
 import {Folder} from "@workspace/types";
-import {FileDocument, FileModel, FileSnapshot, IUpdateFile} from "@src/models/File";
+import {FileDocument, FileModel, FileSnapshot} from "@src/models/File";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 
 
 export const getFolderTree = async (): Promise<Folder[]> => {
-    const flatFolders = await FolderModel.find().sort({name: 1}).lean();
+    const flatFolders = await FolderModel.find().sort({name: 1}).lean({virtuals: true});
 
-    const folderMap = new Map<string, Folder & { children: Folder[] }>();
+    const folderMap = new Map<string, Folder>();
 
     for (const f of flatFolders) {
-        folderMap.set(f._id.toString(), {
-            id: f._id.toString(),
+        folderMap.set(f.id, {
+            id: f.id,
             name: f.name,
             parentFolderId: f.parentFolderId,
             children: [],
@@ -25,13 +25,13 @@ export const getFolderTree = async (): Promise<Folder[]> => {
     const roots: Folder[] = [];
 
     for (const f of flatFolders) {
-        const current = folderMap.get(f._id.toString());
+        const current = folderMap.get(f.id);
         if (!current) continue;
 
-        const parentId = f.parentFolderId?.toString();
+        const parentId = f.parentFolderId;
         if (parentId && folderMap.has(parentId)) {
             const parent = folderMap.get(parentId)!;
-            parent.children.push(current);
+            parent.children?.push(current);
         } else {
             roots.push(current);
         }
@@ -48,8 +48,8 @@ export const getFolderContents = async (
 
     const listChildren = async (parentId: string) => {
         const [subfolderDocs, fileDocs] = await Promise.all([
-            FolderModel.find({parentFolderId: parentId}).setOptions(findOpts ?? {}).sort({name: 1}).lean(),
-            FileModel.find({parentFolderId: parentId}).setOptions(findOpts ?? {}).sort({name: 1}).lean(),
+            FolderModel.find({parentFolderId: parentId}).setOptions(findOpts ?? {}).sort({name: 1}).lean({virtuals: true}),
+            FileModel.find({parentFolderId: parentId}).setOptions(findOpts ?? {}).sort({name: 1}).lean({virtuals: true}),
         ]);
 
         return {
@@ -69,13 +69,13 @@ export const getFolderContents = async (
         };
     }
 
-    const folderDoc = await FolderModel.findById(folderId).setOptions(findOpts ?? {}).lean();
+    const folderDoc = await FolderModel.findById(folderId).setOptions(findOpts ?? {}).lean({virtuals: true});
     if (!folderDoc) return null;
 
     const {subfolders, files} = await listChildren(folderId);
 
     return {
-        id: folderDoc._id.toString(),
+        id: folderDoc.id,
         name: folderDoc.name,
         children: subfolders,
         files,

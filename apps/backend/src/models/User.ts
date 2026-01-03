@@ -1,6 +1,7 @@
 import {z} from "zod";
 import {UserValidationErrorType} from "@workspace/types";
 import {Document, model, Schema, Types} from "mongoose";
+import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 
 export const UserSchema = z.object({
     id: z.string().optional(),
@@ -27,6 +28,7 @@ export type IUser = z.infer<typeof UserSchema>;
 
 export interface UserDocument extends Omit<IUser, 'id' | 'created'>, Document {
     _id: Types.ObjectId;
+    id: string;
     created: Date;
 }
 
@@ -44,8 +46,6 @@ const UserMongooseSchema = new Schema<UserDocument>(
     }
 );
 
-UserMongooseSchema.virtual('id').get(function (this: UserDocument) {
-    return this._id.toHexString();
-});
+UserMongooseSchema.plugin(mongooseLeanVirtuals);
 
 export const UserModel = model<UserDocument>('User', UserMongooseSchema);
