@@ -1,6 +1,6 @@
-import {FolderDocument, FolderModel, FolderVersion, IUpdateFolder} from "@src/models/Folder";
+import {FolderDocument, FolderModel, FolderSnapshot, IUpdateFolder} from "@src/models/Folder";
 import {Folder} from "@workspace/types";
-import {FileDocument, FileModel, FileVersion, IUpdateFile} from "@src/models/File";
+import {FileDocument, FileModel, FileSnapshot, IUpdateFile} from "@src/models/File";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
@@ -83,34 +83,55 @@ export const getFolderContents = async (
     };
 };
 
-const checkForUpdate = <T>(oldValue: T | undefined, newValue: T | undefined): T | undefined => {
-    return newValue != null && newValue !== oldValue
-        ? oldValue
-        : undefined;
-};
-
-export const createFileVersion = (file: FileDocument, update: IUpdateFile): FileVersion => {
+export const createFileSnapshot = (
+    file: FileDocument,
+    options: {
+        updatedBy: string;
+        reason?: "create" | "update" | "restore";
+        restoreFromVersion?: number;
+    }
+): FileSnapshot => {
     return {
         version: file.version,
-        name: checkForUpdate(file.name, update.name),
-        contentType: checkForUpdate(file.contentType, update.contentType),
-        size: checkForUpdate(file.size, update.size),
-        updatedAt: file.updatedAt,
-        userName: file.userName,
-        parentFolderId: checkForUpdate(file.parentFolderId, update.parentFolderId),
-        comment: checkForUpdate(file.comment, update.comment),
-        deleted: checkForUpdate(file.deleted, update.deleted),
-        s3Key: checkForUpdate(file.s3Key, update.s3Key)
+        createdAt: new Date(),
+        updatedBy: options.updatedBy,
+        reason: options.reason,
+        restoreFromVersion: options.restoreFromVersion,
+
+        state: {
+            name: file.name,
+            contentType: file.contentType,
+            size: file.size,
+            userName: file.userName,
+            parentFolderId: file.parentFolderId,
+            comment: file.comment,
+            deleted: file.deleted,
+            s3Key: file.s3Key,
+        },
     };
 };
 
-export const createFolderVersion = (folder: FolderDocument, update: IUpdateFolder): FolderVersion => {
+
+export const createFolderSnapshot = (
+    folder: FolderDocument,
+    options: {
+        updatedBy: string;
+        reason?: "create" | "update" | "restore";
+        restoreFromVersion?: number;
+    }
+): FolderSnapshot => {
     return {
         version: folder.version,
-        name: checkForUpdate(folder.name, update.name),
-        updatedAt: folder.updatedAt,
-        userName: folder.userName,
-        parentFolderId: checkForUpdate(folder.parentFolderId, update.parentFolderId),
-        deleted: checkForUpdate(folder.deleted, update.deleted),
+        createdAt: new Date(),
+        updatedBy: options.updatedBy,
+        reason: options.reason,
+        restoreFromVersion: options.restoreFromVersion,
+
+        state: {
+            name: folder.name,
+            parentFolderId: folder.parentFolderId,
+            userName: folder.userName,
+            deleted: folder.deleted,
+        },
     };
 };

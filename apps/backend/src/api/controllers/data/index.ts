@@ -16,39 +16,44 @@ import {FileModel} from "@src/models/File";
 import mongoose from "mongoose";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
-import {createFileVersion, createFolderVersion} from "@src/services/dataService";
+import {createFileSnapshot, createFolderSnapshot} from "@src/services/dataService";
 
 
-const moveItem = async (item: Data, targetFolderId: string, session: mongoose.ClientSession) => {
+const moveItem = async (
+    item: Data,
+    targetFolderId: string,
+    userName: string,
+    session: mongoose.ClientSession
+) => {
     if (isFolder(item)) {
         const folder = await FolderModel.findById(item.id).session(session);
         if (!folder) return;
 
-        const versionBackup = createFolderVersion(folder, {id: item.id, parentFolderId: targetFolderId});
+        folder.parentFolderId = targetFolderId;
+        folder.userName = userName;
+        folder.version++;
 
-        await FolderModel.updateOne(
-            {_id: item.id}, {
-                parentFolderId: targetFolderId,
-                $inc: {version: 1},
-                $push: {previousVersions: versionBackup}
-            },
-            {session});
+        folder.previousVersions.push(
+            createFolderSnapshot(folder, { updatedBy: userName, reason: 'update' })
+        );
 
-    } else if (isFileMeta(item)) {
+        await folder.save({ session });
+        return;
+    }
+
+    if (isFileMeta(item)) {
         const file = await FileModel.findById(item.id).session(session);
         if (!file) return;
 
-        const versionBackup = createFileVersion(file, {id: item.id, parentFolderId: targetFolderId});
+        file.parentFolderId = targetFolderId;
+        file.userName = userName;
+        file.version++;
 
-        await FileModel.updateOne(
-            {_id: item.id},
-            {
-                parentFolderId: targetFolderId,
-                $inc: {version: 1},
-                $push: {previousVersions: versionBackup}
-            },
-            {session}
+        file.previousVersions.push(
+            createFileSnapshot(file, { updatedBy: userName, reason: 'update' })
         );
+
+        await file.save({ session });
     }
 };
 
@@ -77,7 +82,7 @@ dataController.put(
                 for (const item of data) {
                     try {
                         await validateMoveItem(item, targetFolderId);
-                        await moveItem(item, targetFolderId, session);
+                        await moveItem(item, targetFolderId, req.user?.username!, session);
 
                     } catch (error: any) {
                         if (error.code === 11000 && isFileMeta(item)) {

@@ -4,18 +4,24 @@ import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {FileValidationErrorType} from "@workspace/types";
 
 
-export const FileVersionSchema = z.object({
-    version: z.number(),
-    name: z.string().optional(),
-    contentType: z.string().optional(),
+export const FileStateSchema = z.object({
+    name: z.string(),
+    contentType: z.string(),
     size: z.number().optional(),
-    status: z.string().optional(),
-    updatedAt: z.date().optional(),
     userName: z.string().optional(),
-    parentFolderId: z.string().optional(),
+    parentFolderId: z.string(),
     comment: z.string().optional(),
     deleted: z.boolean().optional(),
-    s3Key: z.string().optional()
+    s3Key: z.string().optional(),
+});
+
+export const FileSnapshotSchema = z.object({
+    version: z.number(),
+    createdAt: z.date(),
+    updatedBy: z.string(),
+    state: FileStateSchema,
+    reason: z.enum(["create", "update", "restore"]).optional(),
+    restoreFromVersion: z.number().optional(),
 });
 
 export const FileSchema = z.object({
@@ -48,7 +54,7 @@ export const FileSchema = z.object({
     parentFolderId: z.string().default(ROOT_FOLDER_ID),
     deleted: z.boolean().optional(),
     s3Key: z.string().optional(),
-    previousVersions: z.array(FileVersionSchema).optional(),
+    previousVersions: z.array(FileSnapshotSchema).default([]),
 });
 
 export const UpdateFileSchema = FileSchema
@@ -58,12 +64,38 @@ export const UpdateFileSchema = FileSchema
 
 export type IFile = z.infer<typeof FileSchema>;
 export type IUpdateFile = z.infer<typeof UpdateFileSchema>;
-export type FileVersion = z.infer<typeof FileVersionSchema>;
+export type FileSnapshot = z.infer<typeof FileSnapshotSchema>;
 
 export interface FileDocument extends Omit<IFile, 'id' | 'created'>, Document {
     _id: Types.ObjectId;
     created: Date;
 }
+
+const FileStateMongooseSchema = new Schema(
+    {
+        name: { type: String, required: true },
+        contentType: { type: String, required: true },
+        size: { type: Number },
+        userName: { type: String },
+        parentFolderId: { type: String, required: true, default: ROOT_FOLDER_ID },
+        comment: { type: String },
+        deleted: { type: Boolean, default: false },
+        s3Key: { type: String },
+    },
+    { _id: false }
+);
+
+const FileSnapshotMongooseSchema = new Schema(
+    {
+        version: { type: Number, required: true },
+        createdAt: { type: Date, required: true },
+        updatedBy: { type: String, required: true },
+        reason: { type: String, enum: ["create", "update", "restore"] },
+        restoreFromVersion: { type: Number },
+        state: { type: FileStateMongooseSchema, required: true },
+    },
+    { _id: false }
+);
 
 const FileMongooseSchema = new Schema<FileDocument>(
     {
@@ -78,19 +110,7 @@ const FileMongooseSchema = new Schema<FileDocument>(
         parentFolderId: {type: String, required: true, default: ROOT_FOLDER_ID},
         deleted: {type: Boolean, default: false},
         s3Key: String,
-        previousVersions: [{
-            version: Number,
-            name: String,
-            contentType: String,
-            size: Number,
-            status: String,
-            updatedAt: Date,
-            userName: String,
-            parentFolderId: String,
-            comment: String,
-            deleted: Boolean,
-            s3Key: String,
-        }]
+        previousVersions: { type: [FileSnapshotMongooseSchema], default: [] },
     },
     {
         timestamps: {createdAt: 'created', updatedAt: 'updatedAt'},

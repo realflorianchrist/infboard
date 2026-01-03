@@ -4,7 +4,7 @@ import {StatusCodes} from "http-status-codes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {FolderModel, FolderSchema, UpdateFolderSchema} from "@src/models/Folder";
 import {ErrorType, Folder, FolderValidationErrorType, UpdateFolder} from "@workspace/types";
-import {createFolderVersion, getFolderContents, getFolderTree} from "@src/services/dataService";
+import {createFolderSnapshot, getFolderContents, getFolderTree} from "@src/services/dataService";
 import {ApiError} from "@src/api/utils/apiError";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
@@ -100,6 +100,12 @@ folderController.post(
                     userName: req.user?.username
                 });
 
+                newFolder.previousVersions.push(
+                    createFolderSnapshot(newFolder, {updatedBy: req.user?.username!, reason: 'create'})
+                );
+
+                await newFolder.save();
+
                 return {
                     status: StatusCodes.OK,
                     data: {
@@ -136,17 +142,13 @@ folderController.put(
                     await validateMoveItem(validated, validated.parentFolderId);
                 }
 
-                const versionBackup = createFolderVersion(folder, validated);
-
-                folder.previousVersions = [...(folder.previousVersions ?? []), versionBackup];
-
-                Object.assign(folder, validated);
-
-                if (folder.userName !== req.user?.username) {
-                    Object.assign(folder, {userName: req.user?.username})
-                }
+                Object.assign(folder, validated, {userName: req.user?.username});
 
                 folder.version = (folder.version) + 1;
+
+                folder.previousVersions.push(
+                    createFolderSnapshot(folder, {updatedBy: req.user?.username!, reason: 'update'})
+                );
 
                 await folder.save();
 

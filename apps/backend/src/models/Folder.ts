@@ -3,20 +3,28 @@ import {Document, model, Query, Schema, Types} from 'mongoose';
 import {FolderValidationErrorType} from "@workspace/types";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 
-export const FolderVersionSchema = z.object({
-    version: z.number(),
-    name: z.string().optional(),
-    updatedAt: z.date().optional(),
+export const FolderStateSchema = z.object({
+    name: z.string(),
+    parentFolderId: z.string(),
     userName: z.string().optional(),
-    parentFolderId: z.string().optional(),
     deleted: z.boolean().optional(),
+});
+
+export const FolderSnapshotSchema = z.object({
+    version: z.number(),
+    createdAt: z.date(),
+    updatedBy: z.string(),
+    state: FolderStateSchema,
+    reason: z.enum(["create", "update", "restore"]).optional(),
+    restoreFromVersion: z.number().optional(),
 });
 
 export const FolderSchema = z.object({
     id: z.string().optional(),
+
     name: z.string()
-        .min(1, {message: FolderValidationErrorType.FOLDER_NAME_EMPTY})
-        .max(20, {message: FolderValidationErrorType.FOLDER_NAME_TOO_LONG}),
+        .min(1, { message: FolderValidationErrorType.FOLDER_NAME_EMPTY })
+        .max(20, { message: FolderValidationErrorType.FOLDER_NAME_TOO_LONG }),
 
     version: z.number()
         .default(1)
@@ -29,7 +37,8 @@ export const FolderSchema = z.object({
     updatedAt: z.date().optional(),
     userName: z.string().optional(),
     deleted: z.boolean().optional(),
-    previousVersions: z.array(FolderVersionSchema).optional(),
+
+    previousVersions: z.array(FolderSnapshotSchema).default([]),
 });
 
 export const UpdateFolderSchema = FolderSchema
@@ -39,12 +48,35 @@ export const UpdateFolderSchema = FolderSchema
 
 export type IFolder = z.infer<typeof FolderSchema>;
 export type IUpdateFolder = z.infer<typeof UpdateFolderSchema>;
-export type FolderVersion = z.infer<typeof FolderVersionSchema>;
+export type FolderSnapshot = z.infer<typeof FolderSnapshotSchema>;
 
 export type FolderDocument = Omit<IFolder, 'id' | 'created'> & Document & {
     _id: Types.ObjectId;
     created: Date;
 };
+
+
+const FolderStateMongooseSchema = new Schema(
+    {
+        name: { type: String, required: true },
+        parentFolderId: { type: String, required: true, default: ROOT_FOLDER_ID },
+        userName: { type: String },
+        deleted: { type: Boolean, default: false },
+    },
+    { _id: false }
+);
+
+const FolderSnapshotMongooseSchema = new Schema(
+    {
+        version: { type: Number, required: true },
+        createdAt: { type: Date, required: true },
+        updatedBy: { type: String, required: true },
+        reason: { type: String, enum: ["create", "update", "restore"] },
+        restoreFromVersion: { type: Number },
+        state: { type: FolderStateMongooseSchema, required: true },
+    },
+    { _id: false }
+);
 
 const FolderMongooseSchema = new Schema<FolderDocument>(
     {
@@ -53,14 +85,7 @@ const FolderMongooseSchema = new Schema<FolderDocument>(
         version: {type: Number, required: true, default: 1},
         deleted: {type: Boolean, default: false},
         userName: String,
-        previousVersions: [{
-            version: Number,
-            name: String,
-            updatedAt: Date,
-            userName: String,
-            parentFolderId: String,
-            deleted: Boolean,
-        }]
+        previousVersions: { type: [FolderSnapshotMongooseSchema], default: [] },
     },
     {
         timestamps: {createdAt: 'created', updatedAt: 'updatedAt'},

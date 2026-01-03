@@ -9,8 +9,8 @@ import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
 import {apiRoutes} from "@workspace/routes";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
 import logger from "jet-logger";
-import {createFileVersion} from "@src/services/dataService";
 import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
+import {createFileSnapshot} from "@src/services/dataService";
 
 const fileController: Router = express.Router();
 
@@ -43,7 +43,12 @@ fileController.post(
                     userName: req.user?.username,
                 });
 
+                newFile.previousVersions.push(
+                    createFileSnapshot(newFile, {updatedBy: req.user?.username!, reason: 'create'})
+                );
+
                 newFile.s3Key = generateFileKey(newFile.id);
+
                 await newFile.save();
 
                 const url = await generatePresignedUploadUrl(
@@ -83,17 +88,13 @@ fileController.put(
                     await validateMoveItem(validated, validated.parentFolderId);
                 }
 
-                const versionBackup = createFileVersion(file, validated);
+                Object.assign(file, validated, {userName: req.user?.username});
 
-                file.previousVersions = [...(file.previousVersions ?? []), versionBackup];
+                file.version++;
 
-                Object.assign(file, validated);
-
-                if (file.userName !== req.user?.username) {
-                    Object.assign(file, {userName: req.user?.username})
-                }
-
-                file.version = (file.version ?? 1) + 1;
+                file.previousVersions.push(
+                    createFileSnapshot(file, {updatedBy: req.user?.username!, reason: 'update'})
+                );
 
                 await file.save();
 
