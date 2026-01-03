@@ -35,7 +35,7 @@ export default function LoginForm() {
             onSuccess: async () => {
                 toast.success(successMessage.LOGIN_SUCCESSFUL);
                 // window.location.replace(routes.HOME); // router.push doesn't work here sometimes
-                setTimeout(() => router.replace(routes.HOME), 30);
+                setTimeout(() => router.replace(routes.HOME), 300);
             },
             onError: (e) => {
                 if (e.errorType === ErrorType.VALIDATION_ERROR) {
