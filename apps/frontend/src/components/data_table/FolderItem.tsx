@@ -2,6 +2,7 @@ import React from 'react'
 import {Folder} from "@workspace/types";
 import {IoFolderOutline} from "react-icons/io5";
 import {cn} from "@workspace/ui/lib/utils";
+import {getFileSymbol} from "@/src/utils/getFileSymbol";
 
 type Props = React.ComponentProps<"div"> & {
     folder: Folder
@@ -9,11 +10,11 @@ type Props = React.ComponentProps<"div"> & {
 
 export default function FolderItem({folder, className, ...props}: Props) {
     return (
-        <div className={cn('flex items-center gap-2', className)}
+        <div className={cn('flex items-center', className)}
              {...props}
         >
-            <IoFolderOutline/>
-            <span className="truncate whitespace-nowrap">{folder.name}</span>
+            <span className={'w-6 flex'}><IoFolderOutline/></span>
+            <span className={'truncate whitespace-nowrap'}>{folder.name}</span>
         </div>
     );
 }

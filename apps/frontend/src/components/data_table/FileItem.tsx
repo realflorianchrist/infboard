@@ -9,11 +9,11 @@ type Props = React.ComponentProps<"div"> & {
 
 export default function FileItem({file, className, ...props}: Props) {
     return (
-        <div className={cn('flex items-center gap-2', className)}
+        <div className={cn('flex items-center', className)}
              {...props}
         >
-            {getFileSymbol(file.contentType)}
-                <span className="truncate whitespace-nowrap">{file.name}</span>
+            <span className={'w-6 flex'}>{getFileSymbol(file.contentType)}</span>
+            <span className={'truncate whitespace-nowrap'}>{file.name}</span>
         </div>
     );
 }
