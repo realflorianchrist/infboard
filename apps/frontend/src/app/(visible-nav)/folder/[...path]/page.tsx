@@ -12,6 +12,7 @@ import {DndContext, pointerWithin} from "@dnd-kit/core";
 import DataDragOverlay from "@/src/components/dnd/DataDragOverlay";
 import useDragAndDropSettings from "@/src/hooks/useDnDSettings";
 import {usePersistScroll} from "@/src/hooks/usePersistScroll";
+import {ScrollArea} from "@workspace/ui/components/scroll-area";
 
 export default function FolderPage() {
 
@@ -47,7 +48,10 @@ export default function FolderPage() {
                 </div>
             </div>
 
-            <ResizablePanelGroup direction="horizontal">
+            <ResizablePanelGroup
+                direction={'horizontal'}
+                autoSaveId={'folder-layout'}
+            >
                 <ResizablePanel
                     defaultSize={15}
                     minSize={15}

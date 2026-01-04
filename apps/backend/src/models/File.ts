@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {Document, model, Query, Schema, Types} from 'mongoose';
 import {ROOT_FOLDER_ID} from "@workspace/constants";
-import {FileValidationErrorType} from "@workspace/types";
+import {CHANGE_REASONS, FileValidationErrorType} from "@workspace/types";
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
 
@@ -21,7 +21,7 @@ export const FileSnapshotSchema = z.object({
     createdAt: z.date(),
     updatedBy: z.string(),
     state: FileStateSchema,
-    reason: z.enum(["create", "update", "restore"]).optional(),
+    reason: z.enum(CHANGE_REASONS),
     restoreFromVersion: z.number().optional(),
 });
 
@@ -92,7 +92,7 @@ const FileSnapshotMongooseSchema = new Schema(
         version: { type: Number, required: true },
         createdAt: { type: Date, required: true },
         updatedBy: { type: String, required: true },
-        reason: { type: String, enum: ["create", "update", "restore"] },
+        reason: { type: String, enum: CHANGE_REASONS, required: true },
         restoreFromVersion: { type: Number },
         state: { type: FileStateMongooseSchema, required: true },
     },

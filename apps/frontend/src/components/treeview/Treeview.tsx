@@ -11,7 +11,7 @@ export default function Treeview() {
 
     return (
         <div ref={setNodeRef}
-             className={'h-full'}
+             className={'h-full px-1'}
         >
             {data?.folders.map((folder) => (
                 <TreeNode key={folder.id} folder={folder} />

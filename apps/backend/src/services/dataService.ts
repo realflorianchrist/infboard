@@ -1,5 +1,5 @@
 import {FolderDocument, FolderModel, FolderSnapshot} from "@src/models/Folder";
-import {Folder} from "@workspace/types";
+import {ChangeReason, FileChangeEvent, Folder} from "@workspace/types";
 import {FileDocument, FileModel, FileSnapshot} from "@src/models/File";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
@@ -109,6 +109,30 @@ export const getFolderContents = async (
     };
 };
 
+const checkForUpdate = <T>(oldValue: T | undefined, newValue: T | undefined) => {
+    if (newValue !== oldValue) {
+        return {
+            from: oldValue,
+            to: newValue
+        }
+    }
+};
+
+
+export const reconstructFileHistory = (fileDoc: FileDocument) => {
+    const fileChangeEvents: FileChangeEvent[] =
+        fileDoc.previousVersions.map(v => {
+            return {
+                version: v.version,
+                updatedAt: v.createdAt,
+                updatedBy: v.updatedBy,
+                reason: v.reason,
+                changes: [],
+                restoreFromVersion: v.restoreFromVersion,
+            }
+        })
+};
+
 /**
  * Creates an immutable snapshot of a file document for version history.
  *
@@ -121,10 +145,10 @@ export const getFolderContents = async (
  * - State: a subset of the file properties needed to restore or display history.
  *
  * @param {FileDocument} file The current file document (typically read within a session/transaction).
- * @param {{ updatedBy: string; reason?: "create" | "update" | "restore"; restoreFromVersion?: number; }} options
+ * @param {{ updatedBy: string; reason: ChangeReason; restoreFromVersion?: number; }} options
  * Audit information describing why the snapshot was created.
  * @param {string} options.updatedBy Username or identifier of the user making the change.
- * @param {"create" | "update" | "restore"} [options.reason] Reason for the snapshot.
+ * @param {ChangeReason} options.reason Reason for the snapshot.
  * @param {number} [options.restoreFromVersion] If reason is "restore", the version restored from.
  * @returns {FileSnapshot} A snapshot object containing versioned state for this file.
  */
@@ -132,7 +156,7 @@ export const createFileSnapshot = (
     file: FileDocument,
     options: {
         updatedBy: string;
-        reason?: "create" | "update" | "restore";
+        reason: ChangeReason;
         restoreFromVersion?: number;
     }
 ): FileSnapshot => {
@@ -168,10 +192,10 @@ export const createFileSnapshot = (
  * - State: a subset of folder properties needed to restore or display history.
  *
  * @param {FolderDocument} folder The current folder document (typically read within a session/transaction).
- * @param {{ updatedBy: string; reason?: "create" | "update" | "restore"; restoreFromVersion?: number; }} options
+ * @param {{ updatedBy: string; reason: ChangeReason; restoreFromVersion?: number; }} options
  * Audit information describing why the snapshot was created.
  * @param {string} options.updatedBy Username or identifier of the user making the change.
- * @param {"create" | "update" | "restore"} [options.reason] Reason for the snapshot.
+ * @param {ChangeReason} options.reason Reason for the snapshot.
  * @param {number} [options.restoreFromVersion] If reason is "restore", the version restored from.
  * @returns {FolderSnapshot} A snapshot object containing versioned state for this folder.
  */
@@ -179,7 +203,7 @@ export const createFolderSnapshot = (
     folder: FolderDocument,
     options: {
         updatedBy: string;
-        reason?: "create" | "update" | "restore";
+        reason: ChangeReason;
         restoreFromVersion?: number;
     }
 ): FolderSnapshot => {

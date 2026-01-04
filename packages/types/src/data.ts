@@ -1,5 +1,9 @@
 type Update<T extends { id: string }> = { id: string } & Partial<Omit<T, "id">>;
 
+export const CHANGE_REASONS = ['create', 'update', 'restore'] as const;
+
+export type ChangeReason = typeof CHANGE_REASONS[number];
+
 export type Folder = {
     name: string;
     id: string;
@@ -30,6 +34,21 @@ export type FileMeta = BaseFileMeta & {
     userName?: string;
     downloads?: number;
     deleted?: boolean;
+};
+
+export type FileChangeEvent = {
+    version: number;
+    updatedAt: Date;
+    updatedBy: string;
+    reason: ChangeReason;
+    changes: FileChange[];
+    restoreFromVersion?: number;
+};
+
+export type FileChange<K extends keyof FileMeta = keyof FileMeta> = {
+    field: K;
+    from: FileMeta[K];
+    to: FileMeta[K];
 };
 
 export type Data = Folder | FileMeta;

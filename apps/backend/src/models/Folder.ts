@@ -1,6 +1,6 @@
 import {z} from 'zod';
 import {Document, model, Query, Schema, Types} from 'mongoose';
-import {FolderValidationErrorType} from "@workspace/types";
+import {CHANGE_REASONS, FolderValidationErrorType} from "@workspace/types";
 import {ROOT_FOLDER_ID} from "@workspace/constants";
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 
@@ -16,7 +16,7 @@ export const FolderSnapshotSchema = z.object({
     createdAt: z.date(),
     updatedBy: z.string(),
     state: FolderStateSchema,
-    reason: z.enum(["create", "update", "restore"]).optional(),
+    reason: z.enum(CHANGE_REASONS).optional(),
     restoreFromVersion: z.number().optional(),
 });
 

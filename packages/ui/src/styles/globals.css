@@ -141,7 +141,7 @@
     }
 
     ::-webkit-scrollbar {
-        @apply w-1.5;
+        @apply w-1.5 h-1.5;
     }
 
     ::-webkit-scrollbar-track {
@@ -152,7 +152,8 @@
         @apply bg-accent/60 rounded-full;
     }
 
-    ::-webkit-scrollbar-button {
+    ::-webkit-scrollbar-button,
+    ::-webkit-scrollbar-corner {
         @apply hidden;
     }
 }

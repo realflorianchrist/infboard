@@ -61,7 +61,7 @@ export default function TreeNode(
         && !isSelected(folder.id);
 
     return (
-        <div className={cn("p-1 rounded",)}>
+        <div>
             <DataContextMenu
                 onNewFolder={() => openNewFolderModal(folder.id)}
                 onEdit={() => openRenameFolderModal(folder.id, folder.name, folder.parentFolderId)}
@@ -74,34 +74,37 @@ export default function TreeNode(
                         setDroppableRef(node);
                         setDraggableRef(node);
                     }}
-                    className={`cursor-pointer select-none flex items-center gap-2 text-sm
-                          px-2 py-1 rounded
-                          hover:bg-accent/10
-                          ${path[path.length - 1]?.id === folder.id ? 'bg-accent/20' : ''}
-                          ${canDrop && "bg-accent/40"}
-                        `}
+                    className={cn('cursor-pointer select-none flex items-center gap-2 text-sm',
+                        'px-2 py-2 rounded-md hover:bg-accent/10',
+                        {
+                            'bg-accent/20': (path[path.length - 1]?.id === folder.id),
+                            'bg-accent/40': canDrop
+                        })}
                     style={{paddingLeft: `${depth * 1}rem`}}
                     {...attributes}
                     {...listeners}
                 >
-                    {folder.children?.length ? (
-                        <button
-                            className={`cursor-pointer`}
-                            onClick={() => setIsOpen(!isOpen)}
+                    <div className={'flex items-center'}>
+                        <div className={'w-8 flex justify-center'}>
+                            {folder.children?.length! > 0 && (
+                                <button
+                                    className={'cursor-pointer'}
+                                    onClick={() => setIsOpen(!isOpen)}
+                                >
+                                    {isOpen ? <VscChevronDown /> : <VscChevronRight />}
+                                </button>
+                            )}
+                        </div>
+
+                        <div
+                            className={'flex items-center gap-2 flex-1'}
+                            onClick={() => {
+                                pushFolderById(folder.id);
+                                setSelected([]);
+                            }}
                         >
-                            {isOpen ? <VscChevronDown/> : <VscChevronRight/>}
-                        </button>
-                    ) : (
-                        <div className="w-4"/>
-                    )}
-                    <div
-                        className="flex items-center gap-2 flex-1"
-                        onClick={() => {
-                            pushFolderById(folder.id);
-                            setSelected([]);
-                        }}
-                    >
-                        <FolderItem folder={folder} />
+                            <FolderItem folder={folder} />
+                        </div>
                     </div>
                 </div>
             </DataContextMenu>
