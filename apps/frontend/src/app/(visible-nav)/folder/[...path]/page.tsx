@@ -11,8 +11,6 @@ import ModalAnchor from "@/src/components/modals/ModalAnchor";
 import {DndContext, pointerWithin} from "@dnd-kit/core";
 import DataDragOverlay from "@/src/components/dnd/DataDragOverlay";
 import useDragAndDropSettings from "@/src/hooks/useDnDSettings";
-import {useLayoutEffect, useRef} from "react";
-import {usePathname} from "next/navigation";
 import {usePersistScroll} from "@/src/hooks/usePersistScroll";
 
 export default function FolderPage() {
@@ -30,8 +28,7 @@ export default function FolderPage() {
         handleDragEnd,
     } = useDragAndDropSettings();
 
-    const treeScrollRef = useRef<HTMLDivElement>(null);
-    const { onScroll } = usePersistScroll(treeScrollRef, 'tree-scroll');
+    const persistScroll = usePersistScroll('tree-scroll');
 
     return (
         <DndContext
@@ -62,9 +59,8 @@ export default function FolderPage() {
                         onUploadFile={() => openUploadFileModal()}
                     >
                         <div
-                            ref={treeScrollRef}
                             className={'h-full overflow-auto scrollbar-gutter-stable'}
-                            onScroll={onScroll}
+                            {...persistScroll}
                         >
                             <Treeview/>
                         </div>

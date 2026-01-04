@@ -1,10 +1,8 @@
-import {RefObject, useCallback, useLayoutEffect} from "react";
+import {useCallback, useLayoutEffect, useRef} from "react";
 import {usePathname} from "next/navigation";
 
-export const usePersistScroll = (
-    ref: RefObject<HTMLElement | null>,
-    key: string
-) => {
+export const usePersistScroll = (key: string) => {
+    const ref = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
 
     useLayoutEffect(() => {
@@ -23,13 +21,13 @@ export const usePersistScroll = (
                 el.scrollTop = top;
             });
         });
-    }, [pathname, key, ref]);
+    }, [pathname, key]);
 
     const onScroll = useCallback(() => {
         const el = ref.current;
         if (!el) return;
         sessionStorage.setItem(key, String(el.scrollTop));
-    }, [key, ref]);
+    }, [key]);
 
-    return { onScroll };
+    return { ref, onScroll };
 };
