@@ -2,6 +2,10 @@ import styles from "./Loader.module.css";
 import {createPortal} from "react-dom";
 import {useEffect, useRef, useState} from "react";
 
+
+/**
+ * Props for the Loader component.
+ */
 type Props = {
     active?: boolean;
     isFullScreen?: boolean;
@@ -9,6 +13,13 @@ type Props = {
     minDisplay?: number;
 }
 
+/**
+ * Loader component with delayed appearance and minimum display duration.
+ *
+ * The loader appears after a configurable delay and stays visible for at least
+ * the specified minimum display time. It can optionally render fullscreen
+ * using a portal.
+ */
 export default function Loader(
     {
         active = true,
