@@ -80,68 +80,66 @@ export default function UploadFileModal() {
     }
 
     return (
-        <Dialog open={uploadFileModal.open} onOpenChange={close}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Datei hochladen</DialogTitle>
-                </DialogHeader>
+        <>
+            <Loader active={isUploading} isFullScreen/>
 
-                <ModalBreadCrumbs parentFolderId={uploadFileModal.parentFolderId}/>
+            <Dialog open={uploadFileModal.open} onOpenChange={close}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Datei hochladen</DialogTitle>
+                    </DialogHeader>
 
-                <div
-                    onDrop={handleDrop}
-                    onDragOver={(e) => e.preventDefault()}
-                    className={cn(
-                        'flex flex-col gap-4 border border-dashed border-border rounded-md p-6 cursor-pointer justify-center items-center',
-                        'hover:border-accent transition-colors text-muted-foreground'
-                    )}
-                    onClick={openFilePicker}
-                >
-                    {isUploading ? (
-                        <Loader/>
-                    ) : (
-                        <>
-                            <FiUpload className={'text-4xl'}/>
-                            <p>Datei hierher ziehen oder klicken zum Auswählen</p>
-                            <p className={'text-xs'}>
-                                {file ? `"${file.name}" ausgewählt` : "Keine Datei ausgewählt"}
-                            </p>
-                            <input
-                                ref={inputRef}
-                                type="file"
-                                hidden
-                                onChange={handleFileChange}
-                            />
-                        </>
-                    )}
-                </div>
+                    <ModalBreadCrumbs parentFolderId={uploadFileModal.parentFolderId}/>
 
-                <Input
-                    placeholder="Kommentar"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                />
-
-                {errorMessage.length > 0 && (
-                    <ul className={'text-error whitespace-normal break-all'}>
-                        {errorMessage.map((error, i) => (
-                            <li key={i}>{error}</li>
-                        ))}
-                    </ul>
-                )}
-
-                <div className={"flex justify-end gap-2 mt-4"}>
-                    <Button variant="secondary" onClick={close}>
-                        Abbrechen
-                    </Button>
-                    <Button
-                        onClick={handleUploadFile}
-                        disabled={!file || isUploading}
+                    <div
+                        onDrop={handleDrop}
+                        onDragOver={(e) => e.preventDefault()}
+                        className={cn(
+                            'flex flex-col gap-4 border border-dashed border-border rounded-md p-6 cursor-pointer justify-center items-center',
+                            'hover:border-accent transition-colors text-muted-foreground'
+                        )}
+                        onClick={openFilePicker}
                     >
-                        Hochladen
-                    </Button>
-                </div>
-            </DialogContent>
-        </Dialog>
-    )
+                        <FiUpload className={'text-4xl'}/>
+                        <p>Datei hierher ziehen oder klicken zum Auswählen</p>
+                        <p className={'text-xs'}>
+                            {file ? `"${file.name}" ausgewählt` : "Keine Datei ausgewählt"}
+                        </p>
+                        <input
+                            ref={inputRef}
+                            type="file"
+                            hidden
+                            onChange={handleFileChange}
+                        />
+                    </div>
+
+                    <Input
+                        placeholder="Kommentar"
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                    />
+
+                    {errorMessage.length > 0 && (
+                        <ul className={'text-error whitespace-normal break-all'}>
+                            {errorMessage.map((error, i) => (
+                                <li key={i}>{error}</li>
+                            ))}
+                        </ul>
+                    )}
+
+                    <div className={"flex justify-end gap-2 mt-4"}>
+                        <Button variant="secondary" onClick={close}>
+                            Abbrechen
+                        </Button>
+                        <Button
+                            onClick={handleUploadFile}
+                            disabled={!file || isUploading}
+                        >
+                            Hochladen
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
 }

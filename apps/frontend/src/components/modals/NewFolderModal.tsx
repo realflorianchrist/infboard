@@ -47,36 +47,36 @@ export default function NewFolderModal() {
     }
 
     return (
-        <Dialog open={newFolderModal.open} onOpenChange={close}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Neuer Ordner</DialogTitle>
-                </DialogHeader>
+        <>
+            <Loader active={savingFolder} isFullScreen/>
 
-                <ModalBreadCrumbs parentFolderId={newFolderModal.parentFolderId} />
+            <Dialog open={newFolderModal.open} onOpenChange={close}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Neuer Ordner</DialogTitle>
+                    </DialogHeader>
 
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    handleAddNewFolder();
-                }}>
-                    <Input
-                        autoFocus
-                        placeholder="Ordnername"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
+                    <ModalBreadCrumbs parentFolderId={newFolderModal.parentFolderId}/>
 
-                    {errorMessage.length > 0 && (
-                        <ul className={'text-error whitespace-normal break-all pt-2'}>
-                            {errorMessage.map((error, i) => (
-                                <li key={i}>{error}</li>
-                            ))}
-                        </ul>
-                    )}
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        handleAddNewFolder();
+                    }}>
+                        <Input
+                            autoFocus
+                            placeholder="Ordnername"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
 
-                    {savingFolder ? (
-                        <Loader/>
-                    ) : (
+                        {errorMessage.length > 0 && (
+                            <ul className={'text-error whitespace-normal break-all pt-2'}>
+                                {errorMessage.map((error, i) => (
+                                    <li key={i}>{error}</li>
+                                ))}
+                            </ul>
+                        )}
+
                         <div className="flex justify-end gap-2 mt-4">
                             <Button type="button" variant="secondary" onClick={close}>
                                 Abbrechen
@@ -87,9 +87,9 @@ export default function NewFolderModal() {
                                 Speichern
                             </Button>
                         </div>
-                    )}
-                </form>
-            </DialogContent>
-        </Dialog>
-    )
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
 }

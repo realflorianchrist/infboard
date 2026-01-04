@@ -187,7 +187,7 @@ export default function DataTable() {
 
     return (
         <>
-            {(isDownloading || loadingData) && <Loader isFullScreen={true}/>}
+            <Loader active={isDownloading || loadingData} isFullScreen={true}/>
 
             <div ref={setNodeRef}
                  className={'flex min-h-full min-w-full'}

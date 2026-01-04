@@ -66,7 +66,7 @@ export default function RegisterForm() {
 
     return (
         <>
-            {registerMutation.isPending && <Loader isFullScreen={true}/>}
+            <Loader active={registerMutation.isPending} isFullScreen={true}/>
 
             <AuthForm
                 onSubmit={handleRegister}

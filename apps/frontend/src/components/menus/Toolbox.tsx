@@ -44,7 +44,7 @@ export default function Toolbox() {
 
     return (
         <>
-            {isDownloading && <Loader isFullScreen={true}/>}
+            <Loader active={isDownloading} isFullScreen={true}/>
 
             <div className={'flex gap-2'}>
                 {isSelectMode && !isDragging && (

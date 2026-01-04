@@ -67,7 +67,7 @@ export default function LoginForm() {
 
     return (
         <>
-            {loginMutation.isPending && <Loader isFullScreen={true}/>}
+            <Loader active={loginMutation.isPending} isFullScreen={true}/>
 
             <AuthForm
                 onSubmit={handleLogin}
