@@ -19,14 +19,14 @@ export default function Header({hideNavigation}: {hideNavigation?: boolean}) {
                     </div>
 
                     <UserSheetMenu>
-                        <div className={'flex items-center justify-center gap-4 cursor-pointer'}>
+                        <span className={'flex items-center justify-center gap-4 cursor-pointer'}>
                             {userDetails().getUserInfos()?.username}
                             <Avatar>
                                 <AvatarFallback>
                                     <IoIosPerson className={'w-10 h-10'}/>
                                 </AvatarFallback>
                             </Avatar>
-                        </div>
+                        </span>
                     </UserSheetMenu>
                 </>
             )}

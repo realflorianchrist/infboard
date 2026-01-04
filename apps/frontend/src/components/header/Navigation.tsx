@@ -32,12 +32,12 @@ export default function Navigation() {
                     Dashboard
                 </Link>
                 <Separator orientation="vertical"/>
-                <div
+                <button
                     onClick={() => setIsSearching(true)}
                     className={`cursor-pointer ${path === routes.SEARCH ? 'text-accent' : ''}`}
                 >
                     Suchen
-                </div>
+                </button>
             </div>
 
             <div
