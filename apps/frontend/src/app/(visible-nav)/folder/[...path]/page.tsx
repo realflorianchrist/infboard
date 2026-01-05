@@ -63,7 +63,7 @@ export default function FolderPage() {
                         onUploadFile={() => openUploadFileModal()}
                     >
                         <div
-                            className={'h-full overflow-auto scrollbar-gutter-stable'}
+                            className={'h-full overflow-auto scrollbar-gutter-stable mr-1'}
                             {...persistScroll}
                         >
                             <Treeview/>
