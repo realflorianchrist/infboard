@@ -1,5 +1,3 @@
-import {JetLogger} from "jet-logger";
-
-const logger = new JetLogger();
+import logger from "jet-logger";
 
 export default logger;

@@ -10,18 +10,18 @@
   },
   "dependencies": {
     "@workspace/types": "workspace:*",
-    "handlebars": "^4.7.8",
+    "handlebars": "^4.7.9",
     "html-to-text": "^9.0.5",
-    "jet-logger": "^2.0.1",
-    "mjml": "^4.15.3",
-    "nodemailer": "^7.0.5"
+    "jet-logger": "^2.2.3",
+    "mjml": "^4.18.0",
+    "nodemailer": "^7.0.13"
   },
   "devDependencies": {
     "@types/html-to-text": "^9.0.4",
     "@types/mjml": "^4.7.4",
-    "@types/nodemailer": "^7.0.0",
-    "typescript": "^5.8.3",
-    "tsx": "^4.20.5"
+    "@types/nodemailer": "^7.0.11",
+    "tsx": "^4.22.0",
+    "typescript": "^5.9.3"
   },
   "exports": {
     ".": {
