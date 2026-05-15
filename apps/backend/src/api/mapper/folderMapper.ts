@@ -1,5 +1,5 @@
-import {FolderDocument} from "@src/models/Folder";
-import {Folder} from "@workspace/types";
+import { FolderDocument } from "@src/models/Folder";
+import { Folder } from "@workspace/types";
 
 export const folderDocumentToFolderMapper = (folderDocument: FolderDocument): Folder => {
     return {
@@ -10,5 +10,5 @@ export const folderDocumentToFolderMapper = (folderDocument: FolderDocument): Fo
         version: folderDocument.version,
         updatedAt: folderDocument.updatedAt,
         userName: folderDocument.userName,
-    }
-}
+    };
+};

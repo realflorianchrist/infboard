@@ -1,12 +1,12 @@
-import {User} from "@workspace/types";
-import {renderMjmlTemplate} from "./renderMjmlTemplate";
-import {NodemailerLike} from "./transport";
+import { User } from "@workspace/types";
+import { renderMjmlTemplate } from "./renderMjmlTemplate";
+import { NodemailerLike } from "./transport";
 
 export const createMailService = (transport: NodemailerLike) => {
 
     const sendEMailConfirmEMail = async (user: User, confirmLink: string) => {
 
-        const {html} = renderMjmlTemplate('emailConfirmTemplate', {...user, confirmLink});
+        const { html } = await renderMjmlTemplate('emailConfirmTemplate', { ...user, confirmLink });
 
         await transport.sendMail({
             to: user.email,
@@ -17,5 +17,5 @@ export const createMailService = (transport: NodemailerLike) => {
 
     return {
         sendEmailConfirmEMail: sendEMailConfirmEMail,
-    }
+    };
 };

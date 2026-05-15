@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
-import {fileURLToPath} from "url";
+import { fileURLToPath } from "url";
 import Handlebars from "handlebars";
 import mjml2html from "mjml";
-import {htmlToText} from "html-to-text";
+import { htmlToText } from "html-to-text";
 import logger from "./utils/logger";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,9 +12,9 @@ const TPL_DIR = path.join(__dirname, "templates");
 
 const readTpl = (name: string) => {
     return fs.readFileSync(path.join(TPL_DIR, name), "utf8");
-}
+};
 
-export const renderMjmlTemplate = (
+export const renderMjmlTemplate = async (
     templateName: string,
     vars: Record<string, any> = {}
 ) => {
@@ -25,9 +25,9 @@ export const renderMjmlTemplate = (
 
     const bodyHtml = Handlebars.compile(body)(vars);
 
-    const mjml = Handlebars.compile(base)({...vars, year: year, children: bodyHtml});
+    const mjml = Handlebars.compile(base)({ ...vars, year: year, children: bodyHtml });
 
-    const {html, errors} = mjml2html(mjml, {
+    const { html, errors } = await mjml2html(mjml, {
         validationLevel: "soft",
         filePath: TPL_DIR,
     });
@@ -36,6 +36,6 @@ export const renderMjmlTemplate = (
         logger.err(errors.map(e => e.formattedMessage).join("\n"));
     }
 
-    const text = htmlToText(html, {wordwrap: 80});
-    return {html, text};
-}
+    const text = htmlToText(html, { wordwrap: 80 });
+    return { html, text };
+};
