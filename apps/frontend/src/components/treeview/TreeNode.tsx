@@ -1,14 +1,14 @@
-'use client'
-import {Folder, FolderPathSegment} from "@workspace/types";
-import {useEffect, useState} from "react";
-import {VscChevronDown, VscChevronRight} from "react-icons/vsc";
-import {IoFolderOutline} from "react-icons/io5";
+'use client';
+import { Folder, FolderPathSegment } from "@workspace/types";
+import { useEffect, useState } from "react";
+import { VscChevronDown, VscChevronRight } from "react-icons/vsc";
+import { IoFolderOutline } from "react-icons/io5";
 import DataContextMenu from "@/src/components/menus/DataContextMenu";
-import {useContextMenu} from "@/src/providers/ContextMenuProvider";
-import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {useDraggable, useDroppable} from "@dnd-kit/core";
-import {cn} from "@workspace/ui/lib/utils";
-import {useHasSelectedAncestor} from "@/src/hooks/useHasSelectedAncestor";
+import { useContextMenu } from "@/src/providers/ContextMenuProvider";
+import { useFolderPath } from "@/src/hooks/useFolderPath";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
+import { cn } from "@workspace/ui/lib/utils";
+import { useHasSelectedAncestor } from "@/src/hooks/useHasSelectedAncestor";
 import FolderItem from "@/src/components/data_table/FolderItem";
 
 export default function TreeNode(
@@ -22,7 +22,7 @@ export default function TreeNode(
         parents?: FolderPathSegment[];
     }) {
 
-    const {path, pushFolderById} = useFolderPath();
+    const { path, pushFolderById } = useFolderPath();
     const {
         openNewFolderModal,
         openRenameFolderModal,
@@ -31,15 +31,15 @@ export default function TreeNode(
         openUploadFileModal,
     } = useContextMenu();
 
-    const {attributes, listeners, setNodeRef: setDraggableRef} = useDraggable({
+    const { attributes, listeners, setNodeRef: setDraggableRef } = useDraggable({
         id: `${folder.id}-treeNode`,
         data: folder
     });
-    const {setNodeRef: setDroppableRef, isOver, node: dropNode, active} = useDroppable({id: `${folder.id}-treeNode`});
+    const { setNodeRef: setDroppableRef, isOver, node: dropNode, active } = useDroppable({ id: `${folder.id}-treeNode` });
 
-    const {isSelected, selected} = useContextMenu();
+    const { isSelected, selected } = useContextMenu();
 
-    const {hasSelectedAncestor} = useHasSelectedAncestor();
+    const { hasSelectedAncestor } = useHasSelectedAncestor();
 
     const [isOpen, setIsOpen] = useState(() => {
         if (typeof window !== 'undefined') {
@@ -80,7 +80,11 @@ export default function TreeNode(
                             'bg-accent/20': (path[path.length - 1]?.id === folder.id),
                             'bg-accent/40': canDrop
                         })}
-                    style={{paddingLeft: `${depth * 1}rem`}}
+                    style={{ paddingLeft: `${depth * 1}rem` }}
+                    onClick={() => {
+                        pushFolderById(folder.id);
+                        setSelected([]);
+                    }}
                     {...attributes}
                     {...listeners}
                 >
@@ -89,7 +93,10 @@ export default function TreeNode(
                             {folder.children?.length! > 0 && (
                                 <button
                                     className={'cursor-pointer'}
-                                    onClick={() => setIsOpen(!isOpen)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setIsOpen(!isOpen);
+                                    }}
                                 >
                                     {isOpen ? <VscChevronDown /> : <VscChevronRight />}
                                 </button>
@@ -98,10 +105,6 @@ export default function TreeNode(
 
                         <div
                             className={'flex items-center gap-2 flex-1'}
-                            onClick={() => {
-                                pushFolderById(folder.id);
-                                setSelected([]);
-                            }}
                         >
                             <FolderItem folder={folder} />
                         </div>
@@ -115,7 +118,7 @@ export default function TreeNode(
                         key={child.id}
                         folder={child}
                         depth={depth + 1}
-                        parents={[...parents, {id: folder.id, name: folder.name}]}
+                        parents={[...parents, { id: folder.id, name: folder.name }]}
                     />
                 ))}
 
