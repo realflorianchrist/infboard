@@ -56,6 +56,8 @@ deploy-dev:
     - ssh $DEPLOY_USER@$DEPLOY_HOST 'mkdir -p ~/.docker'
     - echo "$DOCKER_AUTH_CONFIG" | ssh $DEPLOY_USER@$DEPLOY_HOST 'cat > ~/.docker/config.json'
     - scp docker-compose.dev.yml $DEPLOY_USER@$DEPLOY_HOST:/opt/infboard/docker-compose.yml
+    - ssh $DEPLOY_USER@$DEPLOY_HOST 'mkdir -p /opt/infboard/frontend'
+    - scp nginx.config $DEPLOY_USER@$DEPLOY_HOST:/opt/infboard/frontend/nginx.config
     - ssh $DEPLOY_USER@$DEPLOY_HOST '
       cd /opt/infboard &&
       docker compose pull &&
