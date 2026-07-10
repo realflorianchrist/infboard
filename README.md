@@ -129,9 +129,12 @@ mongodb:27017
 You can set this using the Mongo shell (`mongosh`):
 
 ```js
-var cfg = rs.conf();
-cfg.members[0].host = "mongodb:27017";
-rs.reconfig(cfg, { force: true });
+rs.initiate({
+  _id: "rs0",
+  members: [
+    { _id: 0, host: "mongodb:27017" }
+  ]
+})
 ```
 
 > Mixing `localhost` and container names (like `mongodb`) is **not allowed** in replica set configurations.

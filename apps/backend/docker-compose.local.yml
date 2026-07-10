@@ -2,8 +2,8 @@ services:
   minio:
     image: quay.io/minio/minio
     ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # Web UI
+      - "9000:9000" # S3 API
+      - "9001:9001" # Web UI
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -18,16 +18,27 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGODB_REPLICA_SET_MODE: primary
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: infboard_db
-    command: [ "--replSet", "rs0", "--keyFile", "/etc/mongo-keyfile", "--bind_ip_all"]
+
+      MONGO_REPLICA_SET_NAME: rs0
+      MONGO_REPLICA_HOST: mongodb:27017
+
+      MONGO_APP_DATABASE: infboard_db
+      MONGO_APP_USERNAME: infboardUser
+      MONGO_APP_PASSWORD: password
+    command: [ "--replSet", "rs0", "--keyFile", "/etc/mongo-keyfile", "--bind_ip_all" ]
     volumes:
       - mongo_data:/data/db
       - mongo_config:/data/configdb
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./init-replica.js:/scripts/init-replica.js:ro
       - ./mongo-keyfile:/etc/mongo-keyfile:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "mongosh --port 27017 -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin /scripts/init-replica.js --quiet" ]
+      interval: 5s
+      timeout: 30s
+      retries: 30
 
   mongo-express:
     image: mongo-express

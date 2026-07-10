@@ -1,10 +1,14 @@
-import {FolderDocument} from "@src/models/Folder";
-import {Folder} from "@workspace/types/data";
+import { FolderDocument } from "@src/models/Folder";
+import { Folder } from "@workspace/types";
 
 export const folderDocumentToFolderMapper = (folderDocument: FolderDocument): Folder => {
     return {
-        id: folderDocument._id.toString(),
+        id: folderDocument.id,
         name: folderDocument.name,
-        parentFolderId: folderDocument.parentFolderId?.toString(),
-    }
-}
+        parentFolderId: folderDocument.parentFolderId,
+        deleted: folderDocument.deleted,
+        version: folderDocument.version,
+        updatedAt: folderDocument.updatedAt,
+        userName: folderDocument.userName,
+    };
+};

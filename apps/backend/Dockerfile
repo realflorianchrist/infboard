@@ -3,8 +3,6 @@ FROM node:${NODE_VERSION}-alpine AS base
 
 WORKDIR /app
 
-ENV CI=true
-
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/backend/package.json ./apps/backend/
 
@@ -25,19 +23,19 @@ FROM node:${NODE_VERSION}-alpine AS production
 
 WORKDIR /app
 
-ENV CI=true
-
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/backend/package.json ./apps/backend/
+COPY packages ./packages
 
 RUN corepack enable  \
     && corepack prepare pnpm@latest --activate  \
     && pnpm install --filter backend... --prod
 
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+COPY --from=builder /app/packages ./packages
 
 WORKDIR /app/apps/backend
 
 EXPOSE 8080
 
-CMD ["node", "-r", "dotenv/config", "dist/apps/backend/src/index.js"]
+CMD ["pnpm", "start"]

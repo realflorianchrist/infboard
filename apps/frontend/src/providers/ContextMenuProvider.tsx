@@ -1,8 +1,11 @@
 'use client'
-import {createContext, useContext, useEffect, useState} from "react";
-import {Folder, FileMeta, Data} from "@workspace/types/data";
+import {createContext, useContext, useState} from "react";
+import {Data} from "@workspace/types";
 
 type ContextMenuContextType = {
+    includeDeleted: boolean,
+    setIncludeDeleted: (v: boolean) => void,
+
     newFolderModal: { open: boolean; parentFolderId?: string; };
     openNewFolderModal: (parentFolderId?: string) => void;
     closeNewFolderModal: () => void;
@@ -27,6 +30,14 @@ type ContextMenuContextType = {
     openUploadFileModal: (parentFolderId?: string) => void;
     closeUploadFileModal: () => void;
 
+    folderVersionHistoryModal: { open: boolean; folderId?: string };
+    openFolderVersionHistoryModal: (folderId?: string) => void;
+    closeFolderVersionHistoryModal: () => void;
+
+    fileVersionHistoryModal: { open: boolean; fileId?: string };
+    openFileVersionHistoryModal: (fileId?: string) => void;
+    closeFileVersionHistoryModal: () => void;
+
     isSelectMode: boolean;
     selected: Data[];
     isSelected: (id: string) => boolean;
@@ -38,6 +49,8 @@ type ContextMenuContextType = {
 const ContextMenuContext = createContext<ContextMenuContextType | undefined>(undefined);
 
 export const ContextMenuProvider = ({children}: { children: React.ReactNode }) => {
+    const [includeDeleted, setIncludeDeleted] = useState<boolean>(false);
+
     const [newFolderModal, setNewFolderModal] = useState<{ open: boolean; parentFolderId?: string; }>({
         open: false,
     });
@@ -78,6 +91,14 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
         open: false,
     });
 
+    const [folderVersionHistoryModal, setFolderVersionHistoryModal] = useState<{ open: boolean; folderId?: string }>({
+        open: false,
+    });
+
+    const [fileVersionHistoryModal, setFileVersionHistoryModal] = useState<{ open: boolean; fileId?: string }>({
+        open: false,
+    });
+
     const [selected, setSelected] = useState<Data[]>([]);
 
     const isSelectMode = selected.length > 0;
@@ -85,16 +106,28 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
     return (
         <ContextMenuContext.Provider
             value={{
+                includeDeleted,
+                setIncludeDeleted,
                 newFolderModal,
                 openNewFolderModal: (id) => setNewFolderModal({open: true, parentFolderId: id}),
                 closeNewFolderModal: () => setNewFolderModal({open: false, parentFolderId: undefined}),
 
                 renameFolderModal,
-                openRenameFolderModal: (id, folderName, parentFolderId) => setRenameFolderModal({open: true, folderId: id, folderName, parentFolderId}),
+                openRenameFolderModal: (id, folderName, parentFolderId) => setRenameFolderModal({
+                    open: true,
+                    folderId: id,
+                    folderName,
+                    parentFolderId
+                }),
                 closeRenameFolderModal: () => setRenameFolderModal({open: false, folderId: null, folderName: null}),
 
                 editFileModal,
-                openEditFileModal: (id, fileName, parentFolderId) => setEditFileModal({open: true, fileId: id, fileName, parentFolderId}),
+                openEditFileModal: (id, fileName, parentFolderId) => setEditFileModal({
+                    open: true,
+                    fileId: id,
+                    fileName,
+                    parentFolderId
+                }),
                 closeEditFileModal: () => setEditFileModal({open: false, fileId: null, fileName: null}),
 
                 deleteFolderModal,
@@ -108,6 +141,14 @@ export const ContextMenuProvider = ({children}: { children: React.ReactNode }) =
                 uploadFileModal,
                 openUploadFileModal: (id) => setUploadFileModal({open: true, parentFolderId: id}),
                 closeUploadFileModal: () => setUploadFileModal({open: false, parentFolderId: undefined}),
+
+                folderVersionHistoryModal,
+                openFolderVersionHistoryModal: (id) => setFolderVersionHistoryModal({open: true, folderId: id}),
+                closeFolderVersionHistoryModal: () => setFolderVersionHistoryModal({open: false, folderId: undefined}),
+
+                fileVersionHistoryModal,
+                openFileVersionHistoryModal: (id) => setFileVersionHistoryModal({open: true, fileId: id}),
+                closeFileVersionHistoryModal: () => setFileVersionHistoryModal({open: false, fileId: undefined}),
 
                 isSelectMode,
                 selected,

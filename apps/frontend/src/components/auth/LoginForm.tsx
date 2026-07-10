@@ -1,19 +1,20 @@
 'use client'
-import {Avatar, AvatarFallback} from "@workspace/ui/components/avatar";
-import {IoIosPerson} from "react-icons/io";
 import {Input} from "@workspace/ui/components/input";
 import {Label} from "@workspace/ui/components/label";
 import {Button} from "@workspace/ui/components/button";
 import {FormEvent, useState} from "react";
 import {z} from "zod";
-import {AuthUser} from "@workspace/types/user";
+import {AuthUser, ErrorType} from "@workspace/types";
 import {useLogin} from "@/src/api/hooks/api_hooks/authHooks";
 import {toast} from "sonner";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import routes from "@/src/constants/routes";
 import {useRouter} from "next/navigation";
-import {ErrorType} from "@workspace/types/apiResponses";
 import {successMessage} from "@/src/utils/getSuccessMessage";
+import AuthForm from "@/src/components/auth/form/AuthForm";
+import FormItem from "@/src/components/auth/form/FormItem";
+import PasswordInputField from "@/src/components/auth/form/PasswordInputField";
+import Loader from "@/src/components/loader/Loader";
 
 
 export default function LoginForm() {
@@ -31,9 +32,10 @@ export default function LoginForm() {
         const user = getAuthUser();
 
         loginMutation.mutate({user}, {
-            onSuccess: () => {
+            onSuccess: async () => {
                 toast.success(successMessage.LOGIN_SUCCESSFUL);
-                window.location.replace(routes.HOME);
+                window.location.replace(routes.HOME); // router.push doesn't work here sometimes
+                // router.replace(routes.HOME);
             },
             onError: (e) => {
                 if (e.errorType === ErrorType.VALIDATION_ERROR) {
@@ -64,16 +66,13 @@ export default function LoginForm() {
     }
 
     return (
-        <div className={'flex flex-col items-center justify-center gap-10'}>
-            <Avatar className={'w-20 h-20'}>
-                <AvatarFallback>
-                    <IoIosPerson className={'w-14 h-14'}/>
-                </AvatarFallback>
-            </Avatar>
-            <form className={'flex flex-col gap-4 w-full'}
-                  onSubmit={handleLogin}
+        <>
+            <Loader active={loginMutation.isPending} isFullScreen={true}/>
+
+            <AuthForm
+                onSubmit={handleLogin}
             >
-                <div className={'input-group'}>
+                <FormItem>
                     <Label htmlFor='username'>Username / E-Mail</Label>
                     <Input
                         id='username'
@@ -81,17 +80,17 @@ export default function LoginForm() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
-                </div>
-                <div className={'input-group'}>
+                </FormItem>
+
+                <FormItem>
                     <Label htmlFor='password'>Passwort</Label>
-                    <Input
-                        id='password'
-                        type='password'
+                    <PasswordInputField
+                        id={'password'}
                         required={true}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
-                </div>
+                </FormItem>
 
                 <div className={'flex flex-col items-start'}>
                     <Button
@@ -103,9 +102,11 @@ export default function LoginForm() {
                         Passwort vergessen?
                     </Button>
                 </div>
+
                 <Button type={'submit'}>
                     Login
                 </Button>
+
                 <div className={'flex self-center items-center text-sm gap-3'}>
                     <p>Noch kein Account?</p>
                     <Button
@@ -117,7 +118,7 @@ export default function LoginForm() {
                         Registrieren
                     </Button>
                 </div>
-            </form>
-        </div>
+            </AuthForm>
+        </>
     );
 }

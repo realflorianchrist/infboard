@@ -4,14 +4,13 @@ import JSZip from "jszip";
 import {saveAs} from "file-saver";
 import {toast} from "sonner";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType, FileMeta} from "@workspace/types";
 import findFolderPathById from "@/src/utils/findFolderPathById";
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {FileMeta} from "@workspace/types/data";
 import {useState} from "react";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {apiRoutes} from "@workspace/routes";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {useQueryClient} from "@tanstack/react-query";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 
@@ -23,8 +22,7 @@ export const useDownloadFile = () => {
 
     const {setSelected} = useContextMenu();
 
-    const {path} = useFolderPath();
-    const parentFolderId = path[path.length - 1]?.id;
+    const {path, folderId} = useFolderPath();
 
     const {data: folderData} = useGetAllFolders();
 
@@ -56,7 +54,7 @@ export const useDownloadFile = () => {
 
             await queryClient.invalidateQueries({
                 queryKey: [
-                    `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
+                    `${apiRoutes.folders.base}${apiRoutes.folders.byId(folderId)}`,
                 ],
             });
 
@@ -83,6 +81,7 @@ export const useDownloadFile = () => {
         setIsDownloading(true);
         const zip = new JSZip();
 
+        // todo: also handle subfolders and check for empty folders
         try {
             const childrenUrls = (
                 await Promise.all(
@@ -122,7 +121,7 @@ export const useDownloadFile = () => {
 
             await queryClient.invalidateQueries({
                 queryKey: [
-                    `${ApiRoutes.folders.base}${ApiRoutes.folders.byId(parentFolderId ?? ROOT_FOLDER_ID)}`,
+                    `${apiRoutes.folders.base}${apiRoutes.folders.byId(folderId)}`,
                 ],
             });
 

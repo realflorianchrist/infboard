@@ -1,10 +1,10 @@
-import {ErrorType} from "@workspace/types/apiResponses";
 import {
+    ErrorType,
     FileValidationErrorType,
     FolderValidationErrorType,
     UserValidationErrorType,
     ValidationErrorType
-} from "@workspace/types/modelValidation";
+} from "@workspace/types";
 
 
 const validationErrorMessages: Record<ValidationErrorType, string> = {
@@ -23,7 +23,9 @@ const validationErrorMessages: Record<ValidationErrorType, string> = {
     [FolderValidationErrorType.FOLDER_NAME_EMPTY]: "Der Ordnername darf nicht leer sein.",
     [FolderValidationErrorType.FOLDER_NAME_TOO_LONG]: "Der Ordnername ist zu lang.",
     [FolderValidationErrorType.FOLDER_ALREADY_EXISTS]: "Ein Ordner mit diesem Namen existiert bereits.",
+    [FolderValidationErrorType.FOLDER_EXISTS_DELETED]: "Ein Ordner mit diesem Namen existiert bereits und ist gelöscht.",
     [FolderValidationErrorType.CANNOT_MOVE_INTO_SELF_OR_DESCENDANT]: "Ein Ordner kann nicht in sich selbst oder einen Nachfahren verschoben werden.",
+    [FolderValidationErrorType.FOLDER_VERSION_NEGATIVE]: "Die Version darf nicht negativ sein.",
 
     // File errors
     [FileValidationErrorType.FILE_NAME_EMPTY]: "Der Dateiname darf nicht leer sein.",
@@ -40,14 +42,26 @@ const generalErrorMessages: Record<ErrorType, string> = {
     [ErrorType.BAD_CREDENTIALS]: "Username oder Passwort ungültig.",
     [ErrorType.TOKEN_MISSING]: "Authentifizierungstoken fehlt.",
     [ErrorType.TOKEN_INVALID]: "Authentifizierungstoken ist ungültig oder abgelaufen.",
+    [ErrorType.EMAIL_ALREADY_VERIFIED]: "E-Mail ist bereits betätigt.",
+    [ErrorType.EMAIL_VERIFICATION_FAILED]: "Beim verifizieren ist ein fehler aufgetreten.",
+    [ErrorType.EMAIL_NOT_VERIFIED]: "E-Mail noch nicht betätigt.",
+
+    [ErrorType.SEND_EMAIL_FAILED]: "Beim senden der E-Mail ist ein fehler aufgetreten.",
+
     [ErrorType.FOLDER_NOT_FOUND]: "Der Ordner wurde nicht gefunden.",
+
     [ErrorType.FILE_NOT_FOUND]: "Die Datei wurde nicht gefunden.",
+
     [ErrorType.VALIDATION_ERROR]: "Die Eingabe enthält ungültige Werte.",
+
     [ErrorType.ALREADY_EXISTS]: "Das Objekt existiert bereits.",
+
     [ErrorType.API_ERROR]: "Es ist ein Fehler bei der Anfrage aufgetreten.",
     [ErrorType.INTERNAL_SERVER_ERROR]: "Ein interner Serverfehler ist aufgetreten.",
+
     [ErrorType.UPLOAD_ERROR]: "Beim upload ist ein Fehler aufgetreten.",
     [ErrorType.DOWNLOAD_ERROR]: "Beim download ist ein Fehler aufgetreten.",
+
     [ErrorType.FOLDER_DELETION_FAILED]: "Beim löschen des Ordners ist ein Fehler aufgetreten.",
     [ErrorType.FILE_DELETION_FAILED]: "Beim löschen der Datei ist ein Fehler aufgetreten."
 };

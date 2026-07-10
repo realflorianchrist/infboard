@@ -2,7 +2,7 @@
 import TreeNode from "@/src/components/treeview/TreeNode";
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import {useDroppable} from "@dnd-kit/core";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 
 export default function Treeview() {
     const {data} = useGetAllFolders();
@@ -11,7 +11,7 @@ export default function Treeview() {
 
     return (
         <div ref={setNodeRef}
-             className={'h-full'}
+             className={'h-full px-1'}
         >
             {data?.folders.map((folder) => (
                 <TreeNode key={folder.id} folder={folder} />

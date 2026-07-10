@@ -1,9 +1,9 @@
 import {usePathname, useRouter} from 'next/navigation';
-import {FolderPath} from '@workspace/types/folderPath';
+import {Folder, FolderPath} from '@workspace/types';
 import {useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
 import routes from "@/src/constants/routes";
-import {Folder} from "@workspace/types/data";
 import findFolderPathById from "@/src/utils/findFolderPathById";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 
 export const useFolderPath = () => {
     const pathname = usePathname();
@@ -13,14 +13,11 @@ export const useFolderPath = () => {
     if (!folderTree) {
         return {
             path: [],
-            setPath: () => {
-            },
-            pushFolderById: () => {
-            },
-            popFolder: () => {
-            },
-            resetPath: () => {
-            },
+            setPath: () => {},
+            pushFolderById: () => {},
+            popFolder: () => {},
+            resetPath: () => {},
+            folderId: ROOT_FOLDER_ID,
         };
     }
 
@@ -69,11 +66,14 @@ export const useFolderPath = () => {
         router.push(routes.HOME);
     };
 
+    const getFolderId = () => path[path.length - 1]?.id ?? ROOT_FOLDER_ID;
+
     return {
         path,
         setPath,
         pushFolderById,
         popFolder,
         resetPath,
+        folderId: getFolderId(),
     };
 };

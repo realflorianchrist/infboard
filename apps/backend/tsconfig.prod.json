@@ -1,21 +1,25 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "outDir": "dist",
-    "removeComments": true,
+    "rootDir": "./src",
     "sourceMap": false,
-    "esModuleInterop": true,
-    "isolatedModules": false
+    "removeComments": true,
+    "declaration": false,
+    "declarationMap": false,
+    "paths": {
+      "@src/*": [
+        "./src/*"
+      ]
+    }
   },
   "include": [
-    "src/**/*.ts",
+    "./src/**/*.ts"
   ],
   "exclude": [
-    "tests",
-    "src/public/",
-    "scripts",
-    "eslint.config.js",
-    "vitest.config.js"
+    "./tests",
+    "./src/public/",
+    "./scripts",
+    "./eslint.config.js",
+    "./vitest.config.mjs"
   ]
 }

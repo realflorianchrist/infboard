@@ -8,10 +8,9 @@ import {
     useReactTable
 } from "@tanstack/react-table";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@workspace/ui/components/table";
-import {useEffect, useState} from "react";
+import {useMemo, useState} from "react";
 import {IoFolderOutline} from "react-icons/io5";
 import {useGetFolderDataById} from "@/src/api/hooks/api_hooks/folderHooks";
-import DataContextMenu from "@/src/components/menus/DataContextMenu";
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {Checkbox} from "@workspace/ui/components/checkbox";
@@ -19,12 +18,14 @@ import {cn} from "@workspace/ui/lib/utils";
 import {useDownloadFile} from "@/src/hooks/useDownloadFile";
 import {formatDate, formatFileSize} from "@/src/utils/formatter";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
 import {getFileSymbol} from "@/src/utils/getFileSymbol";
 import Loader from "@/src/components/loader/Loader";
-import DnDTableRow from "@/src/components/dnd/DnDTableRow";
 import {useDroppable} from "@dnd-kit/core";
-import {Data, isFolder} from "@workspace/types/data";
+import {Data, isFolder} from "@workspace/types";
+import FolderRow from "@/src/components/data_table/FolderRow";
+import FileRow from "@/src/components/data_table/FileRow";
+import FolderItem from "@/src/components/data_table/FolderItem";
+import FileItem from "@/src/components/data_table/FileItem";
 
 export type RowData = Data & {
     select?: boolean;
@@ -32,46 +33,29 @@ export type RowData = Data & {
 
 
 export default function DataTable() {
-    const {path, pushFolderById} = useFolderPath();
+    const {folderId} = useFolderPath();
     const {
-        openNewFolderModal,
-        openRenameFolderModal,
-        openDeleteFolderModal,
-        openDeleteFileModal,
         selected,
         isSelected,
         setSelected,
         addSelected,
         removeSelected,
-        openUploadFileModal,
-        openEditFileModal,
     } = useContextMenu();
 
-    const {downloadFile, isDownloading} = useDownloadFile();
+    const {isDownloading} = useDownloadFile();
 
     const columnHelper = createColumnHelper<RowData>();
 
-    const [data, setData] = useState<RowData[]>([]);
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const folderId = path[path.length - 1]?.id ?? ROOT_FOLDER_ID;
-    const {data: result} = useGetFolderDataById(folderId);
+    const {data: result, isPending: loadingData} = useGetFolderDataById(folderId);
     const {setNodeRef} = useDroppable({id: folderId});
 
-    useEffect(() => {
-        const currentFolder = result?.folder;
-        if (!currentFolder) return;
-
-        const folderRows: RowData[] = (currentFolder.children ?? []);
-
-        const fileRows: RowData[] = (currentFolder.files ?? []).map((file) => ({
-            ...file,
-            updatedAt: formatDate(file.updatedAt),
-            size: formatFileSize(file.size),
-        }));
-
-        setData([...folderRows, ...fileRows]);
-    }, [result]);
+    const rows = useMemo<RowData[]>(() => {
+        const f = result?.folder;
+        if (!f) return [];
+        return [...(f.children ?? []), ...(f.files ?? [])];
+    }, [result?.folder?.children, result?.folder?.files]);
 
 
     const columns = [
@@ -135,9 +119,8 @@ export default function DataTable() {
                         title={row.name}
                     >
                         <span className="shrink-0">
-                            {isFolder(row) ? <IoFolderOutline/> : getFileSymbol(row.contentType)}
+                            {isFolder(row) ? <FolderItem folder={row}/> : <FileItem file={row}/>}
                         </span>
-                        <span className="truncate whitespace-nowrap">{row.name}</span>
                     </div>
                 );
             },
@@ -147,6 +130,7 @@ export default function DataTable() {
         }),
         columnHelper.accessor('updatedAt', {
             header: () => <span className={'truncate'}>Geändert</span>,
+            cell: (info) => formatDate(info.row.original.updatedAt),
             size: 150,
             minSize: 75,
             maxSize: 300,
@@ -175,8 +159,13 @@ export default function DataTable() {
             minSize: 75,
             maxSize: 300,
         }),
-        columnHelper.accessor('size', {
-            header: () => <span className={'truncate'}>Grösse</span>,
+        columnHelper.accessor(row => (isFolder(row) ? undefined : row.size), {
+            id: "size",
+            header: () => <span className="truncate">Grösse</span>,
+            cell: (info) => {
+                const value = info.getValue();
+                return value == null ? "" : formatFileSize(value);
+            },
             size: 100,
             minSize: 75,
             maxSize: 300,
@@ -184,7 +173,7 @@ export default function DataTable() {
     ];
 
     const table = useReactTable({
-        data,
+        data: rows,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -198,7 +187,7 @@ export default function DataTable() {
 
     return (
         <>
-            {isDownloading && <Loader isFullScreen={true}/>}
+            <Loader active={isDownloading || loadingData} isFullScreen={true}/>
 
             <div ref={setNodeRef}
                  className={'flex min-h-full min-w-full'}
@@ -211,24 +200,26 @@ export default function DataTable() {
                                     <TableHead
                                         key={header.id}
                                         style={{width: header.getSize()}}
-                                        className="group select-none"
+                                        className={'group relative select-none'}
                                     >
-                                        <div className="flex gap-2 items-center cursor-pointer"
+                                        <div className={'flex gap-2 items-center cursor-pointer'}
                                              onClick={header.column.getToggleSortingHandler()}
                                         >
                                             {!header.isPlaceholder && (
                                                 <>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
-                                                    <span className="w-4 flex justify-center">
-                                                {{
-                                                    asc: <FaCaretUp/>,
-                                                    desc: <FaCaretDown/>,
-                                                }[header.column.getIsSorted() as string] ?? (
-                                                    <span className="invisible">
-                                                        <FaCaretUp/>
+                                                    <span className={'w-4 flex justify-center'}>
+                                                {
+                                                    {
+                                                        asc: <FaCaretUp/>,
+                                                        desc: <FaCaretDown/>,
+                                                    }
+                                                        [header.column.getIsSorted() as string] ?? (
+                                                        <span className={'invisible'}>
+                                                            <FaCaretUp/>
+                                                        </span>
+                                                    )}
                                                     </span>
-                                                )}
-                                            </span>
                                                 </>
                                             )}
                                         </div>
@@ -259,51 +250,27 @@ export default function DataTable() {
                                 ))
 
                             const rowClassNames = cn('cursor-pointer select-none group', {
-                                'bg-accent/10 hover:bg-accent/20': isSelected(item.id)
+                                'bg-accent/10 hover:bg-accent/20': isSelected(item.id),
+                                'opacity-50': item.deleted
                             });
 
                             return (
                                 isFolder(item) ? (
-                                    <DataContextMenu
+                                    <FolderRow
                                         key={row.id}
-                                        onNewFolder={() => openNewFolderModal(item.id)}
-                                        onEdit={() => openRenameFolderModal(item.id, item.name, item.parentFolderId)}
-                                        onDelete={() => openDeleteFolderModal(item.id)}
-                                        onSelect={() => {
-                                            const folder = result?.folder.children?.find(f => f.id === item.id);
-                                            if (!isSelected(item.id) && folder) addSelected(folder);
-                                        }}
-                                        onUploadFile={() => openUploadFileModal(item.id)}
+                                        folder={item}
+                                        className={rowClassNames}
                                     >
-                                        <DnDTableRow
-                                            data={item}
-                                            className={rowClassNames}
-                                            onDoubleClick={() => {
-                                                pushFolderById(item.id);
-                                                setSelected([]);
-                                            }}
-                                        >
-                                            {Cells()}
-                                        </DnDTableRow>
-                                    </DataContextMenu>
+                                        {Cells()}
+                                    </FolderRow>
                                 ) : (
-                                    <DataContextMenu
+                                    <FileRow
                                         key={row.id}
-                                        onEdit={() => openEditFileModal(item.id, item.name, item.parentFolderId)}
-                                        onDelete={() => openDeleteFileModal(item.id)}
-                                        onSelect={() => {
-                                            const file = result?.folder.files?.find(f => f.id === item.id);
-                                            if (!isSelected(item.id) && file) addSelected(file);
-                                        }}
+                                        file={item}
+                                        className={rowClassNames}
                                     >
-                                        <DnDTableRow
-                                            data={item}
-                                            className={rowClassNames}
-                                            onDoubleClick={() => downloadFile(item.id)}
-                                        >
-                                            {Cells()}
-                                        </DnDTableRow>
-                                    </DataContextMenu>
+                                        {Cells()}
+                                    </FileRow>
                                 )
                             );
                         })}

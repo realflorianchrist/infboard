@@ -1,9 +1,9 @@
 import {FileDocument} from "@src/models/File";
-import {FileMeta} from "@workspace/types/data";
+import {FileMeta} from "@workspace/types";
 
 export const fileDocumentToFileMapper = (fileDocument: FileDocument, url?: string): FileMeta => {
     return {
-        id: fileDocument._id.toString(),
+        id: fileDocument.id,
         contentType: fileDocument.contentType,
         name: fileDocument.name,
         url: url,
@@ -14,5 +14,6 @@ export const fileDocumentToFileMapper = (fileDocument: FileDocument, url?: strin
         comment: fileDocument.comment,
         downloads: fileDocument.downloads,
         parentFolderId: fileDocument.parentFolderId,
-    }
-}
+        deleted: fileDocument.deleted
+    };
+};

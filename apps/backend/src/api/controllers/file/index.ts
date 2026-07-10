@@ -1,22 +1,22 @@
 import express, {Router} from "express";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {FileMeta, NewFileInput, UpdateFileMeta} from "@workspace/types/data";
+import {ErrorType, FileMeta, FileValidationErrorType, NewFileInput, UpdateFileMeta} from "@workspace/types";
 import {StatusCodes} from "http-status-codes";
 import {ApiError} from "@src/api/utils/apiError";
-import {ErrorType} from "@workspace/types/apiResponses";
-import {FileModel, FileSchema, FileVersion, UpdateFileSchema} from "@src/models/File";
+import {FileModel, FileSchema, UpdateFileSchema} from "@src/models/File";
 import {generateFileKey, generatePresignedDownloadUrl, generatePresignedUploadUrl} from "@src/services/s3Service";
 import {fileDocumentToFileMapper} from "@src/api/mapper/fileMapper";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {apiRoutes} from "@workspace/routes";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
-import {FileValidationErrorType} from "@workspace/types/modelValidation";
 import logger from "jet-logger";
+import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
+import {createFileSnapshot} from "@src/services/dataService";
 
 const fileController: Router = express.Router();
 
 
 fileController.post(
-    ApiRoutes.files.add,
+    apiRoutes.files.add,
     handleRequest<{ file: NewFileInput }, { file: FileMeta }>(
         async (req) => {
 
@@ -24,7 +24,8 @@ fileController.post(
 
             const {name, parentFolderId} = validated;
 
-            const existing = await FileModel.findOne({name, parentFolderId});
+            const existing = await FileModel.findOne({name, parentFolderId})
+                .setOptions({includeDeleted: true});
 
             if (existing) {
                 throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
@@ -43,6 +44,11 @@ fileController.post(
                 });
 
                 newFile.s3Key = generateFileKey(newFile.id);
+
+                newFile.previousVersions.push(
+                    createFileSnapshot(newFile, {updatedBy: req.user?.username!, reason: 'create'})
+                );
+
                 await newFile.save();
 
                 const url = await generatePresignedUploadUrl(
@@ -64,32 +70,31 @@ fileController.post(
 
 
 fileController.put(
-    ApiRoutes.files.update,
+    apiRoutes.files.update,
     handleRequest<{ file: UpdateFileMeta }, { file: FileMeta }>(
         async (req) => {
 
             const validated = validateOrThrow(UpdateFileSchema, req.body.file);
 
-            const file = await FileModel.findById(validated.id);
-            if (!file) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            const file = await FileModel.findById(validated.id)
+                .setOptions({includeDeleted: true});
+
+            if (!file) {
+                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
+            }
 
             try {
-                const versionBackup: FileVersion = {
-                    version: file.version ?? 1,
-                    name: file.name,
-                    contentType: file.contentType,
-                    size: file.size,
-                    updatedAt: file.updatedAt,
-                    userName: file.userName,
-                    parentFolderId: file.parentFolderId,
-                    comment: file.comment,
-                };
+                if (validated.parentFolderId) {
+                    await validateMoveItem(validated, validated.parentFolderId);
+                }
 
-                file.previousVersions = [...(file.previousVersions ?? []), versionBackup];
+                Object.assign(file, validated, {userName: req.user?.username});
 
-                Object.assign(file, validated);
+                file.version++;
 
-                file.version = (file.version ?? 1) + 1;
+                file.previousVersions.push(
+                    createFileSnapshot(file, {updatedBy: req.user?.username!, reason: 'update'})
+                );
 
                 await file.save();
 
@@ -100,31 +105,33 @@ fileController.put(
                     }
                 };
 
-            } catch (error) {
+            } catch (error: any) {
                 if (error.code === 11000) {
                     throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
                         validationErrors: [FileValidationErrorType.FILE_ALREADY_EXISTS]
                     });
                 }
 
-                throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, ErrorType.INTERNAL_SERVER_ERROR);
+                throw new error;
             }
         }
     )
 );
 
 fileController.put(
-    ApiRoutes.files.downloadUrlById(':id'),
-    handleRequest<{}, { url: string, file: FileMeta }, { id: string }>(
+    apiRoutes.files.downloadUrlById(':id'),
+    handleRequest<{}, { url: string, file: FileMeta }, { id: string }, { includeDeleted: string }>(
         async (req) => {
 
             const {id} = req.params;
+            const includeDeleted = req.query.includeDeleted === 'true';
+            const findOpts = includeDeleted ? {includeDeleted: true} : undefined;
 
             const fileDoc = await FileModel.findByIdAndUpdate(
                 id,
                 {$inc: {downloads: 1}},
                 {timestamps: false, new: true},
-            );
+            ).setOptions(findOpts ?? {});
 
             if (!fileDoc) {
                 throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
@@ -149,17 +156,21 @@ fileController.put(
 );
 
 fileController.put(
-    ApiRoutes.files.downloadUrlsByFolderId(':folderId'),
-    handleRequest<{}, { url: string, file: FileMeta }[], { folderId: string }>(
+    apiRoutes.files.downloadUrlsByFolderId(':folderId'),
+    handleRequest<{}, { url: string, file: FileMeta }[], { folderId: string }, { includeDeleted: string }>(
         async (req) => {
 
             const {folderId} = req.params;
+            const includeDeleted = req.query.includeDeleted === 'true';
+            const findOpts = includeDeleted ? {includeDeleted: true} : undefined;
 
-            const fileDocs = await FileModel.find({parentFolderId: folderId});
+            const fileDocs = await FileModel.find({parentFolderId: folderId})
+                .setOptions(findOpts ?? {});
 
             await Promise.all(
                 fileDocs.map((file) =>
                     FileModel.findByIdAndUpdate(file._id, {$inc: {downloads: 1}}, {timestamps: false})
+                        .setOptions(findOpts ?? {})
                 )
             );
 
@@ -191,34 +202,7 @@ fileController.put(
 );
 
 fileController.put(
-    ApiRoutes.files.delete(':id'),
-    handleRequest<{}, { file: FileMeta }, { id: string }>(
-        async (req) => {
-
-            const {id} = req.params;
-
-            const fileDoc = await FileModel.findByIdAndUpdate(
-                id,
-                {$set: {deleted: true}},
-                {timestamps: false}
-            );
-
-            if (!fileDoc) {
-                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FILE_NOT_FOUND);
-            }
-
-            return {
-                status: StatusCodes.OK,
-                data: {
-                    file: fileDocumentToFileMapper(fileDoc)
-                },
-            };
-        }
-    )
-);
-
-fileController.put(
-    ApiRoutes.files.rollback(':id'),
+    apiRoutes.files.rollback(':id'),
     handleRequest<{}, { file: FileMeta }, { id: string }>(
         async (req) => {
 

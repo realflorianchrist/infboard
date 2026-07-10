@@ -1,22 +1,21 @@
 import express, {Router} from "express";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {apiRoutes} from "@workspace/routes";
 import {StatusCodes} from "http-status-codes";
 import {handleRequest} from "@src/api/utils/handleRequest";
 import {FolderModel, FolderSchema, UpdateFolderSchema} from "@src/models/Folder";
-import {Folder, UpdateFolder} from "@workspace/types/data";
-import {getFolderContents, getFolderTree} from "@src/services/dataService";
+import {ErrorType, Folder, FolderValidationErrorType, UpdateFolder} from "@workspace/types";
+import {createFolderSnapshot, getFolderContents, getFolderTree} from "@src/services/dataService";
 import {ApiError} from "@src/api/utils/apiError";
-import {ErrorType} from "@workspace/types/apiResponses";
 import {validateOrThrow} from "@src/api/utils/validateOrThrow";
-import {FolderValidationErrorType} from "@workspace/types/modelValidation";
 import {folderDocumentToFolderMapper} from "@src/api/mapper/folderMapper";
-import {isDescendant} from "@src/api/controllers/utils/moveDataValidation";
+import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
+import {FileModel} from "@src/models/File";
 
 
 const folderController: Router = express.Router();
 
 folderController.get(
-    ApiRoutes.folders.all,
+    apiRoutes.folders.all,
     handleRequest<{}, { folders: Folder[] }>(
         async () => {
 
@@ -31,12 +30,13 @@ folderController.get(
 );
 
 folderController.get(
-    ApiRoutes.folders.byId(':id'),
-    handleRequest<{}, { folder: Folder }, { id: string }>(
+    apiRoutes.folders.byId(':id'),
+    handleRequest<{}, { folder: Folder }, { id: string }, { includeDeleted: string }>(
         async (req) => {
             const {id} = req.params;
+            const includeDeleted = req.query.includeDeleted === 'true';
 
-            const folder = await getFolderContents(id);
+            const folder = await getFolderContents(id, includeDeleted);
 
             if (!folder) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.FOLDER_NOT_FOUND);
 
@@ -48,8 +48,30 @@ folderController.get(
     )
 );
 
+folderController.get(
+    apiRoutes.folders.hasDeletedFiles(':id'),
+    handleRequest<{}, { hasDeletedFiles: boolean }, { id: string }>(
+        async (req) => {
+            const {id} = req.params;
+
+            const count = await FileModel.countDocuments({
+                parentFolderId: id,
+                deleted: true,
+            });
+            const hasDeletedFiles = count > 0;
+
+            return {
+                status: StatusCodes.OK,
+                data: {
+                    hasDeletedFiles: hasDeletedFiles,
+                },
+            }
+        }
+    )
+);
+
 folderController.post(
-    ApiRoutes.folders.add,
+    apiRoutes.folders.add,
     handleRequest<{ name: string, parentFolderId?: string }, { folder: Folder }>(
         async (req) => {
 
@@ -57,16 +79,32 @@ folderController.post(
 
             const {name, parentFolderId} = validated;
 
-            const existing = await FolderModel.findOne({name, parentFolderId});
+            const existing = await FolderModel.findOne({name, parentFolderId})
+                .setOptions({includeDeleted: true});
 
             if (existing) {
-                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
-                    validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS]
-                });
+                if (existing.deleted) {
+                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                        validationErrors: [FolderValidationErrorType.FOLDER_EXISTS_DELETED]
+                    });
+                } else {
+                    throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
+                        validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS]
+                    });
+                }
             }
 
             try {
-                const newFolder = await FolderModel.create(validated);
+                const newFolder = await FolderModel.create({
+                    ...validated,
+                    userName: req.user?.username
+                });
+
+                newFolder.previousVersions.push(
+                    createFolderSnapshot(newFolder, {updatedBy: req.user?.username!, reason: 'create'})
+                );
+
+                await newFolder.save();
 
                 return {
                     status: StatusCodes.OK,
@@ -82,7 +120,7 @@ folderController.post(
 );
 
 folderController.put(
-    ApiRoutes.folders.update,
+    apiRoutes.folders.update,
     handleRequest<{ folder: UpdateFolder }, { folder: Folder }>(
         async (req) => {
 
@@ -94,36 +132,34 @@ folderController.put(
                 });
             }
 
-            if (!validated.parentFolderId) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
+            const folder = await FolderModel.findById(validated.id)
+                .setOptions({includeDeleted: true});
 
-            const isInvalid = await isDescendant(validated.id, validated.parentFolderId);
-            if (isInvalid) {
-                throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
-                    validationErrors: [FolderValidationErrorType.CANNOT_MOVE_INTO_SELF_OR_DESCENDANT],
-                });
-            }
+            if (!folder) throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
 
             try {
-                const updatedFolder = await FolderModel.findByIdAndUpdate(
-                    validated.id,
-                    {...validated},
-                    {
-                        new: true,
-                        runValidators: true,
-                    }
+                if (validated.parentFolderId) {
+                    await validateMoveItem(validated, validated.parentFolderId);
+                }
+
+                Object.assign(folder, validated, {userName: req.user?.username});
+
+                folder.version = (folder.version) + 1;
+
+                folder.previousVersions.push(
+                    createFolderSnapshot(folder, {updatedBy: req.user?.username!, reason: 'update'})
                 );
 
-                if (!updatedFolder) {
-                    throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
-                }
+                await folder.save();
 
                 return {
                     status: StatusCodes.OK,
                     data: {
-                        folder: folderDocumentToFolderMapper(updatedFolder),
+                        folder: folderDocumentToFolderMapper(folder),
                     },
                 };
-            } catch (error) {
+
+            } catch (error: any) {
                 if (error.code === 11000) {
                     throw new ApiError(StatusCodes.BAD_REQUEST, ErrorType.VALIDATION_ERROR, {
                         validationErrors: [FolderValidationErrorType.FOLDER_ALREADY_EXISTS],
@@ -135,30 +171,5 @@ folderController.put(
         }
     )
 );
-
-folderController.delete(
-    ApiRoutes.folders.delete(':id'),
-    handleRequest<{ id: string }, { folder: Folder }>(
-        async (req) => {
-
-            const {id} = req.body;
-
-            const folder = await FolderModel.findById(id);
-            if (!folder) {
-                throw new ApiError(StatusCodes.NOT_FOUND, ErrorType.NOT_FOUND);
-            }
-
-            await folder.deleteOne();
-
-            return {
-                status: StatusCodes.OK,
-                data: {
-                    folder: folderDocumentToFolderMapper(folder),
-                },
-            };
-        }
-    )
-);
-
 
 export default folderController;

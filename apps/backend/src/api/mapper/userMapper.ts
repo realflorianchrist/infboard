@@ -1,9 +1,9 @@
-import {User} from "@workspace/types/user";
 import {UserDocument} from "@src/models/User";
+import {User} from "@workspace/types";
 
-export const userDocumentToFileMapper = (userDocument: UserDocument): User => {
+export const userDocumentToUserMapper = (userDocument: UserDocument): User => {
     return {
-        id: userDocument._id.toString(),
+        id: userDocument.id,
         username: userDocument.username,
         email: userDocument.email,
     }

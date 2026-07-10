@@ -2,20 +2,13 @@
 import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@workspace/ui/components/dialog";
 import {Button} from "@workspace/ui/components/button";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbList,
-    BreadcrumbSeparator
-} from "@workspace/ui/components/breadcrumb";
-import {Fragment, useState} from "react";
+import {useState} from "react";
 import {Input} from "@workspace/ui/components/input";
-import {useCreateFolder, useGetAllFolders} from "@/src/api/hooks/api_hooks/folderHooks";
-import findFolderPathById from "@/src/utils/findFolderPathById";
+import {useCreateFolder} from "@/src/api/hooks/api_hooks/folderHooks";
 import Loader from "../loader/Loader";
 import {getErrorMessage} from "@/src/utils/getErrorMessage";
 import ModalBreadCrumbs from "@/src/components/modals/ModalBreadCrumbs";
-import {ErrorType} from "@workspace/types/apiResponses";
+import {ErrorType} from "@workspace/types";
 import {toast} from "sonner";
 import {successMessage} from "@/src/utils/getSuccessMessage";
 
@@ -54,36 +47,36 @@ export default function NewFolderModal() {
     }
 
     return (
-        <Dialog open={newFolderModal.open} onOpenChange={close}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Neuer Ordner</DialogTitle>
-                </DialogHeader>
+        <>
+            <Loader active={savingFolder} isFullScreen/>
 
-                <ModalBreadCrumbs parentFolderId={newFolderModal.parentFolderId} />
+            <Dialog open={newFolderModal.open} onOpenChange={close}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Neuer Ordner</DialogTitle>
+                    </DialogHeader>
 
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    handleAddNewFolder();
-                }}>
-                    <Input
-                        autoFocus
-                        placeholder="Ordnername"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
+                    <ModalBreadCrumbs parentFolderId={newFolderModal.parentFolderId}/>
 
-                    {errorMessage.length > 0 && (
-                        <ul className={'text-error whitespace-normal break-all pt-2'}>
-                            {errorMessage.map((error, i) => (
-                                <li key={i}>{error}</li>
-                            ))}
-                        </ul>
-                    )}
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        handleAddNewFolder();
+                    }}>
+                        <Input
+                            autoFocus
+                            placeholder="Ordnername"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
 
-                    {savingFolder ? (
-                        <Loader/>
-                    ) : (
+                        {errorMessage.length > 0 && (
+                            <ul className={'text-error whitespace-normal break-all pt-2'}>
+                                {errorMessage.map((error, i) => (
+                                    <li key={i}>{error}</li>
+                                ))}
+                            </ul>
+                        )}
+
                         <div className="flex justify-end gap-2 mt-4">
                             <Button type="button" variant="secondary" onClick={close}>
                                 Abbrechen
@@ -94,9 +87,9 @@ export default function NewFolderModal() {
                                 Speichern
                             </Button>
                         </div>
-                    )}
-                </form>
-            </DialogContent>
-        </Dialog>
-    )
+                    </form>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
 }

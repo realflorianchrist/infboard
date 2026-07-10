@@ -1,0 +1,20 @@
+import React from 'react'
+import {Folder} from "@workspace/types";
+import {IoFolderOutline} from "react-icons/io5";
+import {cn} from "@workspace/ui/lib/utils";
+import {getFileSymbol} from "@/src/utils/getFileSymbol";
+
+type Props = React.ComponentProps<"span"> & {
+    folder: Folder
+};
+
+export default function FolderItem({folder, className, ...props}: Props) {
+    return (
+        <span className={cn('flex items-center', className)}
+             {...props}
+        >
+            <span className={'w-6 flex'}><IoFolderOutline/></span>
+            <span className={'truncate whitespace-nowrap'}>{folder.name}</span>
+        </span>
+    );
+}

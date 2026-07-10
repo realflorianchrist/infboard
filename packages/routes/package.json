@@ -1,6 +1,16 @@
 {
   "name": "@workspace/routes",
   "version": "1.0.0",
-  "main": "apiRoutes.ts",
-  "license": "MIT"
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  }
 }

@@ -44,6 +44,11 @@ export const useApiQuery = <TApiResponse, TTransformed = TApiResponse>(
                 ...requestOptions,
                 method: HttpMethod.GET,
             }),
+
+        staleTime: 60_000,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+        gcTime: 30 * 60_000,
         ...queryOptions,
     });
 };
@@ -98,8 +103,8 @@ export const useApiMutation = <TApiResponse, TRequestBody>(
                 body: requestBody ? JSON.stringify(requestBody) : undefined,
             })
         },
-        onSuccess: (data, variables, context) => {
-            mutationOptions?.onSuccess?.(data, variables, context);
+        onSuccess: (data, variables, onMutateResult, context) => {
+            mutationOptions?.onSuccess?.(data, variables, onMutateResult, context);
 
             const paths =
                 typeof invalidatePaths === "function"
@@ -108,7 +113,9 @@ export const useApiMutation = <TApiResponse, TRequestBody>(
 
             // Automatically invalidate queries after a successful mutation
             paths?.forEach((key) => {
-                queryClient.invalidateQueries({queryKey: [key]});
+                queryClient.invalidateQueries({
+                    queryKey: [key],
+                });
             });
         },
         ...mutationOptions,

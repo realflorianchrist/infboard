@@ -1,13 +1,22 @@
 {
   "extends": "@workspace/typescript-config/nextjs.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@workspace/ui/*": ["../../packages/ui/src/*"],
-      "@workspace/types/*": ["../../packages/types/*"],
-      "@workspace/routes/*": ["../../packages/routes/*"],
-      "@workspace/constants/*": ["../../packages/constants/*"],
+      "@/*": [
+        "./*"
+      ],
+      "@workspace/ui/*": [
+        "../../packages/ui/src/*"
+      ],
+      "@workspace/types": [
+        "../../packages/types/src/index.ts"
+      ],
+      "@workspace/routes": [
+        "../../packages/routes/src/index.ts"
+      ],
+      "@workspace/constants": [
+        "../../packages/constants/src/index.ts"
+      ],
     },
     "plugins": [
       {
@@ -22,5 +31,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

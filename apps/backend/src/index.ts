@@ -1,16 +1,17 @@
-import logger from 'jet-logger';
 import cors from "cors";
 import express from 'express';
-import {NodeEnvs} from '@src/constants';
+import {NodeEnvs} from '@src/constants/NodeEnvs';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import {connectDB} from "@src/config/database";
 import {ensureBucketExists} from "@src/config/s3";
 import dispatcher from "@src/api/controllers/dispatcher";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {apiRoutes} from "@workspace/routes";
 import {ENV} from "@src/constants/ENV";
 import {errorHandler} from "@src/middleware/errorHandler";
 import {authenticateToken} from "@src/middleware/authMiddleware";
+import logger from "@src/utils/logger";
+import {requireUser} from "@src/middleware/requireUser";
 
 
 // **** Configuration **** //
@@ -50,7 +51,13 @@ app.use((req, res, next) => {
     }
     return authenticateToken(req, res, next);
 });
-app.use(ApiRoutes.base, dispatcher);
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api/open')) {
+        return next();
+    }
+    return requireUser(req, res, next);
+});
+app.use(apiRoutes.base, dispatcher);
 app.use(errorHandler);
 
 

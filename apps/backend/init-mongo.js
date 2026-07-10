@@ -1,26 +1,24 @@
-db = db.getSiblingDB("admin");
+const databaseName = process.env.MONGO_APP_DATABASE;
+const databaseUser = process.env.MONGO_APP_USERNAME;
+const databasePassword = process.env.MONGO_APP_PASSWORD;
 
-try {
-    rs.initiate({
-        _id: "rs0",
-        members: [{ _id: 0, host: "localhost:27017" }]
-    });
-    print("Replica set 'rs0' initiated.");
-} catch (e) {
-    print("Replica set already initiated or error occurred:", e.message);
-}
+db = db.getSiblingDB(databaseName);
 
-db = db.getSiblingDB("infboard_db");
+print(`DB '${databaseName}' selected`);
 
-print("DB 'infboard_db' created");
-
-if (!db.getUser("infboardUser")) {
+if (!db.getUser(databaseUser)) {
     db.createUser({
-        user: "infboardUser",
-        pwd: "password",
-        roles: [{ role: "readWrite", db: "infboard_db" }]
+        user: databaseUser,
+        pwd: databasePassword,
+        roles: [
+            {
+                role: "readWrite",
+                db: databaseName
+            }
+        ]
     });
-    print("User 'infboardUser' created with readWrite permissions.");
+
+    print(`User '${databaseUser}' created with readWrite permissions.`);
 } else {
-    print("User 'infboardUser' already exists.");
+    print(`User '${databaseUser}' already exists.`);
 }

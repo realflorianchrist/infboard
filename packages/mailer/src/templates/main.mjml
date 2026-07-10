@@ -1,0 +1,33 @@
+<mjml>
+    <mj-head>
+        <mj-include path="./styles/styles.css" type="css"/>
+    </mj-head>
+    <mj-body css-class="body">
+        <mj-section css-class="header">
+            <mj-column>
+                <mj-text>
+                    infboard.ch
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        {{{children}}}
+
+        <mj-section>
+            <mj-column>
+                <mj-text>
+                    Freundliche Grüsse <br>
+                    Dein Infboard-Team
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        <mj-section>
+            <mj-column>
+                <mj-text>
+                    &copy; Infboard {{year}}
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

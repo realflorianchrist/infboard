@@ -1,48 +1,59 @@
 import express, {Router} from "express";
-import {ApiRoutes} from "@workspace/routes/apiRoutes";
+import {apiRoutes} from "@workspace/routes";
 import {handleRequest} from "@src/api/utils/handleRequest";
-import {Data, isFileMeta, isFolder} from "@workspace/types/data";
+import {
+    Data,
+    ErrorType,
+    FileValidationErrorType,
+    FolderValidationErrorType,
+    isFileMeta,
+    isFolder
+} from "@workspace/types";
 import {StatusCodes} from "http-status-codes";
 import {FolderModel} from "@src/models/Folder";
 import {ApiError} from "@src/api/utils/apiError";
-import {ErrorType} from "@workspace/types/apiResponses";
-import {FileModel, FileVersion} from "@src/models/File";
+import {FileModel} from "@src/models/File";
 import mongoose from "mongoose";
-import {ROOT_FOLDER_ID} from "@workspace/constants/index";
-import {FileValidationErrorType, FolderValidationErrorType} from "@workspace/types/modelValidation";
+import {ROOT_FOLDER_ID} from "@workspace/constants";
 import {validateMoveItem} from "@src/api/controllers/utils/moveDataValidation";
+import {createFileSnapshot, createFolderSnapshot} from "@src/services/dataService";
 
 
-
-const moveItem = async (item: Data, targetFolderId: string, session: mongoose.ClientSession) => {
+const moveItem = async (
+    item: Data,
+    targetFolderId: string,
+    userName: string,
+    session: mongoose.ClientSession
+) => {
     if (isFolder(item)) {
-        await FolderModel.updateOne({_id: item.id}, {
-            parentFolderId: targetFolderId
-        }, {session});
-    } else if (isFileMeta(item)) {
+        const folder = await FolderModel.findById(item.id).session(session);
+        if (!folder) return;
+
+        folder.parentFolderId = targetFolderId;
+        folder.userName = userName;
+        folder.version++;
+
+        folder.previousVersions.push(
+            createFolderSnapshot(folder, { updatedBy: userName, reason: 'update' })
+        );
+
+        await folder.save({ session });
+        return;
+    }
+
+    if (isFileMeta(item)) {
         const file = await FileModel.findById(item.id).session(session);
         if (!file) return;
 
-        const versionBackup: FileVersion = {
-            version: file.version ?? 1,
-            name: file.name,
-            contentType: file.contentType,
-            size: file.size,
-            updatedAt: file.updatedAt,
-            userName: file.userName,
-            parentFolderId: file.parentFolderId,
-            comment: file.comment,
-        };
+        file.parentFolderId = targetFolderId;
+        file.userName = userName;
+        file.version++;
 
-        await FileModel.updateOne(
-            { _id: item.id },
-            {
-                parentFolderId: targetFolderId,
-                $inc: { version: 1 },
-                $push: { previousVersions: versionBackup }
-            },
-            { session }
+        file.previousVersions.push(
+            createFileSnapshot(file, { updatedBy: userName, reason: 'update' })
         );
+
+        await file.save({ session });
     }
 };
 
@@ -50,7 +61,7 @@ const moveItem = async (item: Data, targetFolderId: string, session: mongoose.Cl
 const dataController: Router = express.Router();
 
 dataController.put(
-    ApiRoutes.data.move,
+    apiRoutes.data.move,
     handleRequest<{ data: Data[]; targetFolderId: string }, {}>(
         async (req) => {
             const {data, targetFolderId} = req.body;
@@ -71,7 +82,7 @@ dataController.put(
                 for (const item of data) {
                     try {
                         await validateMoveItem(item, targetFolderId);
-                        await moveItem(item, targetFolderId, session);
+                        await moveItem(item, targetFolderId, req.user?.username!, session);
 
                     } catch (error: any) {
                         if (error.code === 11000 && isFileMeta(item)) {

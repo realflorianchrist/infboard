@@ -4,12 +4,32 @@ import {useContextMenu} from "@/src/providers/ContextMenuProvider";
 import menuOptions from "@/src/constants/menuOptions";
 import {useDownloadFile} from "@/src/hooks/useDownloadFile";
 import {useFolderPath} from "@/src/hooks/useFolderPath";
-import {isFileMeta, isFolder} from "@workspace/types/data";
+import {isFileMeta, isFolder} from "@workspace/types";
 import Loader from "@/src/components/loader/Loader";
+import {useDndMonitor} from "@dnd-kit/core";
+import {useState} from "react";
+import {useHasFolderDeletedFiles} from "@/src/api/hooks/api_hooks/folderHooks";
 
 export default function Toolbox() {
 
+    const [isDragging, setIsDragging] = useState(false);
+
+
+    useDndMonitor({
+        onDragStart() {
+            setIsDragging(true);
+        },
+        onDragCancel() {
+            setIsDragging(false);
+        },
+        onDragEnd() {
+            setIsDragging(false);
+        }
+    });
+
     const {
+        includeDeleted,
+        setIncludeDeleted,
         openNewFolderModal,
         isSelectMode,
         selected,
@@ -18,16 +38,16 @@ export default function Toolbox() {
 
     const {downloadFile, downloadFiles, isDownloading} = useDownloadFile();
 
-    const {path} = useFolderPath();
-
-    const folderId = path[path.length - 1]?.id;
+    const {folderId} = useFolderPath();
+    const {data} = useHasFolderDeletedFiles(folderId);
+    const hasFolderDeletedFiles = data?.hasDeletedFiles;
 
     return (
         <>
-            {isDownloading && <Loader isFullScreen={true}/>}
+            <Loader active={isDownloading} isFullScreen={true}/>
 
             <div className={'flex gap-2'}>
-                {isSelectMode && (
+                {isSelectMode && !isDragging && (
                     <Button
                         variant={'secondary'}
                         onClick={async () => {
@@ -45,12 +65,23 @@ export default function Toolbox() {
                         {menuOptions.download}
                     </Button>
                 )}
-                <Button
-                    variant={'secondary'}
-                    onClick={() => {}}
-                >
-                    {menuOptions.showDeletedFile}
-                </Button>
+
+                {hasFolderDeletedFiles && (
+                    <Button
+                        variant={'secondary'}
+                        onClick={() => {
+                            includeDeleted
+                                ? setIncludeDeleted(false)
+                                : setIncludeDeleted(true)
+                        }}
+                    >
+                        {includeDeleted
+                            ? menuOptions.hideDeletedFile
+                            : menuOptions.showDeletedFile
+                        }
+                    </Button>
+                )}
+
                 <Button
                     variant={'secondary'}
                     onClick={() => openNewFolderModal(folderId)}
